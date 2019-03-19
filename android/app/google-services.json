@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "499572790335",
+    "firebase_url": "https://ikonfete-59dcc.firebaseio.com",
+    "project_id": "ikonfete-59dcc",
+    "storage_bucket": "ikonfete-59dcc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:499572790335:android:84ebcec00d442852",
+        "android_client_info": {
+          "package_name": "com.ikonfete.ikonfete"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "499572790335-h1ss5gpmp2segci04mveqta3q8dld8kr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ikonfete.ikonfete",
+            "certificate_hash": "6d28f502a036275891ecc954b829c371decc03c7"
+          }
+        },
+        {
+          "client_id": "499572790335-rnrrbanksqlhj3e9nnbslun32hpegrt1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSYk0IuHOpccBMr1xQslPzKwhkyTpPTz8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "499572790335-rnrrbanksqlhj3e9nnbslun32hpegrt1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "499572790335-l3sgm557cuttprg0sv0eji17r5k5o0ro.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ikonfete.ikonfete"
+              }
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
