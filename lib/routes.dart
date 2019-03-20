@@ -1,6 +1,7 @@
 import 'package:fluro/fluro.dart';
+import 'package:flutter/material.dart';
 import 'package:ikonfete/registry.dart';
-import 'package:ikonfete/screens/activation/activation_screen.dart';
+import 'package:ikonfete/repository/auth_repository.dart';
 import 'package:ikonfete/screens/login/login.dart';
 import 'package:ikonfete/screens/pending_verification/pending_verification_screen.dart';
 import 'package:ikonfete/screens/signup/signup_main_screen.dart';
@@ -36,7 +37,7 @@ void defineRoutes(Router router) {
   );
 
   router.define(
-    Routes.verificationScreen(),
+    Routes.verificationScreenRoute(),
     handler: Handler(handlerFunc: (ctx, params) {
       final uid = params["uid"][0];
       return verificationScreen(ctx, uid);
@@ -44,7 +45,7 @@ void defineRoutes(Router router) {
   );
 
   router.define(
-    Routes.pendingVerificationScreen(),
+    Routes.pendingVerificationScreenRoute(),
     handler: Handler(handlerFunc: (ctx, params) {
       final uid = params["uid"][0];
       return pendingVerificationScreen(ctx, uid);
@@ -60,11 +61,42 @@ class Routes {
     return "/team_selection/${uid == null || uid.isEmpty ? ":uid" : uid}";
   }
 
-  static String verificationScreen({String uid}) {
+  static String verificationScreenRoute({String uid}) {
     return "/verification/${uid == null || uid.isEmpty ? ":uid" : uid}";
   }
 
-  static String pendingVerificationScreen({String uid}) {
+  static String pendingVerificationScreenRoute({String uid}) {
     return "/peding_verification/${uid == null || uid.isEmpty ? ":uid" : uid}";
+  }
+
+  static Widget getHomePage(
+      BuildContext context, CurrentUserHolder currentUser) {
+    if (currentUser == null || !currentUser.isEmailActivated) {
+      return loginScreen(context);
+    }
+
+//    if (!currentUser.isEmailActivated) {
+//      return activationScreen(context, currentUser.uid, activationRepository);
+//    }
+
+    if (currentUser.isArtist) {
+      if (currentUser.isArtistVerified) {
+        // todo: to artist home screen
+      } else if (currentUser.isArtistPendingVerification) {
+        // to pending verification screen
+        return pendingVerificationScreen(context, currentUser.uid);
+      } else {
+        // to verification screen
+        return verificationScreen(context, currentUser.uid);
+      }
+    } else {
+      if (currentUser.isFanInTeam) {
+        // todo: fan home screen
+      } else {
+        return teamSelectionScreen(context, currentUser.uid);
+      }
+    }
+
+    return loginScreen(context);
   }
 }

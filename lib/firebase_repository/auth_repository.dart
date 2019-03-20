@@ -23,12 +23,6 @@ class FirebaseAuthRepository extends EmailAuth {
         _cloudFunctions = CloudFunctions.instance,
         _firebaseStorage = FirebaseStorage.instance;
 
-  @override
-  Future login() {
-    // TODO: implement login
-    return null;
-  }
-
   /// validateEmail checks if the supplied email belongs to either an artist or a fan.
   /// The implication of this is that a user cannot signup as both an artist and a fan.
   /// In the future, consider adding an 'isArtist' parameter and calling
@@ -158,6 +152,65 @@ class FirebaseAuthRepository extends EmailAuth {
     }
 
     return _FirebaseCurrentUserHolder(firebaseUser, user);
+  }
+
+  @override
+  Future<EmailAuthResult> emailLogin(
+      bool isArtist, String email, String password) async {
+    try {
+      final firebaseUser = await _firebaseAuth.signInWithEmailAndPassword(
+          email: email, password: password);
+      if (firebaseUser == null) {
+        return EmailAuthResult(
+            success: false, error: "Incorrect email or password");
+      }
+      User user;
+      if (isArtist) {
+        user = await artistRepository.findByUID(firebaseUser.uid);
+      } else {
+        user = await fanRepository.findByUID(firebaseUser.uid);
+      }
+
+      if (user == null) {
+        return EmailAuthResult(
+            success: false,
+            error: "${isArtist ? "Artist" : "Fan"} account not found");
+      }
+
+      return EmailAuthResult(
+          success: true,
+          currentUserHolder: _FirebaseCurrentUserHolder(firebaseUser, user));
+    } on PlatformException catch (e) {
+      String errMsg;
+      switch (e.code) {
+        case "ERROR_INVALID_EMAIL":
+          errMsg = "Invalid email address";
+          break;
+        case "ERROR_WRONG_PASSWORD":
+        case "ERROR_USER_NOT_FOUND":
+          errMsg = "Incorrect email or password";
+          break;
+        case "ERROR_USER_DISABLED":
+          errMsg = "Your account has been disabled";
+          break;
+        case "ERROR_OPERATION_NOT_ALLOWED":
+          errMsg = "Email login not allowed";
+          break;
+        case "ERROR_TOO_MANY_REQUESTS":
+          errMsg = "Too many attempts. Please wait for a while and retry";
+          break;
+      }
+      return EmailAuthResult(success: false, error: errMsg);
+    } on Exception catch (e) {
+      print(e.toString());
+      return EmailAuthResult(
+          success: false, error: "An unknown error occurred");
+    }
+  }
+
+  @override
+  Future<void> signOut() {
+    return _firebaseAuth.signOut();
   }
 }
 

@@ -79,7 +79,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
               // navigate to pending verification screen
               ScreenUtils.onWidgetDidBuild(() {
                 Navigator.of(context).pushReplacementNamed(
-                    Routes.pendingVerificationScreen(uid: widget.uid));
+                    Routes.pendingVerificationScreenRoute(uid: widget.uid));
               });
             } else {
               ScreenUtils.onWidgetDidBuild(() {

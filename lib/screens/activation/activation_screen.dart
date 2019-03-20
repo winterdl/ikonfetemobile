@@ -56,7 +56,7 @@ class _ActivationScreenState extends State<ActivationScreen> {
               if (result.isArtist) {
                 ScreenUtils.onWidgetDidBuild(() {
                   Navigator.of(context).pushReplacementNamed(
-                      Routes.verificationScreen(uid: widget.uid));
+                      Routes.verificationScreenRoute(uid: widget.uid));
                 });
               } else {
                 ScreenUtils.onWidgetDidBuild(() {

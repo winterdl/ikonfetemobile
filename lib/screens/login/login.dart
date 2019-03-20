@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ikonfete/app_config.dart';
 import 'package:ikonfete/colors.dart';
 import 'package:ikonfete/icons.dart';
 import 'package:ikonfete/app_bloc.dart';
@@ -16,7 +15,7 @@ import 'package:ikonfete/widget/overlays.dart';
 
 Widget loginScreen(BuildContext context) {
   return BlocProvider<LoginBloc>(
-    bloc: LoginBloc(appConfig: AppConfig.of(context)),
+    bloc: LoginBloc(),
     child: LoginScreen(),
   );
 }
@@ -41,62 +40,66 @@ class LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       key: scaffoldKey,
-      body: BlocBuilder<LoginEvent, LoginState>(
-        bloc: loginBloc,
-        builder: (BuildContext ctx, LoginState loginState) {
-          if (loginState.loginResult != null) {
-            final loginResult = loginState.loginResult;
-            if (!loginResult.success) {
-              ScreenUtils.onWidgetDidBuild(() {
-                scaffoldKey.currentState.showSnackBar(
-                    SnackBar(content: Text(loginResult.errorMessage)));
-              });
-            } else {
-              appBloc.dispatch(LoginDone(loginResult: loginResult));
-            }
-          }
+      body: BlocBuilder<AppEvent, AppState>(
+        bloc: appBloc,
+        builder: (context, appState) {
+          return BlocBuilder<LoginEvent, LoginState>(
+            bloc: loginBloc,
+            builder: (BuildContext ctx, LoginState loginState) {
+              if (loginState.emailAuthResult != null) {
+                final result = loginState.emailAuthResult;
+                if (result.success) {
+                  final currentUser = result.currentUserHolder;
+                  final newScreen = Routes.getHomePage(context, currentUser);
+                  ScreenUtils.onWidgetDidBuild(() {
+                    Navigator.of(context).pushReplacement(
+                        CupertinoPageRoute(builder: (ctx) => newScreen));
+                  });
+                } else {
+                  ScreenUtils.onWidgetDidBuild(() {
+                    scaffoldKey.currentState.showSnackBar(
+                      SnackBar(
+                        content: Text(result.error),
+                        backgroundColor: errorColor,
+                      ),
+                    );
+                  });
+                }
+              }
 
-          return Container(
-            width: double.infinity,
-            height: double.infinity,
-            color: Colors.white,
-            padding: EdgeInsets.only(
-              top: MediaQuery.of(context).viewInsets.top + 40.0,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                OverlayBuilder(
-                  child: Container(),
-                  showOverlay: loginState.isLoading,
-                  overlayBuilder: (context) => HudOverlay.getOverlay(),
+              return Container(
+                width: double.infinity,
+                height: double.infinity,
+                color: Colors.white,
+                padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).viewInsets.top + 40.0,
                 ),
-                _buildTitleAndBackButton(context),
-                SizedBox(height: 20.0),
-                _buildIntroText(context),
-                SizedBox(height: 30.0),
-                BlocBuilder<AppEvent, AppState>(
-                  bloc: appBloc,
-                  builder: (BuildContext ctx, AppState appState) {
-                    return LoginForm(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    OverlayBuilder(
+                      child: Container(),
+                      showOverlay: loginState.isLoading,
+                      overlayBuilder: (context) => HudOverlay.getOverlay(),
+                    ),
+                    _buildTitleAndBackButton(context),
+                    SizedBox(height: 20.0),
+                    _buildIntroText(context),
+                    SizedBox(height: 30.0),
+                    LoginForm(
                       formKey: formKey,
                       isArtist: appState.isArtist,
                       onSwitchMode: (isArtist) {
                         appBloc.dispatch(SwitchMode(isArtist: isArtist));
                       },
-                    );
-                  },
+                    ),
+                    Expanded(child: Container()),
+                    _buildButtons(context, appState),
+                    SizedBox(height: 40.0),
+                  ],
                 ),
-                Expanded(child: Container()),
-                BlocBuilder<AppEvent, AppState>(
-                  bloc: appBloc,
-                  builder: (context, appState) {
-                    return _buildButtons(context, appState);
-                  },
-                ),
-                SizedBox(height: 40.0),
-              ],
-            ),
+              );
+            },
           );
         },
       ),

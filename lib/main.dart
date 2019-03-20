@@ -12,10 +12,6 @@ import 'package:ikonfete/registry.dart';
 import 'package:ikonfete/model/artist.dart';
 import 'package:ikonfete/model/fan.dart';
 import 'package:ikonfete/routes.dart';
-import 'package:ikonfete/screens/login/login.dart';
-import 'package:ikonfete/screens/pending_verification/pending_verification_screen.dart';
-import 'package:ikonfete/screens/team_selection/team_selection_screen.dart';
-import 'package:ikonfete/screens/verification/verification_screen.dart';
 import 'package:ikonfete/utils/types.dart';
 import 'package:ikonfete/widget/hud_overlay.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -46,7 +42,6 @@ class IkonfeteAppState extends State<IkonfeteApp> {
 
     _appBloc = AppBloc(
       preferences: widget.preferences,
-      initialCurrentUser: widget.currentUser,
       initialCurrentArtistOrFan: widget.currentArtistOrFan,
     );
   }
@@ -89,33 +84,7 @@ class IkonfeteAppState extends State<IkonfeteApp> {
   Future<Widget> _getHomeScreen() async {
     final emailAuthRepo = Registry().emailAuthRepository();
     final currentUser = await emailAuthRepo.getCurrentUser();
-    if (currentUser == null || !currentUser.isEmailActivated) {
-      return loginScreen(context);
-    }
-
-//    if (!currentUser.isEmailActivated) {
-//      return activationScreen(context, currentUser.uid, activationRepository);
-//    }
-
-    if (currentUser.isArtist) {
-      if (currentUser.isArtistVerified) {
-        // todo: to artist home screen
-      } else if (currentUser.isArtistPendingVerification) {
-        // to pending verification screen
-        return pendingVerificationScreen(context, currentUser.uid);
-      } else {
-        // to verification screen
-        return verificationScreen(context, currentUser.uid);
-      }
-    } else {
-      if (currentUser.isFanInTeam) {
-        // todo: fan home screen
-      } else {
-        return teamSelectionScreen(context, currentUser.uid);
-      }
-    }
-
-    return loginScreen(context);
+    return Routes.getHomePage(context, currentUser);
   }
 
 //  static Widget getInitialScreen(BuildContext context, AppState state) {
