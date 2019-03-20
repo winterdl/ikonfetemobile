@@ -7,14 +7,14 @@ import 'package:ikonfete/colors.dart';
 import 'package:ikonfete/model/artist.dart';
 import 'package:ikonfete/model/fan.dart';
 import 'package:ikonfete/routes.dart';
+import 'package:ikonfete/screen_utils.dart';
 import 'package:ikonfete/screens/team_selection/team_selection_bloc.dart';
 import 'package:ikonfete/utils/logout_helper.dart';
 import 'package:ikonfete/widget/form_fields.dart';
 import 'package:ikonfete/widget/hud_overlay.dart';
 import 'package:ikonfete/widget/overlays.dart';
 
-Widget teamSelectionScreen(
-    BuildContext context, String uid) {
+Widget teamSelectionScreen(BuildContext context, String uid) {
   return BlocProvider<TeamSelectionBloc>(
     bloc: TeamSelectionBloc(),
     child: TeamSelectionScreen(uid: uid),
@@ -66,6 +66,20 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
         body: BlocBuilder<TeamSelectionEvent, TeamSelectionState>(
           bloc: bloc,
           builder: (BuildContext ctx, TeamSelectionState state) {
+            if (state.loadFanResult != null) {
+              final result = state.loadFanResult;
+              if (result.first) {
+                // todo: start search
+              } else {
+                ScreenUtils.onWidgetDidBuild(() {
+                  scaffoldKey.currentState.showSnackBar(SnackBar(
+                    content: Text(result.second),
+                    backgroundColor: errorColor,
+                  ));
+                });
+              }
+            }
+
 //            if (state.hasError) {
 //              ScreenUtils.onWidgetDidBuild(() {
 //                scaffoldKey.currentState

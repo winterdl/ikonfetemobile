@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ikonfete/app_bloc.dart';
 import 'package:ikonfete/colors.dart';
-import 'package:ikonfete/di.dart';
+import 'package:ikonfete/registry.dart';
 import 'package:ikonfete/icons.dart';
 import 'package:ikonfete/repository/activation_repository.dart';
 import 'package:ikonfete/repository/auth_repository.dart';

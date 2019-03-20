@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:ikonfete/di.dart';
+import 'package:ikonfete/registry.dart';
 import 'package:ikonfete/repository/auth_repository.dart';
 import 'package:ikonfete/screens/signup/bloc_models.dart';
 import 'package:meta/meta.dart';

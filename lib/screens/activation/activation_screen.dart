@@ -54,6 +54,10 @@ class _ActivationScreenState extends State<ActivationScreen> {
               // for artists, navigate to verification screen
               // for fans, navigate to team selection screen
               if (result.isArtist) {
+                ScreenUtils.onWidgetDidBuild(() {
+                  Navigator.of(context).pushReplacementNamed(
+                      Routes.verificationScreen(uid: widget.uid));
+                });
               } else {
                 ScreenUtils.onWidgetDidBuild(() {
                   Navigator.of(context).pushReplacementNamed(

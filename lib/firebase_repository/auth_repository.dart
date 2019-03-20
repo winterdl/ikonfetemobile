@@ -142,6 +142,10 @@ class FirebaseAuthRepository extends EmailAuth {
   @override
   Future<CurrentUserHolder> getCurrentUser() async {
     FirebaseUser firebaseUser = await _firebaseAuth.currentUser();
+    if (firebaseUser == null) {
+      return null;
+    }
+
     User user;
     if (!firebaseUser.isAnonymous) {
       user = await artistRepository.findByUID(firebaseUser.uid);

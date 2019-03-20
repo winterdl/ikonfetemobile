@@ -1,5 +1,4 @@
-//import 'package:flutter_twitter_login/flutter_twitter_login.dart';
-import 'package:ikonfete/app_config.dart';
+import 'package:flutter_twitter_login/flutter_twitter_login.dart';
 import 'package:meta/meta.dart';
 
 class TwitterAuthResult {
@@ -17,47 +16,49 @@ class TwitterAuthResult {
 }
 
 class TwitterAuth {
-  final AppConfig appConfig;
-//  TwitterLogin twitterLogin;
+  final String consumerKey;
+  final String consumerSecret;
 
-  TwitterAuth({@required this.appConfig}) {
-//    twitterLogin = TwitterLogin(
-//      consumerKey: appConfig.twitterConfig.consumerKey,
-//      consumerSecret: appConfig.twitterConfig.consumerSecret,
-//    );
+  TwitterLogin twitterLogin;
+
+  TwitterAuth({@required this.consumerKey, @required this.consumerSecret}) {
+    twitterLogin = TwitterLogin(
+      consumerKey: consumerKey,
+      consumerSecret: consumerSecret,
+    );
   }
 
   Future<bool> isLoggedIn() {
-//    return twitterLogin.isSessionActive;
+    return twitterLogin.isSessionActive;
   }
 
   Future<TwitterAuthResult> twitterAuth() async {
-//    await twitterLogin.logOut();
-//    final twitterLoginResult = await twitterLogin.authorize();
-//    if (twitterLoginResult.status == TwitterLoginStatus.loggedIn) {
-//      final tresult = TwitterAuthResult();
-//      tresult
-//        ..canceled = false
-//        ..success = true
-//        ..twitterUID = twitterLoginResult.session.userId
-//        ..twitterUsername = twitterLoginResult.session.username
-//        ..tokenSecret = twitterLoginResult.session.secret
-//        ..token = twitterLoginResult.session.token;
-//      return tresult;
-//    } else if (twitterLoginResult.status ==
-//        TwitterLoginStatus.cancelledByUser) {
-//      final tresult = TwitterAuthResult();
-//      tresult
-//        ..success = false
-//        ..canceled = true;
-//      return tresult;
-//    } else {
-//      final tresult = TwitterAuthResult();
-//      tresult
-//        ..success = false
-//        ..canceled = false
-//        ..errorMessage = twitterLoginResult.errorMessage;
-//      return tresult;
-//    }
+    await twitterLogin.logOut();
+    final twitterLoginResult = await twitterLogin.authorize();
+    if (twitterLoginResult.status == TwitterLoginStatus.loggedIn) {
+      final tresult = TwitterAuthResult();
+      tresult
+        ..canceled = false
+        ..success = true
+        ..twitterUID = twitterLoginResult.session.userId
+        ..twitterUsername = twitterLoginResult.session.username
+        ..tokenSecret = twitterLoginResult.session.secret
+        ..token = twitterLoginResult.session.token;
+      return tresult;
+    } else if (twitterLoginResult.status ==
+        TwitterLoginStatus.cancelledByUser) {
+      final tresult = TwitterAuthResult();
+      tresult
+        ..success = false
+        ..canceled = true;
+      return tresult;
+    } else {
+      final tresult = TwitterAuthResult();
+      tresult
+        ..success = false
+        ..canceled = false
+        ..errorMessage = twitterLoginResult.errorMessage;
+      return tresult;
+    }
   }
 }

@@ -71,4 +71,11 @@ class FirebaseArtistRepository extends FirestoreRepository<Artist>
         .update(model.toJson());
     return;
   }
+
+  @override
+  Future<List<Artist>> searchByNameOrUsername(String query) async {
+//    _firebaseDatabase.reference().child(collection).
+    // todo
+    return [];
+  }
 }

@@ -1,10 +1,11 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/services.dart';
-import 'package:ikonfete/di.dart';
+import 'package:ikonfete/registry.dart';
 import 'package:ikonfete/exceptions.dart';
 import 'package:ikonfete/model/artist.dart';
 import 'package:ikonfete/model/fan.dart';
 import 'package:ikonfete/repository/fan_repository.dart';
+import 'package:ikonfete/utils/types.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -22,12 +23,18 @@ class _LoadFan extends TeamSelectionEvent {
   _LoadFan(this.uid);
 }
 
-//class SearchQuery extends TeamSelectionEvent {
-//  final String query;
-//
-//  SearchQuery(this.query);
-//}
-//
+class SearchEvent extends TeamSelectionEvent {
+  final String query;
+
+  SearchEvent(this.query);
+}
+
+class _SearchEvent extends TeamSelectionEvent {
+  final String query;
+
+  _SearchEvent(this.query);
+}
+
 //class _SearchQuery extends TeamSelectionEvent {
 //  final String query;
 //
@@ -58,39 +65,32 @@ class _LoadFan extends TeamSelectionEvent {
 
 class TeamSelectionState {
   final bool isLoading;
+  final Pair<bool, String> loadFanResult;
   final Fan fan;
   final List<Artist> artists;
   final bool isSearching;
+  final Pair<bool, String> searchResult;
   final Artist selectedArtist;
-
-  final bool showArtistModal;
-  final bool hasError;
-  final String errorMessage;
-  final bool teamSelectionResult;
 
   TeamSelectionState({
     @required this.isLoading,
+    @required this.loadFanResult,
     @required this.fan,
     @required this.isSearching,
+    @required this.searchResult,
     @required this.artists,
     @required this.selectedArtist,
-    @required this.showArtistModal,
-    @required this.hasError,
-    @required this.errorMessage,
-    @required this.teamSelectionResult,
   });
 
   factory TeamSelectionState.initial() {
     return TeamSelectionState(
       isLoading: false,
+      loadFanResult: null,
       fan: null,
       artists: [],
       isSearching: false,
+      searchResult: null,
       selectedArtist: null,
-      showArtistModal: false,
-      hasError: false,
-      errorMessage: null,
-      teamSelectionResult: false,
     );
   }
 
@@ -100,10 +100,8 @@ class TeamSelectionState {
     List<Artist> artists,
     bool isSearching,
     Artist selectedArtist,
-    bool showArtistModal,
-    bool hasError,
-    String errorMessage,
-    bool teamSelectionResult,
+    Pair<bool, String> loadFanResult,
+    Pair<bool, String> searchResult,
   }) {
     return TeamSelectionState(
       isLoading: isLoading ?? this.isLoading,
@@ -111,20 +109,9 @@ class TeamSelectionState {
       artists: artists ?? this.artists,
       isSearching: isSearching ?? this.isSearching,
       selectedArtist: selectedArtist ?? this.selectedArtist,
-      showArtistModal: showArtistModal ?? this.showArtistModal,
-      hasError: hasError ?? this.hasError,
-      errorMessage: errorMessage ?? this.errorMessage,
-      teamSelectionResult: teamSelectionResult ?? this.teamSelectionResult,
+      loadFanResult: loadFanResult,
+      searchResult: searchResult,
     );
-  }
-
-  TeamSelectionState withError(String errorMessage) {
-    return copyWith(
-        isLoading: false,
-        isSearching: false,
-        hasError: true,
-        showArtistModal: false,
-        errorMessage: errorMessage);
   }
 
   @override
@@ -137,10 +124,8 @@ class TeamSelectionState {
       artists == other.artists &&
       isSearching == other.isSearching &&
       selectedArtist == other.selectedArtist &&
-      showArtistModal == other.showArtistModal &&
-      hasError == other.hasError &&
-      errorMessage == other.errorMessage &&
-      teamSelectionResult == other.teamSelectionResult;
+      loadFanResult == other.loadFanResult &&
+      searchResult == other.searchResult;
 
   @override
   int get hashCode =>
@@ -149,10 +134,8 @@ class TeamSelectionState {
       fan.hashCode ^
       isSearching.hashCode ^
       selectedArtist.hashCode ^
-      showArtistModal.hashCode ^
-      hashCode.hashCode ^
-      errorMessage.hashCode ^
-      teamSelectionResult.hashCode;
+      loadFanResult.hashCode ^
+      searchResult.hashCode;
 }
 
 class TeamSelectionBloc extends Bloc<TeamSelectionEvent, TeamSelectionState> {
@@ -171,6 +154,10 @@ class TeamSelectionBloc extends Bloc<TeamSelectionEvent, TeamSelectionState> {
 
     if (event is LoadFan) {
       dispatch(_LoadFan(event.uid));
+    }
+
+    if (event is SearchEvent) {
+      dispatch(_SearchEvent(event.query));
     }
 
 //    if (event is SearchQuery) {
@@ -200,12 +187,35 @@ class TeamSelectionBloc extends Bloc<TeamSelectionEvent, TeamSelectionState> {
       yield state.copyWith(isLoading: true);
     }
 
+    if (event is SearchEvent) {
+      yield state.copyWith(isSearching: true);
+    }
+
     if (event is _LoadFan) {
       try {
         final fan = await _loadFan(event.uid);
-        yield state.copyWith(isLoading: false, fan: fan);
+        yield state.copyWith(
+            isLoading: false, fan: fan, loadFanResult: Pair.from(true, null));
       } on AppException catch (e) {
-        yield state.copyWith(isLoading: false, errorMessage: e.message);
+        yield state.copyWith(
+            isLoading: false, loadFanResult: Pair.from(false, e.message));
+      }
+    }
+
+    if (event is _SearchEvent) {
+      try {
+        final artists = await _searchForArtist(event.query);
+        yield state.copyWith(
+          isLoading: false,
+          isSearching: false,
+          artists: artists,
+          loadFanResult: Pair.from(true, null),
+        );
+      } on AppException catch (e) {
+        yield state.copyWith(
+            isLoading: false,
+            isSearching: false,
+            searchResult: Pair.from(false, e.message));
       }
     }
 
@@ -290,6 +300,10 @@ class TeamSelectionBloc extends Bloc<TeamSelectionEvent, TeamSelectionState> {
       print("Failed to load fan $uid. ${e.toString()}");
       throw AppException("An unknown error occurred");
     }
+  }
+
+  Future<List<Artist>> _searchForArtist(String query) async {
+    return [];
   }
 
 //  Future<List<Team>> _searchArtistTeams(String query) async {

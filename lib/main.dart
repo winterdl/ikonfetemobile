@@ -8,23 +8,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 //import 'package:ikonfete/localization.dart';
 import 'package:ikonfete/app_bloc.dart';
 import 'package:ikonfete/colors.dart';
-import 'package:ikonfete/di.dart';
+import 'package:ikonfete/registry.dart';
 import 'package:ikonfete/model/artist.dart';
 import 'package:ikonfete/model/fan.dart';
 import 'package:ikonfete/routes.dart';
 import 'package:ikonfete/screens/login/login.dart';
+import 'package:ikonfete/screens/pending_verification/pending_verification_screen.dart';
 import 'package:ikonfete/screens/team_selection/team_selection_screen.dart';
-
-//import 'package:ikonfete/screens/artist_verification/artist_verification.dart';
-//import 'package:ikonfete/screens/fan_team_selection/fan_team_selection.dart';
-//import 'package:ikonfete/screens/login/login.dart';
-//import 'package:ikonfete/screens/onboarding.dart';
-//import 'package:ikonfete/screens/pending_verification/pending_verification.dart';
-//import 'package:ikonfete/screens/signup/user_signup_profile.dart';
+import 'package:ikonfete/screens/verification/verification_screen.dart';
 import 'package:ikonfete/utils/types.dart';
 import 'package:ikonfete/widget/hud_overlay.dart';
-
-//import 'package:ikonfete/zoom_scaffold/zoom_scaffold_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class IkonfeteApp extends StatefulWidget {
@@ -106,11 +99,13 @@ class IkonfeteAppState extends State<IkonfeteApp> {
 
     if (currentUser.isArtist) {
       if (currentUser.isArtistVerified) {
-        // todo: to pending verification screen
-      } else if (currentUser.isArtistPendingVerification) {
-        // todo: to verification screen
-      } else {
         // todo: to artist home screen
+      } else if (currentUser.isArtistPendingVerification) {
+        // to pending verification screen
+        return pendingVerificationScreen(context, currentUser.uid);
+      } else {
+        // to verification screen
+        return verificationScreen(context, currentUser.uid);
       }
     } else {
       if (currentUser.isFanInTeam) {

@@ -54,7 +54,6 @@ void main() async {
       accessToken: "232707493-WuE4AfaUH6FZ4DP23dAFe6Aw4ta8mXD63oIyAXkB",
       accessTokenSecret: "dTdKFRrZScqgERhzLQnQEqrgkWNDag5T5yQF3ncAukS0h",
     ),
-    serverBaseUrl: "http://104.248.166.222:8080",
     child: IkonfeteApp(
       preferences: sharedPreferences,
       currentUser: currentUser,

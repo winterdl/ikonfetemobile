@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
-import 'package:ikonfete/di.dart';
+import 'package:ikonfete/registry.dart';
 import 'package:ikonfete/repository/activation_repository.dart';
 import 'package:ikonfete/utils/types.dart';
 import 'package:meta/meta.dart';
