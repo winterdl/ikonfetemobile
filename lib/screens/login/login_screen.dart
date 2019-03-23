@@ -50,7 +50,8 @@ class LoginScreenState extends State<LoginScreen> {
                 final result = loginState.emailAuthResult;
                 if (result.success) {
                   final currentUser = result.currentUserHolder;
-                  final newScreen = Routes.getHomePage(context, currentUser);
+                  final newScreen =
+                      Routes.getHomePage(context, appBloc, currentUser);
                   ScreenUtils.onWidgetDidBuild(() {
                     Navigator.of(context).pushReplacement(
                         CupertinoPageRoute(builder: (ctx) => newScreen));

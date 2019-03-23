@@ -1,5 +1,7 @@
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ikonfete/app_bloc.dart';
 import 'package:ikonfete/registry.dart';
 import 'package:ikonfete/repository/auth_repository.dart';
 import 'package:ikonfete/screens/home/artist_home_screen.dart';
@@ -9,6 +11,7 @@ import 'package:ikonfete/screens/pending_verification/pending_verification_scree
 import 'package:ikonfete/screens/signup/signup_main_screen.dart';
 import 'package:ikonfete/screens/team_selection/team_selection_screen.dart';
 import 'package:ikonfete/screens/verification/verification_screen.dart';
+import 'package:ikonfete/zoom_scaffold/zoom_scaffold_screen.dart';
 
 final registry = Registry();
 final router = Router();
@@ -58,7 +61,18 @@ void defineRoutes(Router router) {
     Routes.artistHomeScreenRoute(),
     handler: Handler(handlerFunc: (ctx, params) {
       final uid = params["uid"][0];
-      return artistHomeScreen(ctx, uid);
+      final bloc = BlocProvider.of<AppBloc>(ctx);
+//      return artistHomeScreen(ctx, uid);
+      return BlocBuilder<AppEvent, AppState>(
+        bloc: bloc,
+        builder: (ctx, appState) {
+          return ZoomScaffoldScreen(
+            screenId: 'home',
+            appState: appState,
+            params: <String, String>{},
+          );
+        },
+      );
     }),
   );
 
@@ -66,7 +80,18 @@ void defineRoutes(Router router) {
     Routes.fanHomeScreenRoute(),
     handler: Handler(handlerFunc: (ctx, params) {
       final uid = params["uid"][0];
-      return fanHomeScreen(ctx, uid);
+      final bloc = BlocProvider.of<AppBloc>(ctx);
+//      return artistHomeScreen(ctx, uid);
+      return BlocBuilder<AppEvent, AppState>(
+        bloc: bloc,
+        builder: (ctx, appState) {
+          return ZoomScaffoldScreen(
+            screenId: 'home',
+            appState: appState,
+            params: <String, String>{},
+          );
+        },
+      );
     }),
   );
 }
@@ -96,7 +121,7 @@ class Routes {
   }
 
   static Widget getHomePage(
-      BuildContext context, CurrentUserHolder currentUser) {
+      BuildContext context, AppBloc appBloc, CurrentUserHolder currentUser) {
     if (currentUser == null || !currentUser.isEmailActivated) {
       return loginScreen(context);
     }
@@ -108,7 +133,18 @@ class Routes {
     if (currentUser.isArtist) {
       if (currentUser.isArtistVerified) {
         // to artist home screen
-        return artistHomeScreen(context, currentUser.uid);
+//        return artistHomeScreen(context, currentUser.uid);
+//      return artistHomeScreen(ctx, uid);
+        return BlocBuilder<AppEvent, AppState>(
+          bloc: appBloc,
+          builder: (ctx, appState) {
+            return ZoomScaffoldScreen(
+              screenId: 'home',
+              appState: appState,
+              params: <String, String>{},
+            );
+          },
+        );
       } else if (currentUser.isArtistPendingVerification) {
         // to pending verification screen
         return pendingVerificationScreen(context, currentUser.uid);
@@ -119,7 +155,17 @@ class Routes {
     } else {
       if (currentUser.isFanInTeam) {
         // to fan home screen
-        return fanHomeScreen(context, currentUser.uid);
+//        return fanHomeScreen(context, currentUser.uid);
+        return BlocBuilder<AppEvent, AppState>(
+          bloc: appBloc,
+          builder: (ctx, appState) {
+            return ZoomScaffoldScreen(
+              screenId: 'home',
+              appState: appState,
+              params: <String, String>{},
+            );
+          },
+        );
       } else {
         // to team selection screen
         return teamSelectionScreen(context, currentUser.uid);

@@ -72,7 +72,7 @@ class IkonfeteAppState extends State<IkonfeteApp> {
           builder: (context, appState) {
             return FutureBuilder<Widget>(
               builder: (context, snapshot) => snapshot.data,
-              future: _getHomeScreen(),
+              future: _getHomeScreen(_appBloc),
               initialData: LoadingScreen(),
             );
           },
@@ -81,10 +81,10 @@ class IkonfeteAppState extends State<IkonfeteApp> {
     );
   }
 
-  Future<Widget> _getHomeScreen() async {
+  Future<Widget> _getHomeScreen(AppBloc appBloc) async {
     final emailAuthRepo = Registry().emailAuthRepository();
     final currentUser = await emailAuthRepo.getCurrentUser();
-    return Routes.getHomePage(context, currentUser);
+    return Routes.getHomePage(context,appBloc, currentUser);
   }
 
 //  static Widget getInitialScreen(BuildContext context, AppState state) {
