@@ -49,9 +49,20 @@ abstract class AuthRepository {
 
   Future<CurrentUserHolder> getCurrentUser();
 
-  Future login();
+  Future<void> signOut();
+}
+
+class EmailAuthResult {
+  final bool success;
+  final CurrentUserHolder currentUserHolder;
+  final String error;
+
+  EmailAuthResult({@required this.success, this.currentUserHolder, this.error});
 }
 
 abstract class EmailAuth extends AuthRepository {
   Future<EmailValidationResult> validateEmail(String email);
+
+  Future<EmailAuthResult> emailLogin(
+      bool isArtist, String email, String password);
 }

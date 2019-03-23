@@ -17,16 +17,19 @@ class FirebaseFanRepository extends FirestoreRepository<Fan>
   Future<Fan> create(Fan model) async {
     model.dateCreated = DateTime.now().toUtc();
     final fan = await firestoreCreate(model);
+    final json = model.toJson();
+    json["searchableName"] = model.name.toLowerCase();
+    json["searchableUsername"] = model.username.toLowerCase();
     await _firebaseDatabase
         .reference()
         .child(collection)
         .child(fan.id)
-        .set(model.toJson());
+        .set(json);
     return fan;
   }
 
   @override
-  Future delete(String id) async {
+  Future<void> delete(String id) async {
     await firestoreDelete(id);
     await _firebaseDatabase
         .reference()
@@ -61,13 +64,16 @@ class FirebaseFanRepository extends FirestoreRepository<Fan>
   }
 
   @override
-  Future update(String id, Fan model) async {
+  Future<void> update(String id, Fan model) async {
     model.dateUpdated = DateTime.now().toUtc();
     await firestoreUpdate(id, model);
+    final json = model.toJson();
+    json["searchableName"] = model.name.toLowerCase();
+    json["searchableUsername"] = model.username.toLowerCase();
     await _firebaseDatabase
         .reference()
         .child(collection)
         .child(id)
-        .update(model.toJson());
+        .update(json);
   }
 }

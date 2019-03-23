@@ -21,6 +21,7 @@ PODS:
     - Firebase/Core
     - Firebase/Functions (~> 5.18)
     - Flutter
+  - Fabric (1.9.0)
   - FBSDKCoreKit (4.41.0):
     - Bolts (~> 1.9)
   - FBSDKLoginKit (4.39.1):
@@ -110,6 +111,9 @@ PODS:
   - flutter_facebook_login (0.0.1):
     - FBSDKLoginKit (= 4.39.1)
     - Flutter
+  - flutter_twitter_login (0.0.1):
+    - Flutter
+    - TwitterKit
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
@@ -172,6 +176,10 @@ PODS:
   - sqflite (0.0.1):
     - Flutter
     - FMDB (~> 2.7.2)
+  - TwitterCore (2.8.0):
+    - Fabric
+  - TwitterKit (2.8.1):
+    - TwitterCore (>= 2.8)
   - video_player (0.0.1):
     - Flutter
   - webview_flutter (0.0.1):
@@ -186,6 +194,7 @@ DEPENDENCIES:
   - firebase_storage (from `.symlinks/plugins/firebase_storage/ios`)
   - Flutter (from `.symlinks/flutter/ios`)
   - flutter_facebook_login (from `.symlinks/plugins/flutter_facebook_login/ios`)
+  - flutter_twitter_login (from `.symlinks/plugins/flutter_twitter_login/ios`)
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - screen (from `.symlinks/plugins/screen/ios`)
@@ -198,6 +207,7 @@ SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - Bolts
     - BoringSSL-GRPC
+    - Fabric
     - FBSDKCoreKit
     - FBSDKLoginKit
     - Firebase
@@ -219,6 +229,8 @@ SPEC REPOS:
     - leveldb-library
     - nanopb
     - Protobuf
+    - TwitterCore
+    - TwitterKit
 
 EXTERNAL SOURCES:
   cloud_firestore:
@@ -237,6 +249,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/flutter/ios"
   flutter_facebook_login:
     :path: ".symlinks/plugins/flutter_facebook_login/ios"
+  flutter_twitter_login:
+    :path: ".symlinks/plugins/flutter_twitter_login/ios"
   image_picker:
     :path: ".symlinks/plugins/image_picker/ios"
   path_provider:
@@ -257,6 +271,7 @@ SPEC CHECKSUMS:
   BoringSSL-GRPC: 2a230d9cd93e7ce39916044f645cebb31f37dde6
   cloud_firestore: cd6e849ecb8ab43e5a7a5f1f169304ca65436c03
   cloud_functions: b98373be5739679dfc7fa6a792ab1c50cbd6edac
+  Fabric: f988e33c97f08930a413e08123064d2e5f68d655
   FBSDKCoreKit: 974810fe3806173f3777c68062fa8ed6fa59b59d
   FBSDKLoginKit: c3079d9a4db27c492287b1eed7a4272b28cf8a59
   Firebase: 02f3281965c075426141a0ce1277e9de6649cab9
@@ -275,6 +290,7 @@ SPEC CHECKSUMS:
   FirebaseStorage: 29075f874c2b3cf61e5221a62c4ceefc809e5412
   Flutter: 58dd7d1b27887414a370fcccb9e645c08ffd7a6a
   flutter_facebook_login: f1f88c32d5888d6b5f3301fd87cc7de26f02877e
+  flutter_twitter_login: 4b537734f9c28ec23f8b82ee5134bc57f6f7f11c
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   GoogleAppMeasurement: 6cf307834da065863f9faf4c0de0a936d81dd832
   GoogleUtilities: 6481e6318c5fcabaaa8513ef8120f329055d7c10
@@ -289,6 +305,8 @@ SPEC CHECKSUMS:
   screen: abd91ca7bf3426e1cc3646d27e9b2358d6bf07b0
   shared_preferences: 1feebfa37bb57264736e16865e7ffae7fc99b523
   sqflite: ff1d9da63c06588cc8d1faf7256d741f16989d5a
+  TwitterCore: e959987be23c767004d29eb7fab8d85d8585a2e5
+  TwitterKit: 3b6044a7320340326a4098f3e37aa1dbaeb94942
   video_player: 3964090a33353060ed7f58aa6427c7b4b208ec21
   webview_flutter: 1aa7604e6cdb451a9b7ed2c37d5454c0b440246b
 

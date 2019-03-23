@@ -1,24 +1,19 @@
-// todo: implement full fledged DI
-
 import 'package:ikonfete/firebase_repository/activation_repository.dart';
 import 'package:ikonfete/firebase_repository/artist_repository.dart';
 import 'package:ikonfete/firebase_repository/auth_repository.dart';
 import 'package:ikonfete/firebase_repository/fan_repository.dart';
+import 'package:ikonfete/firebase_repository/pending_verification_repository.dart';
 import 'package:ikonfete/repository/activation_repository.dart';
 import 'package:ikonfete/repository/artist_repository.dart';
 import 'package:ikonfete/repository/auth_repository.dart';
 import 'package:ikonfete/repository/fan_repository.dart';
 import 'package:flutter_simple_dependency_injection/injector.dart';
-
-//final ArtistRepository artistRepository = FirebaseArtistRepository();
-//final FanRepository fanRepository = FirebaseFanRepository();
-//final ActivationRepository activationRepository =
-//    FirebaseActivationRepository();
-//final EmailAuth emailAuthRepo =
-//    FirebaseAuthRepository(artistRepository, fanRepository);
+import 'package:ikonfete/repository/pending_verification_repository.dart';
 
 class RegistryKeys {
   static final String emailAuthRepository = "email_auth_repository";
+  static final String twitterConsumerKey = "twitter_consumer_key";
+  static final String twitterConsumerSecret = "twitter_consumer_secret";
 }
 
 class Registry {
@@ -35,6 +30,8 @@ class Registry {
         (i) => FirebaseAuthRepository(
             i.get<ArtistRepository>(), i.get<FanRepository>()),
         key: RegistryKeys.emailAuthRepository);
+    _injector.map<PendingVerificationRepository>(
+        (i) => FirebasePendingVerificationRepository());
   }
 
   ArtistRepository artistRepository() => _injector.get<ArtistRepository>();
@@ -48,4 +45,7 @@ class Registry {
 
   EmailAuth emailAuthRepository() =>
       authRepositories().firstWhere((repo) => repo is EmailAuth, orElse: null);
+
+  PendingVerificationRepository pendingVerificationRepository() =>
+      _injector.get<PendingVerificationRepository>();
 }

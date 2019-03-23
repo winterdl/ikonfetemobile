@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ikonfete/model/artist.dart';
 import 'package:ikonfete/model/auth_type.dart';
 import 'package:ikonfete/model/fan.dart';
@@ -66,9 +65,3 @@ class AuthResult {
 
   bool get isFan => _fan != null;
 }
-
-class LoginResult extends AuthResult {
-  FirebaseUser firebaseUser;
-
-  LoginResult(AuthActionRequest request) : super(request: request);
-} 

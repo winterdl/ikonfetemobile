@@ -190,32 +190,32 @@ class _SignupMainScreenState extends State<SignupMainScreen> {
   }
 
   Widget _buildPolicyText(BuildContext context) {
-    final webviewAppBar = (String title) => AppBar(
-          backgroundColor: Colors.white,
-          elevation: 3.0,
-          leading: IconButton(
-            iconSize: 15.0,
-            icon: Icon(
-              ThemifyIcons.close,
-              color: Color(0xFFAAAAAA),
-            ),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          title: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 18.0,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w200,
-                ),
-              ),
-            ],
-          ),
-        );
+//    final webviewAppBar = (String title) => AppBar(
+//          backgroundColor: Colors.white,
+//          elevation: 3.0,
+//          leading: IconButton(
+//            iconSize: 15.0,
+//            icon: Icon(
+//              ThemifyIcons.close,
+//              color: Color(0xFFAAAAAA),
+//            ),
+//            onPressed: () => Navigator.of(context).pop(),
+//          ),
+//          title: Column(
+//            mainAxisAlignment: MainAxisAlignment.center,
+//            crossAxisAlignment: CrossAxisAlignment.start,
+//            children: <Widget>[
+//              Text(
+//                title,
+//                style: TextStyle(
+//                  fontSize: 18.0,
+//                  color: Colors.black,
+//                  fontWeight: FontWeight.w200,
+//                ),
+//              ),
+//            ],
+//          ),
+//        );
 
     final privacyPolicyTapHandler = TapGestureRecognizer();
     privacyPolicyTapHandler.onTap = () {};

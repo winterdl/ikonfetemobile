@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
-import 'package:ikonfete/di.dart';
+import 'package:ikonfete/registry.dart';
 import 'package:ikonfete/model/artist.dart';
 import 'package:ikonfete/model/fan.dart';
 import 'package:ikonfete/repository/auth_repository.dart';

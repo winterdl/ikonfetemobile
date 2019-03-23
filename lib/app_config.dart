@@ -9,7 +9,6 @@ class AppConfig extends InheritedWidget {
     @required this.flavorName,
     @required this.facebookConfig,
     @required this.twitterConfig,
-    @required this.serverBaseUrl,
     @required Widget child,
   }) : super(child: child);
 
@@ -17,7 +16,6 @@ class AppConfig extends InheritedWidget {
   final String flavorName;
   final FacebookConfig facebookConfig;
   final TwitterConfig twitterConfig;
-  final String serverBaseUrl;
 
   static AppConfig of(BuildContext context) {
     return context.inheritFromWidgetOfExactType(AppConfig);
