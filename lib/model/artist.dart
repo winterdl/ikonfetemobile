@@ -5,6 +5,7 @@ class Artist extends User {
   DateTime dateVerified;
   bool isPendingVerification = false;
   String bio;
+  num teamMemberCount = 0;
 
 //  String spotifyArtistId;
 //  String deezerArtistId;
@@ -15,7 +16,8 @@ class Artist extends User {
     this
       ..isVerified = json["isVerified"] ?? false
       ..isPendingVerification = json["isPendingVerification"] ?? false
-      ..bio = json["bio"] ?? "";
+      ..bio = json["bio"] ?? ""
+      ..teamMemberCount = json["teamMemberCount"] ?? 0;
 
     this.dateVerified = json["dateVerified"] == null
         ? null
@@ -30,6 +32,7 @@ class Artist extends User {
       "dateVerified": dateVerified?.toUtc()?.millisecondsSinceEpoch ?? null,
       "isPendingVerification": isPendingVerification,
       "bio": bio,
+      "teamMemberCount": teamMemberCount ?? 0,
     });
     return map;
   }

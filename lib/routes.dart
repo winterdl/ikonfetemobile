@@ -2,7 +2,9 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:ikonfete/registry.dart';
 import 'package:ikonfete/repository/auth_repository.dart';
-import 'package:ikonfete/screens/login/login.dart';
+import 'package:ikonfete/screens/home/artist_home_screen.dart';
+import 'package:ikonfete/screens/home/fan_home_screen.dart';
+import 'package:ikonfete/screens/login/login_screen.dart';
 import 'package:ikonfete/screens/pending_verification/pending_verification_screen.dart';
 import 'package:ikonfete/screens/signup/signup_main_screen.dart';
 import 'package:ikonfete/screens/team_selection/team_selection_screen.dart';
@@ -51,6 +53,22 @@ void defineRoutes(Router router) {
       return pendingVerificationScreen(ctx, uid);
     }),
   );
+
+  router.define(
+    Routes.artistHomeScreenRoute(),
+    handler: Handler(handlerFunc: (ctx, params) {
+      final uid = params["uid"][0];
+      return artistHomeScreen(ctx, uid);
+    }),
+  );
+
+  router.define(
+    Routes.fanHomeScreenRoute(),
+    handler: Handler(handlerFunc: (ctx, params) {
+      final uid = params["uid"][0];
+      return fanHomeScreen(ctx, uid);
+    }),
+  );
 }
 
 class Routes {
@@ -69,6 +87,14 @@ class Routes {
     return "/peding_verification/${uid == null || uid.isEmpty ? ":uid" : uid}";
   }
 
+  static String artistHomeScreenRoute({String uid}) {
+    return "/artist_home/${uid == null || uid.isEmpty ? ":uid" : uid}";
+  }
+
+  static String fanHomeScreenRoute({String uid}) {
+    return "/fan_home/${uid == null || uid.isEmpty ? ":uid" : uid}";
+  }
+
   static Widget getHomePage(
       BuildContext context, CurrentUserHolder currentUser) {
     if (currentUser == null || !currentUser.isEmailActivated) {
@@ -81,7 +107,8 @@ class Routes {
 
     if (currentUser.isArtist) {
       if (currentUser.isArtistVerified) {
-        // todo: to artist home screen
+        // to artist home screen
+        return artistHomeScreen(context, currentUser.uid);
       } else if (currentUser.isArtistPendingVerification) {
         // to pending verification screen
         return pendingVerificationScreen(context, currentUser.uid);
@@ -91,12 +118,12 @@ class Routes {
       }
     } else {
       if (currentUser.isFanInTeam) {
-        // todo: fan home screen
+        // to fan home screen
+        return fanHomeScreen(context, currentUser.uid);
       } else {
+        // to team selection screen
         return teamSelectionScreen(context, currentUser.uid);
       }
     }
-
-    return loginScreen(context);
   }
 }

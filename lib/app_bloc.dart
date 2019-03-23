@@ -35,8 +35,6 @@ class AppState {
     this.isArtist,
   });
 
-//  String get uid => currentUser != null ? currentUser.uid : null;
-
   factory AppState.initial(
       SharedPreferences preferences, ExclusivePair<Artist, Fan> artistOrFan) {
     // get shared prefs
@@ -44,16 +42,6 @@ class AppState {
     final isOnBoarded =
         preferences.getBool(PreferenceKeys.isOnBoarded) ?? false;
     final isLoggedIn = preferences.getBool(PreferenceKeys.isLoggedIn) ?? false;
-//    final isProfileSetup = artistOrFan == null
-//        ? false
-//        : (isArtist
-//            ? !StringUtils.isNullOrEmpty(artistOrFan.first.username)
-//            : !StringUtils.isNullOrEmpty(artistOrFan.second.username));
-//    final isFanTeamSetup = isArtist
-//        ? false
-//        : (artistOrFan == null
-//            ? false
-//            : !StringUtils.isNullOrEmpty(artistOrFan.second.currentTeamId));
 
     return AppState(
       isOnBoarded: isOnBoarded,
@@ -119,60 +107,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     if (event is Signout) {
       await emailAuthRepo.signOut();
       yield state.copyWith(isLoggedIn: false);
-//      await _signOut();
-//      await preferences.setBool(PreferenceKeys.isLoggedIn, false);
-//      await preferences.remove(PreferenceKeys.uid);
-//      await DbProvider.db.clearCurrentArtistOrFan();
-//      final newState = AppState.initial(preferences, null, null);
-//      yield newState.copyWith(isLoggedIn: false);
     }
-
-//    if (event is LoginDone) {
-//      final isArtist = event.loginResult.isArtist;
-//      final artistOrFan = isArtist
-//          ? ExclusivePair<Artist, Fan>.withFirst(event.loginResult.artist)
-//          : ExclusivePair<Artist, Fan>.withSecond(event.loginResult.fan);
-//      final isFanTeamSetup = isArtist ||
-//          !StringUtils.isNullOrEmpty(artistOrFan.second.currentTeamId);
-//      final isProfileSetup = isArtist
-//          ? !StringUtils.isNullOrEmpty(artistOrFan.first.username)
-//          : !StringUtils.isNullOrEmpty(artistOrFan.second.username);
-//      final uid = isArtist ? artistOrFan.first.uid : artistOrFan.second.uid;
-//
-//      await preferences.setBool(PreferenceKeys.isLoggedIn, true);
-//      await preferences.setString(PreferenceKeys.uid, uid);
-//      if (isArtist) {
-//        await DbProvider.db.setCurrentArtist(artistOrFan.first);
-//      } else {
-//        await DbProvider.db.setCurrentFan(artistOrFan.second);
-//      }
-//
-//      yield state.copyWith(
-//        artistOrFan: artistOrFan,
-//        isArtist: event.loginResult.isArtist,
-//        currentUser: event.loginResult.firebaseUser,
-//        isFanTeamSetup: isFanTeamSetup,
-//        isProfileSetup: isProfileSetup,
-//        isLoggedIn: true,
-//      );
-//    }
-
-//    if (event is FanSignupDone) {
-//      final firebaseUser = await FirebaseAuth.instance.currentUser();
-//      final artistOrFan = ExclusivePair<Artist, Fan>.withSecond(event.fan);
-//      final isFanTeamSetup =
-//      !StringUtils.isNullOrEmpty(event.fan.currentTeamId);
-//      final isProfileSetup = !StringUtils.isNullOrEmpty(event.fan.username);
-//      await DbProvider.db.setCurrentFan(event.fan);
-//
-//      yield state.copyWith(
-//        artistOrFan: artistOrFan,
-//        isArtist: false,
-//        currentUser: firebaseUser,
-//        isFanTeamSetup: isFanTeamSetup,
-//        isProfileSetup: isProfileSetup,
-//        isLoggedIn: true,
-//      );
-//    }
   }
 }

@@ -4,6 +4,7 @@ import 'package:ikonfete/registry.dart';
 import 'package:ikonfete/exceptions.dart';
 import 'package:ikonfete/model/artist.dart';
 import 'package:ikonfete/model/fan.dart';
+import 'package:ikonfete/repository/artist_repository.dart';
 import 'package:ikonfete/repository/fan_repository.dart';
 import 'package:ikonfete/utils/types.dart';
 import 'package:meta/meta.dart';
@@ -35,33 +36,19 @@ class _SearchEvent extends TeamSelectionEvent {
   _SearchEvent(this.query);
 }
 
-//class _SearchQuery extends TeamSelectionEvent {
-//  final String query;
-//
-//  _SearchQuery(this.query);
-//}
-//
-//class TeamSelected extends TeamSelectionEvent {
-//  final Artist artist;
-//
-//  TeamSelected(this.artist);
-//}
-//
-//class AddFanToTeam extends TeamSelectionEvent {
-//  final String teamId;
-//  final String fanUid;
-//
-//  AddFanToTeam({@required this.teamId, @required this.fanUid});
-//}
-//
-//class _AddFanToTeam extends TeamSelectionEvent {
-//  final String teamId;
-//  final String fanUid;
-//
-//  _AddFanToTeam({@required this.teamId, @required this.fanUid});
-//}
-//
-//class ClearSelectedTeam extends TeamSelectionEvent {}
+class JoinTeam extends TeamSelectionEvent {
+  final String artistUid;
+  final String fanUid;
+
+  JoinTeam({@required this.artistUid, @required this.fanUid});
+}
+
+class _JoinTeam extends TeamSelectionEvent {
+  final String artistUid;
+  final String fanUid;
+
+  _JoinTeam({@required this.artistUid, @required this.fanUid});
+}
 
 class TeamSelectionState {
   final bool isLoading;
@@ -70,7 +57,7 @@ class TeamSelectionState {
   final List<Artist> artists;
   final bool isSearching;
   final Pair<bool, String> searchResult;
-  final Artist selectedArtist;
+  final Pair<bool, String> teamSelectionResult;
 
   TeamSelectionState({
     @required this.isLoading,
@@ -79,7 +66,7 @@ class TeamSelectionState {
     @required this.isSearching,
     @required this.searchResult,
     @required this.artists,
-    @required this.selectedArtist,
+    @required this.teamSelectionResult,
   });
 
   factory TeamSelectionState.initial() {
@@ -90,27 +77,26 @@ class TeamSelectionState {
       artists: [],
       isSearching: false,
       searchResult: null,
-      selectedArtist: null,
+      teamSelectionResult: null,
     );
   }
 
-  TeamSelectionState copyWith({
-    bool isLoading,
-    Fan fan,
-    List<Artist> artists,
-    bool isSearching,
-    Artist selectedArtist,
-    Pair<bool, String> loadFanResult,
-    Pair<bool, String> searchResult,
-  }) {
+  TeamSelectionState copyWith(
+      {bool isLoading,
+      Fan fan,
+      List<Artist> artists,
+      bool isSearching,
+      Pair<bool, String> loadFanResult,
+      Pair<bool, String> searchResult,
+      Pair<bool, String> teamSelectionResult}) {
     return TeamSelectionState(
       isLoading: isLoading ?? this.isLoading,
       fan: fan ?? this.fan,
       artists: artists ?? this.artists,
       isSearching: isSearching ?? this.isSearching,
-      selectedArtist: selectedArtist ?? this.selectedArtist,
       loadFanResult: loadFanResult,
       searchResult: searchResult,
+      teamSelectionResult: teamSelectionResult,
     );
   }
 
@@ -123,9 +109,9 @@ class TeamSelectionState {
       fan == other.fan &&
       artists == other.artists &&
       isSearching == other.isSearching &&
-      selectedArtist == other.selectedArtist &&
       loadFanResult == other.loadFanResult &&
-      searchResult == other.searchResult;
+      searchResult == other.searchResult &&
+      teamSelectionResult == other.teamSelectionResult;
 
   @override
   int get hashCode =>
@@ -133,15 +119,18 @@ class TeamSelectionState {
       artists.hashCode ^
       fan.hashCode ^
       isSearching.hashCode ^
-      selectedArtist.hashCode ^
       loadFanResult.hashCode ^
-      searchResult.hashCode;
+      searchResult.hashCode ^
+      teamSelectionResult.hashCode;
 }
 
 class TeamSelectionBloc extends Bloc<TeamSelectionEvent, TeamSelectionState> {
   final FanRepository fanRepository;
+  final ArtistRepository artistRepository;
 
-  TeamSelectionBloc() : fanRepository = Registry().fanRepository();
+  TeamSelectionBloc()
+      : fanRepository = Registry().fanRepository(),
+        artistRepository = Registry().artistRepository();
 
   @override
   TeamSelectionState get initialState => TeamSelectionState.initial();
@@ -160,30 +149,22 @@ class TeamSelectionBloc extends Bloc<TeamSelectionEvent, TeamSelectionState> {
       dispatch(_SearchEvent(event.query));
     }
 
-//    if (event is SearchQuery) {
-//      dispatch(_SearchQuery(event.query));
-//    }
-//
-//    if (event is TeamSelected) {
-////      dispatch(_LoadArtistForTeam(event.team));
-//    }
-//
-//    if (event is AddFanToTeam) {
-//      dispatch(_AddFanToTeam(teamId: event.teamId, fanUid: event.fanUid));
-//    }
+    if (event is JoinTeam) {
+      dispatch(_JoinTeam(artistUid: event.artistUid, fanUid: event.fanUid));
+    }
   }
 
   @override
   Stream<TeamSelectionEvent> transform(Stream<TeamSelectionEvent> events) {
     return (events as Observable<TeamSelectionEvent>)
-        .debounce(Duration(milliseconds: 100));
+        .debounce(Duration(milliseconds: 50));
   }
 
   // TODO: implement infinite scrolling list
   @override
   Stream<TeamSelectionState> mapEventToState(
       TeamSelectionState state, TeamSelectionEvent event) async* {
-    if (event is LoadFan) {
+    if (event is LoadFan || event is JoinTeam) {
       yield state.copyWith(isLoading: true);
     }
 
@@ -209,7 +190,7 @@ class TeamSelectionBloc extends Bloc<TeamSelectionEvent, TeamSelectionState> {
           isLoading: false,
           isSearching: false,
           artists: artists,
-          loadFanResult: Pair.from(true, null),
+          searchResult: Pair.from(true, null),
         );
       } on AppException catch (e) {
         yield state.copyWith(
@@ -219,71 +200,12 @@ class TeamSelectionBloc extends Bloc<TeamSelectionEvent, TeamSelectionState> {
       }
     }
 
-//    if (event is LoadFan || event is AddFanToTeam) {
-//      yield state.copyWith(isLoading: true, hasError: false);
-//    }
-//
-//    if (event is SearchQuery) {
-//      yield state.copyWith(isSearching: true, hasError: false);
-//    }
-
-//    if (event is TeamSelected) {
-//      yield state.copyWith(
-//          selectedTeam: event.team, isLoading: true, hasError: false);
-//    }
-
-//    if (event is ClearSelectedTeam) {
-//      yield TeamSelectionState.initial()
-//          .copyWith(fan: state.fan, teams: state.teams);
-//    }
-
-//    try {
-//      if (event is _LoadFan) {
-//        final fan = await _loadFan(event.uid);
-//        dispatch(SearchQuery(""));
-//        yield state.copyWith(isLoading: false, fan: fan, hasError: false);
-//      }
-//
-//      if (event is _SearchQuery) {
-//        final teams = await _searchArtistTeams(event.query);
-//        yield state.copyWith(isSearching: false, teams: teams, hasError: false);
-//      }
-//
-//      if (event is _LoadArtistForTeam) {
-//        final artist = await _loadArtistForTeam(event.team);
-//        yield state.copyWith(
-//            selectedArtist: artist.second,
-//            isLoading: false,
-//            hasError: false,
-//            showArtistModal: true);
-//      }
-//
-//      if (event is _AddFanToTeam) {
-//        final fan = state.fan;
-//        final result = await _addFanToTeam(event.teamId, event.fanUid);
-//        fan.currentTeamId = event.teamId;
-//        final newState =
-//        TeamSelectionState.initial().copyWith(fan: fan, teams: state.teams);
-//        if (!result) {
-//          yield newState.copyWith(
-//            teamSelectionResult: false,
-//            isLoading: false,
-//            hasError: true,
-//            showArtistModal: false,
-//            errorMessage: "Failed to join team",
-//          );
-//        } else {
-//          yield newState.copyWith(
-//            isLoading: false,
-//            teamSelectionResult: true,
-//            hasError: false,
-//            showArtistModal: false,
-//          );
-//        }
-//      }
-//    } on ApiException catch (e) {
-//      yield state.withError(e.message);
-//    }
+    if (event is _JoinTeam) {
+      final result = await _addFanToArtistTeam(
+          artistUid: event.artistUid, fanUid: event.fanUid);
+      yield state.copyWith(
+          isLoading: false, isSearching: false, teamSelectionResult: result);
+    }
   }
 
   Future<Fan> _loadFan(String uid) async {
@@ -292,6 +214,7 @@ class TeamSelectionBloc extends Bloc<TeamSelectionEvent, TeamSelectionState> {
       if (fan == null) {
         throw AppException("Fan not found");
       }
+      dispatch(SearchEvent(""));
       return fan;
     } on PlatformException catch (e) {
       print("Failed to load fan $uid. ${e.message}");
@@ -303,29 +226,31 @@ class TeamSelectionBloc extends Bloc<TeamSelectionEvent, TeamSelectionState> {
   }
 
   Future<List<Artist>> _searchForArtist(String query) async {
-    return [];
+    final artists = await artistRepository.searchByNameOrUsername(query);
+    return artists;
   }
 
-//  Future<List<Team>> _searchArtistTeams(String query) async {
-//    final teamApi = TeamApi(appConfig.serverBaseUrl);
-//    List<Team> teams;
-//    if (query.trim().isEmpty) {
-//      teams = await teamApi.getTeams(1, 20);
-//    } else {
-//      teams = await teamApi.searchTeams(query, 1, 20);
-//    }
-//    return teams;
-//  }
-//
-//  Future<Pair<Team, Artist>> _loadArtistForTeam(Team team) async {
-//    final artistApi = ArtistApi(appConfig.serverBaseUrl);
-//    final artist = await artistApi.findByUID(team.artistUid);
-//    return Pair.from(team, artist);
-//  }
-//
-//  Future<bool> _addFanToTeam(String teamId, String fanUid) async {
-//    final teamApi = TeamApi(appConfig.serverBaseUrl);
-//    final success = await teamApi.addFanToTeam(teamId, fanUid);
-//    return success;
-//  }
+  Future<Pair<bool, String>> _addFanToArtistTeam(
+      {@required String artistUid, @required String fanUid}) async {
+    try {
+      final fan = await fanRepository.findByUID(fanUid);
+      if (fan == null) {
+        return Pair.from(false, "Fan does not exist");
+      }
+      final artist = await artistRepository.findByUID(artistUid);
+      if (artist == null) {
+        return Pair.from(false, "Artist does not exist");
+      }
+
+      bool added = await artistRepository.addTeamMember(artist.id, fan.id);
+
+      return Pair.from(added, added ? null : "Failed to join team");
+    } on PlatformException catch (e) {
+      print("Failed to add fan to artist team: ${e.message}");
+      return Pair.from(false, e.message);
+    } on Exception catch (e) {
+      print("Failed to add fan to artist team: ${e.toString()}");
+      return Pair.from(false, e.toString());
+    }
+  }
 }

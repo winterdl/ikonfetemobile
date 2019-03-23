@@ -8,25 +8,31 @@ class FirebaseArtistRepository extends FirestoreRepository<Artist>
   final ModelBuilder<Artist> artistModelBuilder =
       (Map<String, dynamic> data) => Artist()..fromJson(data);
   final FirebaseDatabase _firebaseDatabase;
+  final String fanCollection;
 
-  FirebaseArtistRepository([String collection = "artists"])
+  FirebaseArtistRepository(
+      [String collection = "artists", String fanCollection = "fans"])
       : _firebaseDatabase = FirebaseDatabase.instance,
+        this.fanCollection = fanCollection,
         super(collection);
 
   @override
   Future<Artist> create(Artist model) async {
     model.dateCreated = DateTime.now().toUtc();
     final artist = await firestoreCreate(model);
+    final json = model.toJson();
+    json["searchableName"] = model.name.toLowerCase();
+    json["searchableUsername"] = model.username.toLowerCase();
     await _firebaseDatabase
         .reference()
         .child(collection)
         .child(artist.id)
-        .set(model.toJson());
+        .set(json);
     return artist;
   }
 
   @override
-  Future delete(String id) async {
+  Future<void> delete(String id) async {
     await firestoreDelete(id);
     await _firebaseDatabase
         .reference()
@@ -61,21 +67,73 @@ class FirebaseArtistRepository extends FirestoreRepository<Artist>
   }
 
   @override
-  Future update(String id, Artist model) async {
+  Future<void> update(String id, Artist model) async {
     model.dateUpdated = DateTime.now().toUtc();
     await firestoreUpdate(id, model);
+    final json = model.toJson();
+    json["searchableName"] = model.name.toLowerCase();
+    json["searchableUsername"] = model.username.toLowerCase();
     await _firebaseDatabase
         .reference()
         .child(collection)
         .child(id)
-        .update(model.toJson());
+        .update(json);
     return;
   }
 
+  // todo: only searches by name
   @override
   Future<List<Artist>> searchByNameOrUsername(String query) async {
-//    _firebaseDatabase.reference().child(collection).
-    // todo
-    return [];
+    DataSnapshot dataSnapshot;
+    if (query == null || query.trim().isEmpty) {
+      dataSnapshot = await _firebaseDatabase
+          .reference()
+          .child(collection)
+          .orderByChild("searchableName")
+          .limitToFirst(20)
+          .once();
+    } else {
+      dataSnapshot = await _firebaseDatabase
+          .reference()
+          .child(collection)
+          .orderByChild("searchableName")
+          .startAt(query)
+          .endAt(query + "\uf8ff")
+          .limitToFirst(20)
+          .once();
+    }
+    final artists = <Artist>[];
+    for (final val in dataSnapshot.value.values) {
+      artists.add(Artist()..fromJson(val));
+    }
+    return artists;
+  }
+
+  @override
+  Future<bool> addTeamMember(String artistId, String fanId) async {
+    final artistRef = firestore.collection(collection).document(artistId);
+    final fanRef = firestore.collection(fanCollection).document(fanId);
+
+    await firestore.runTransaction((transaction) async {
+      await fanRef.updateData({"currentTeamId": artistId});
+      final docsnap = await transaction.get(artistRef);
+      num teamMemberCount = docsnap.data["teamMemberCount"];
+      num newTeamMemberCount = teamMemberCount + 1;
+      await transaction
+          .update(artistRef, {"teamMemberCount": newTeamMemberCount});
+
+      await _firebaseDatabase
+          .reference()
+          .child(collection)
+          .child(artistId)
+          .update({"teamMemberCount": newTeamMemberCount});
+      await _firebaseDatabase
+          .reference()
+          .child(fanCollection)
+          .child(fanId)
+          .update({"currentTeamId": artistId});
+    });
+
+    return true;
   }
 }

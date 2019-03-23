@@ -16,7 +16,7 @@ class FirebaseActivationRepository extends FirestoreRepository<Activation>
   }
 
   @override
-  Future delete(String id) {
+  Future<void> delete(String id) {
     return firestoreDelete(id);
   }
 
@@ -38,7 +38,7 @@ class FirebaseActivationRepository extends FirestoreRepository<Activation>
   }
 
   @override
-  Future update(String id, Activation model) {
+  Future<void> update(String id, Activation model) {
     return firestoreUpdate(id, model);
   }
 }
