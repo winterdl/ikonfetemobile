@@ -1,5 +1,4 @@
 import 'package:ikonfete/model/artist.dart';
-import 'package:ikonfete/model/fan.dart';
 import 'package:ikonfete/repository/repository.dart';
 
 abstract class ArtistRepository implements Repository<Artist, String> {

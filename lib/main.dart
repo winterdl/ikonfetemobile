@@ -3,9 +3,6 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-//import 'package:flutter_localizations/flutter_localizations.dart';
-//import 'package:ikonfete/localization.dart';
 import 'package:ikonfete/app_bloc.dart';
 import 'package:ikonfete/colors.dart';
 import 'package:ikonfete/registry.dart';
@@ -84,42 +81,8 @@ class IkonfeteAppState extends State<IkonfeteApp> {
   Future<Widget> _getHomeScreen(AppBloc appBloc) async {
     final emailAuthRepo = Registry().emailAuthRepository();
     final currentUser = await emailAuthRepo.getCurrentUser();
-    return Routes.getHomePage(context,appBloc, currentUser);
+    return Routes.getHomePage(context, appBloc, currentUser);
   }
-
-//  static Widget getInitialScreen(BuildContext context, AppState state) {
-//    if (!state.isOnBoarded) {
-//      return OnBoardingScreen();
-//    } else if (state.isLoggedIn) {
-//      if (!state.isProfileSetup) {
-//        return userSignupProfileScreen(context, state.uid);
-//      } else if (state.isArtist) {
-//        if (state.artistOrFan.first.isVerified) {
-//          return ZoomScaffoldScreen(
-//            screenId: 'home',
-//            appState: state,
-//          );
-//        } else if (state.artistOrFan.first.isPendingVerification) {
-//          return pendingVerificationScreen(context, state.uid);
-//        } else {
-//          return artistVerificationScreen(context, state.uid);
-//        }
-//      } else {
-//        // check if fan team is setup
-//        if (state.isFanTeamSetup) {
-//          return ZoomScaffoldScreen(
-//            screenId: 'home',
-//            appState: state,
-//          );
-//        } else {
-//          return teamSelectionScreen(context, state.uid);
-//        }
-//      }
-//    } else {
-//      return loginScreen(context);
-//    }
-////    return loginScreen(context);
-//  }
 }
 
 class LoadingScreen extends StatelessWidget {

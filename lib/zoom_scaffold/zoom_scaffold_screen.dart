@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:ikonfete/app_bloc.dart';
 import 'package:ikonfete/zoom_scaffold/menu.dart';
 import 'package:ikonfete/zoom_scaffold/menu_screen.dart';
 import 'package:ikonfete/zoom_scaffold/zoom_scaffold.dart';
 
 class ZoomScaffoldScreen extends StatefulWidget {
-  final AppState appState;
+  final bool isArtist;
+  final String uid;
   final String screenId;
   final Map<String, String> params;
 
   ZoomScaffoldScreen({
-    @required this.appState,
+    @required this.isArtist,
+    @required this.uid,
     @required this.screenId,
     this.params,
   });
@@ -20,7 +21,7 @@ class ZoomScaffoldScreen extends StatefulWidget {
 
   static ZoomScaffoldScreenState getState(BuildContext context) {
     ZoomScaffoldScreenState zoomScaffoldScreenState =
-    context.ancestorStateOfType(ZoomScaffoldStateTypeMatcher());
+        context.ancestorStateOfType(ZoomScaffoldStateTypeMatcher());
     return zoomScaffoldScreenState;
   }
 }
@@ -32,15 +33,16 @@ class ZoomScaffoldScreenState extends State<ZoomScaffoldScreen> {
   @override
   void initState() {
     super.initState();
-    selectedMenuItemId = defaultMenuItem(isArtist: widget.appState.isArtist).id;
-    activeScreen = defaultScreen(isArtist: widget.appState.isArtist);
+    selectedMenuItemId =
+        defaultMenuItem(isArtist: widget.isArtist, uid: widget.uid).id;
+    activeScreen = defaultScreen(isArtist: widget.isArtist, uid: widget.uid);
   }
 
   @override
   Widget build(BuildContext context) {
     return ZoomScaffold(
       menuScreen: MenuScreen(
-        menu: zoomScaffoldMenu(isArtist: widget.appState.isArtist),
+        menu: zoomScaffoldMenu(isArtist: widget.isArtist, uid: widget.uid),
         selectedItemId: selectedMenuItemId,
         onMenuItemSelected: _onMenuItemSelected,
       ),
@@ -51,7 +53,7 @@ class ZoomScaffoldScreenState extends State<ZoomScaffoldScreen> {
   void _onMenuItemSelected(String itemId) {
     selectedMenuItemId = itemId;
     final screen = getZoomScaffoldScreen(selectedMenuItemId,
-        isArtist: widget.appState.isArtist);
+        isArtist: widget.isArtist, uid: widget.uid);
     setState(() => activeScreen = screen);
   }
 

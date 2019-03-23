@@ -39,14 +39,15 @@ class MenuItem {
       other is MenuItem && other.id == id && other.title == title;
 }
 
-Map<MenuItem, Screen> zoomScaffoldMenuItems({@required bool isArtist}) {
+Map<MenuItem, Screen> zoomScaffoldMenuItems(
+    {@required bool isArtist, @required String uid}) {
   final menu = <MenuItem, Screen>{};
 
   menu[MenuItem(id: MenuIDs.profile, title: 'Profile', display: false)] =
       profileScreen;
 
   menu[MenuItem(id: MenuIDs.home, title: 'Home', isDefault: true)] =
-      homeScreen();
+      homeScreen(uid);
 
   menu[MenuItem(id: MenuIDs.superFans, title: 'Super Fans')] = superfansScreen;
 
@@ -63,8 +64,9 @@ Map<MenuItem, Screen> zoomScaffoldMenuItems({@required bool isArtist}) {
   return menu;
 }
 
-Screen getZoomScaffoldScreen(String menuItemId, {@required bool isArtist}) {
-  final menuItems = zoomScaffoldMenuItems(isArtist: isArtist);
+Screen getZoomScaffoldScreen(String menuItemId,
+    {@required bool isArtist, @required uid}) {
+  final menuItems = zoomScaffoldMenuItems(isArtist: isArtist, uid: uid);
   var menuItem =
       menuItems.keys.firstWhere((item) => item.id == menuItemId, orElse: null);
   if (menuItem == null) {
@@ -73,20 +75,20 @@ Screen getZoomScaffoldScreen(String menuItemId, {@required bool isArtist}) {
   return menuItems[menuItem];
 }
 
-Screen defaultScreen({@required bool isArtist}) {
-  final menuItem = defaultMenuItem(isArtist: isArtist);
-  return zoomScaffoldMenuItems(isArtist: isArtist)[menuItem];
+Screen defaultScreen({@required bool isArtist, @required String uid}) {
+  final menuItem = defaultMenuItem(isArtist: isArtist, uid: uid);
+  return zoomScaffoldMenuItems(isArtist: isArtist, uid: uid)[menuItem];
 }
 
-//MenuItem defaultMenuItem({@required bool isArtist}) {
-MenuItem defaultMenuItem({@required bool isArtist}) {
-  final menuItem = zoomScaffoldMenuItems(isArtist: isArtist)
+MenuItem defaultMenuItem({@required bool isArtist, @required String uid}) {
+  final menuItem = zoomScaffoldMenuItems(isArtist: isArtist, uid: uid)
       .keys
       .firstWhere((item) => item.isDefault);
   if (menuItem == null) throw ArgumentError("Default Menu Item not found");
   return menuItem;
 }
 
-Menu zoomScaffoldMenu({@required bool isArtist}) {
-  return Menu(items: zoomScaffoldMenuItems(isArtist: isArtist).keys.toList());
+Menu zoomScaffoldMenu({@required bool isArtist, @required String uid}) {
+  return Menu(
+      items: zoomScaffoldMenuItems(isArtist: isArtist, uid: uid).keys.toList());
 }

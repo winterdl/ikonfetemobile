@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ikonfete/model/artist.dart';
 import 'package:ikonfete/model/auth_type.dart';
 import 'package:ikonfete/model/fan.dart';

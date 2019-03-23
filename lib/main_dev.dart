@@ -1,7 +1,5 @@
-import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ikonfete/app_config.dart';
@@ -20,17 +18,17 @@ void main() async {
     ],
   );
 
-  final firebaseApp = await FirebaseApp.configure(
-    name: "ikonfete",
-    options: FirebaseOptions(
-      googleAppID: Platform.isIOS
-          ? "1:915599328141:ios:75be1ef2cbdac210"
-          : "1:915599328141:android:49880b1f76da2ca7",
-      projectID: "ikonfete-dev",
-      gcmSenderID: "915599328141",
-      apiKey: "AIzaSyDfYJVgz85fds9XyoqbZhHsUOMTJuJwx6A",
-    ),
-  );
+//  final firebaseApp = await FirebaseApp.configure(
+//    name: "ikonfete",
+//    options: FirebaseOptions(
+//      googleAppID: Platform.isIOS
+//          ? "1:915599328141:ios:75be1ef2cbdac210"
+//          : "1:915599328141:android:49880b1f76da2ca7",
+//      projectID: "ikonfete-dev",
+//      gcmSenderID: "915599328141",
+//      apiKey: "AIzaSyDfYJVgz85fds9XyoqbZhHsUOMTJuJwx6A",
+//    ),
+//  );
 
   await DbProvider.db.database; // init database
   final sharedPreferences = await SharedPreferences.getInstance();

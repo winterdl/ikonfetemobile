@@ -1,11 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
-import 'package:ikonfete/app_config.dart';
-import 'package:ikonfete/exceptions.dart';
-import 'package:ikonfete/model/auth_type.dart';
-import 'package:ikonfete/model/auth_utils.dart';
 import 'package:ikonfete/registry.dart';
 import 'package:ikonfete/repository/auth_repository.dart';
 import 'package:meta/meta.dart';

@@ -1,11 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ikonfete/app_bloc.dart';
 import 'package:ikonfete/colors.dart';
 import 'package:ikonfete/icons.dart';
 import 'package:ikonfete/utils/logout_helper.dart';
-import 'package:ikonfete/utils/strings.dart';
 import 'package:ikonfete/zoom_scaffold/menu.dart';
 import 'package:ikonfete/zoom_scaffold/menu_ids.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -15,11 +13,13 @@ import 'zoom_scaffold.dart';
 final menuScreenKey = GlobalKey<_MenuScreenState>(debugLabel: 'MenuScreen');
 
 class MenuScreen extends StatefulWidget {
+  final bool isArtist;
   final Menu menu;
   final String selectedItemId;
   final Function(String) onMenuItemSelected;
 
   MenuScreen({
+    this.isArtist,
     this.menu,
     this.selectedItemId,
     this.onMenuItemSelected,
@@ -102,7 +102,7 @@ class _MenuScreenState extends State<MenuScreen> with TickerProviderStateMixin {
   }
 
   Widget createMenuProfileDetails(
-      MenuController menuController, AppState appState) {
+      MenuController menuController) {
     switch (menuController.state) {
       case MenuState.open:
       case MenuState.opening:
@@ -114,7 +114,7 @@ class _MenuScreenState extends State<MenuScreen> with TickerProviderStateMixin {
         break;
     }
 
-    final isArtist = appState.isArtist;
+//    final isArtist = appState.isArtist;
 //    final artist = isArtist ? appState.artistOrFan?.first ?? null : null;
 //    final fan = isArtist ? null : appState.artistOrFan?.second ?? null;
 //    final photoUrl = isArtist
@@ -234,11 +234,7 @@ class _MenuScreenState extends State<MenuScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget createFeteScore(MenuController menuController, AppState appState) {
-    final isArtist = appState.isArtist;
-//    final artist = isArtist ? appState.artistOrFan?.first ?? null : null;
-//    final fan = isArtist ? null : appState.artistOrFan?.second ?? null;
-
+  Widget createFeteScore(MenuController menuController) {
     return Positioned(
       bottom: 100.0,
       left: 35.0,
@@ -268,8 +264,6 @@ class _MenuScreenState extends State<MenuScreen> with TickerProviderStateMixin {
   Widget createLogoutMenuItem(
       MenuController menuController, AppState appState) {
     final appBloc = BlocProvider.of<AppBloc>(context);
-
-    final isArtist = appState.isArtist;
 
     return Positioned(
       bottom: 30.0,
@@ -352,8 +346,8 @@ class _MenuScreenState extends State<MenuScreen> with TickerProviderStateMixin {
                 children: [
 //              createMenuTitle(menuController),
                   createMenuItems(menuController),
-                  createMenuProfileDetails(menuController, appState),
-                  createFeteScore(menuController, appState),
+                  createMenuProfileDetails(menuController),
+                  createFeteScore(menuController),
                   createLogoutMenuItem(menuController, appState),
                   shouldRenderSelector
                       ? new ItemSelector(
