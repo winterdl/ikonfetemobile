@@ -136,4 +136,17 @@ class FirebaseArtistRepository extends FirestoreRepository<Artist>
 
     return true;
   }
+
+  @override
+  Stream<Artist> streamByUID(String uid) {
+    return firestore
+        .collection(collection)
+        .where("uid", isEqualTo: uid)
+        .limit(1)
+        .snapshots()
+        .map<Artist>((qs) {
+      return qs.documents.isEmpty ? null : Artist()
+        ..fromJson(qs.documents.first.data);
+    });
+  }
 }

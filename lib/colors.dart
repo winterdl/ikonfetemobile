@@ -16,5 +16,6 @@ final facebookColor = Color(0xFF3B5998);
 final twitterColor = Color(0xFF1DA1F2);
 final soundCloudColor = Color(0xFFFF7700);
 final spotifyColor = Color(0xFF1DB954);
+final itunesColor = Color(0xFFEA4CC0);
 
 final errorColor = Colors.red;

@@ -59,12 +59,13 @@ void defineRoutes(Router router) {
     Routes.artistHomeScreenRoute(),
     handler: Handler(handlerFunc: (ctx, params) {
       final uid = params["uid"][0];
-      return ZoomScaffoldScreen(
-        screenId: 'home',
-        isArtist: true,
-        uid: uid,
-        params: <String, String>{},
-      );
+      return zoomScaffoldScreen(ctx, true, uid, 'home');
+//      return ZoomScaffoldScreen(
+//        screenId: 'home',
+//        isArtist: true,
+//        uid: uid,
+//        params: <String, String>{},
+//      );
     }),
   );
 
@@ -72,12 +73,13 @@ void defineRoutes(Router router) {
     Routes.fanHomeScreenRoute(),
     handler: Handler(handlerFunc: (ctx, params) {
       final uid = params["uid"][0];
-      return ZoomScaffoldScreen(
-        screenId: 'home',
-        uid: uid,
-        isArtist: false,
-        params: <String, String>{},
-      );
+      return zoomScaffoldScreen(ctx, false, uid, 'home');
+//      return ZoomScaffoldScreen(
+//        screenId: 'home',
+//        uid: uid,
+//        isArtist: false,
+//        params: <String, String>{},
+//      );
     }),
   );
 }
@@ -118,12 +120,14 @@ class Routes {
         return BlocBuilder<AppEvent, AppState>(
           bloc: appBloc,
           builder: (ctx, appState) {
-            return ZoomScaffoldScreen(
-              screenId: 'home',
-              uid: currentUser.uid,
-              isArtist: currentUser.isArtist,
-              params: <String, String>{},
-            );
+            return zoomScaffoldScreen(
+                ctx, currentUser.isArtist, currentUser.uid, 'home');
+//            return ZoomScaffoldScreen(
+//              screenId: 'home',
+//              uid: currentUser.uid,
+//              isArtist: currentUser.isArtist,
+//              params: <String, String>{},
+//            );
           },
         );
       } else if (currentUser.isArtistPendingVerification) {
@@ -139,12 +143,14 @@ class Routes {
         return BlocBuilder<AppEvent, AppState>(
           bloc: appBloc,
           builder: (ctx, appState) {
-            return ZoomScaffoldScreen(
-              screenId: 'home',
-              uid: currentUser.uid,
-              isArtist: currentUser.isArtist,
-              params: <String, String>{},
-            );
+            return zoomScaffoldScreen(
+                ctx, currentUser.isArtist, currentUser.uid, 'home');
+//            return ZoomScaffoldScreen(
+//              screenId: 'home',
+//              uid: currentUser.uid,
+//              isArtist: currentUser.isArtist,
+//              params: <String, String>{},
+//            );
           },
         );
       } else {

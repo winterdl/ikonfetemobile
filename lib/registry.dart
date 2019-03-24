@@ -2,6 +2,7 @@ import 'package:ikonfete/firebase_repository/activation_repository.dart';
 import 'package:ikonfete/firebase_repository/artist_repository.dart';
 import 'package:ikonfete/firebase_repository/auth_repository.dart';
 import 'package:ikonfete/firebase_repository/fan_repository.dart';
+import 'package:ikonfete/firebase_repository/settings_repository.dart';
 import 'package:ikonfete/firebase_repository/pending_verification_repository.dart';
 import 'package:ikonfete/repository/activation_repository.dart';
 import 'package:ikonfete/repository/artist_repository.dart';
@@ -9,6 +10,7 @@ import 'package:ikonfete/repository/auth_repository.dart';
 import 'package:ikonfete/repository/fan_repository.dart';
 import 'package:flutter_simple_dependency_injection/injector.dart';
 import 'package:ikonfete/repository/pending_verification_repository.dart';
+import 'package:ikonfete/repository/settings_repository.dart';
 
 class RegistryKeys {
   static final String emailAuthRepository = "email_auth_repository";
@@ -32,6 +34,7 @@ class Registry {
         key: RegistryKeys.emailAuthRepository);
     _injector.map<PendingVerificationRepository>(
         (i) => FirebasePendingVerificationRepository());
+    _injector.map<SettingsRepository>((i) => FirebaseSettingsRepository());
   }
 
   ArtistRepository artistRepository() => _injector.get<ArtistRepository>();
@@ -48,4 +51,7 @@ class Registry {
 
   PendingVerificationRepository pendingVerificationRepository() =>
       _injector.get<PendingVerificationRepository>();
+
+  SettingsRepository settingsRepository() =>
+      _injector.get<SettingsRepository>();
 }

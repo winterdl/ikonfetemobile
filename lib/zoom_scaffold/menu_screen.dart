@@ -1,9 +1,15 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ikonfete/app_bloc.dart';
 import 'package:ikonfete/colors.dart';
 import 'package:ikonfete/icons.dart';
+import 'package:ikonfete/model/artist.dart';
+import 'package:ikonfete/model/fan.dart';
+import 'package:ikonfete/repository/auth_repository.dart';
+import 'package:ikonfete/routes.dart';
 import 'package:ikonfete/utils/logout_helper.dart';
+import 'package:ikonfete/utils/strings.dart';
 import 'package:ikonfete/zoom_scaffold/menu.dart';
 import 'package:ikonfete/zoom_scaffold/menu_ids.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -13,16 +19,16 @@ import 'zoom_scaffold.dart';
 final menuScreenKey = GlobalKey<_MenuScreenState>(debugLabel: 'MenuScreen');
 
 class MenuScreen extends StatefulWidget {
-  final bool isArtist;
   final Menu menu;
   final String selectedItemId;
   final Function(String) onMenuItemSelected;
+  final CurrentUserHolder currentUser;
 
   MenuScreen({
-    this.isArtist,
     this.menu,
     this.selectedItemId,
     this.onMenuItemSelected,
+    this.currentUser,
   }) : super(key: menuScreenKey);
 
   @override
@@ -101,8 +107,7 @@ class _MenuScreenState extends State<MenuScreen> with TickerProviderStateMixin {
         });
   }
 
-  Widget createMenuProfileDetails(
-      MenuController menuController) {
+  Widget createMenuProfileDetails(MenuController menuController) {
     switch (menuController.state) {
       case MenuState.open:
       case MenuState.opening:
@@ -120,6 +125,8 @@ class _MenuScreenState extends State<MenuScreen> with TickerProviderStateMixin {
 //    final photoUrl = isArtist
 //        ? artist?.profilePictureUrl ?? null
 //        : fan?.profilePictureUrl ?? null;
+
+    final photoUrl = widget.currentUser?.user?.profilePictureUrl ?? null;
 
     return Transform(
       transform: Matrix4.translationValues(0.0, 100.0, 0.0),
@@ -157,14 +164,13 @@ class _MenuScreenState extends State<MenuScreen> with TickerProviderStateMixin {
               leading: CircleAvatar(
                 backgroundColor: primaryColor,
                 radius: 30.0,
-//                backgroundImage: !StringUtils.isNullOrEmpty(photoUrl)
-//                    ? CachedNetworkImageProvider(photoUrl)
-//                    : MemoryImage(kTransparentImage),
-                backgroundImage: MemoryImage(kTransparentImage),
+                backgroundImage: !StringUtils.isNullOrEmpty(photoUrl)
+                    ? CachedNetworkImageProvider(photoUrl)
+                    : MemoryImage(kTransparentImage),
               ),
               title: Text(
 //                appState.isArtist ? artist?.name ?? "" : fan?.name ?? "",
-                "NAME", // todo
+                widget.currentUser?.user?.name ?? "NAME",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 20.0,
@@ -174,8 +180,8 @@ class _MenuScreenState extends State<MenuScreen> with TickerProviderStateMixin {
               subtitle: Text(
 //                isArtist
 //                    ? "@${artist?.username ?? ""}"
-//                    : "@${fan?.username ?? ""}",todo
-                "Username",
+//                    : "@${fan?.username ?? ""}",
+                "@${widget.currentUser?.user?.username ?? "username"}",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 14.0,
@@ -249,8 +255,8 @@ class _MenuScreenState extends State<MenuScreen> with TickerProviderStateMixin {
             Text(
 //              isArtist
 //                  ? artist?.feteScore.toString() ?? ""
-//                  : fan?.feteScore.toString() ?? "",//todo
-              "0",
+//                  : fan?.feteScore.toString() ?? "",
+              widget.currentUser?.user?.feteScore?.toString() ?? "0",
               style: TextStyle(fontSize: 50.0, color: Color(0xFFF0F0F0)),
             ),
             SizedBox(width: 5.0),
@@ -276,6 +282,7 @@ class _MenuScreenState extends State<MenuScreen> with TickerProviderStateMixin {
             // handle logout
             if (await canLogout(context)) {
               appBloc.dispatch(Signout());
+              Navigator.of(context).pushReplacementNamed(Routes.login);
             }
           },
           child: Row(

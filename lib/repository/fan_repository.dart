@@ -7,4 +7,6 @@ abstract class FanRepository implements Repository<Fan, String> {
   Future<Fan> findByUsername(String username);
 
   Future<Fan> findByEmail(String email);
+
+  Stream<Fan> streamByUID(String uid);
 }
