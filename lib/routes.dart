@@ -6,6 +6,7 @@ import 'package:ikonfete/registry.dart';
 import 'package:ikonfete/repository/auth_repository.dart';
 import 'package:ikonfete/screens/login/login_screen.dart';
 import 'package:ikonfete/screens/pending_verification/pending_verification_screen.dart';
+import 'package:ikonfete/screens/reset_password/reset_password_screen.dart';
 import 'package:ikonfete/screens/signup/signup_main_screen.dart';
 import 'package:ikonfete/screens/team_selection/team_selection_screen.dart';
 import 'package:ikonfete/screens/verification/verification_screen.dart';
@@ -26,6 +27,13 @@ void defineRoutes(Router router) {
     Routes.signup,
     handler: Handler(
       handlerFunc: (ctx, params) => signupMainScreen(ctx),
+    ),
+  );
+
+  router.define(
+    Routes.resetPassword,
+    handler: Handler(
+      handlerFunc: (ctx, params) => resetPasswordScreen(ctx),
     ),
   );
 
@@ -60,12 +68,6 @@ void defineRoutes(Router router) {
     handler: Handler(handlerFunc: (ctx, params) {
       final uid = params["uid"][0];
       return zoomScaffoldScreen(ctx, true, uid, 'home');
-//      return ZoomScaffoldScreen(
-//        screenId: 'home',
-//        isArtist: true,
-//        uid: uid,
-//        params: <String, String>{},
-//      );
     }),
   );
 
@@ -74,12 +76,6 @@ void defineRoutes(Router router) {
     handler: Handler(handlerFunc: (ctx, params) {
       final uid = params["uid"][0];
       return zoomScaffoldScreen(ctx, false, uid, 'home');
-//      return ZoomScaffoldScreen(
-//        screenId: 'home',
-//        uid: uid,
-//        isArtist: false,
-//        params: <String, String>{},
-//      );
     }),
   );
 }
@@ -87,6 +83,7 @@ void defineRoutes(Router router) {
 class Routes {
   static final String login = "/login";
   static final String signup = "/signup";
+  static final String resetPassword = "/reset_password";
 
   static String teamSelection({String uid}) {
     return "/team_selection/${uid == null || uid.isEmpty ? ":uid" : uid}";

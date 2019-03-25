@@ -4,8 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ikonfete/app_bloc.dart';
 import 'package:ikonfete/colors.dart';
 import 'package:ikonfete/icons.dart';
-import 'package:ikonfete/model/artist.dart';
-import 'package:ikonfete/model/fan.dart';
 import 'package:ikonfete/repository/auth_repository.dart';
 import 'package:ikonfete/routes.dart';
 import 'package:ikonfete/utils/logout_helper.dart';

@@ -16,7 +16,6 @@ Screen settingsScreen(String uid) {
   return Screen(
     title: "Settings",
     contentBuilder: (context) {
-      print("Return settings screen");
       return SettingsScreen(SettingsBloc(uid: uid));
     },
   );
