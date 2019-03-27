@@ -1,1 +1,42 @@
 #import "GeneratedPluginRegistrant.h"
+#import "../DeezerSDK/include/Deezer+Compatibility.h"
+#import "../DeezerSDK/include/DZRModel.h"
+#import "../DeezerSDK/include/DZRRequestManager.h"
+#import "../DeezerSDK/include/DZRPlayer.h"
+//#import <SpotifyiOS/SpotifyiOS.h>
+
+//#import "Deezer+Compatibility.h"
+
+#import "../DeezerSDK/include/DeezerConnect.h"
+//#import "../DeezerSDK/include/DeezerConnect+Compatibility.h"
+#import "../DeezerSDK/include/DeezerRequestDelegate.h"
+
+#import "../DeezerSDK/include/DZRNetworkRequest.h"
+//#import "DZRRequestManager.h"
+#import "../DeezerSDK/include/DZRCancelable.h"
+#import "../DeezerSDK/include/DZRGenericCancelable.h"
+
+#import "../DeezerSDK/include/DZRAlbum.h"
+#import "../DeezerSDK/include/DZRArtist.h"
+#import "../DeezerSDK/include/DZRComment.h"
+#import "../DeezerSDK/include/DZREditorial.h"
+#import "../DeezerSDK/include/DZREpisode.h"
+#import "../DeezerSDK/include/DZRFolder.h"
+#import "../DeezerSDK/include/DZRGenre.h"
+#import "../DeezerSDK/include/DZRModel.h"
+#import "../DeezerSDK/include/DZRObject.h"
+#import "../DeezerSDK/include/DZRObject+Compatibility.h"
+#import "../DeezerSDK/include/DZRManagedRadio.h"
+#import "../DeezerSDK/include/DZRObjectList.h"
+#import "../DeezerSDK/include/DZRPlayableArray.h"
+#import "../DeezerSDK/include/DZRPlaylist.h"
+#import "../DeezerSDK/include/DZRPodcast.h"
+#import "../DeezerSDK/include/DZRRadio.h"
+#import "../DeezerSDK/include/DZRTrack.h"
+#import "../DeezerSDK/include/DZRUser.h"
+
+//#import "DZRPlayer.h"
+
+#import "../DeezerSDK/include/NSBundle+DZRBundle.h"
+#import "../DeezerSDK/include/NSError+DZRPlayer.h"
+#import "../DeezerSDK/include/NSError+DZRModel.h"

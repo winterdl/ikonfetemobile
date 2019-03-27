@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Deezer Login</title>
+    <script type="text/javascript" src="https://e-cdns-files.dzcdn.net/js/min/dz.js"></script>
+</head>
+
+<body>
+    <div id="dz-root"></div>
+    <p>DEEZER LOGIN</p>
+    <script type="text/javascript">
+        // (function () {
+        //     var e = document.createElement('script');
+        //     e.src = 'https://e-cdns-files.dzcdn.net/js/min/dz.js';
+        //     e.async = true;
+        //     document.getElementById('dz-root').appendChild(e);
+        // }());
+        window.onload = function () {
+            DZ.init({
+                appId: '293124',
+                channelUrl: 'http://ikonfete.com',
+                player: {
+                    onload: onPlayerLoaded
+                }
+            });
+
+            // Then, request the user to log in
+            DZ.login(function (response) {
+                if (response.authResponse) {
+                    // console.log('Welcome!  Fetching your information.... ');
+                    // DZ.api('/user/me', function (response) {
+                    //     console.log('Good to see you, ' + response.name + '.');
+                    // });
+                    DeezerAuth.postMessage(JSON.stringify({ success: true, accessToken: response.authResponse.accessToken, userID: response.userID }));
+                } else {
+                    DeezerAuth.postMessage(JSON.stringify({ success: false }));
+                }
+            }, { perms: 'basic_access,email' });
+        };
+
+        function onPlayerLoaded() { }
+    </script>
+</body>
+
+</html>

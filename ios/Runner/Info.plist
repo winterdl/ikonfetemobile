@@ -72,5 +72,19 @@
         <string>fbauth2</string>
         <string>fbshareextension</string>
     </array>
+    <key>io.flutter.embedded_views_preview</key>
+    <true/>
+
+    <key>NSAppTransportSecurity</key>
+    <dict>
+      <key>NSExceptionDomains</key>
+      <dict>
+        <key>example.com</key>
+        <dict>
+          <key>NSTemporaryExceptionRequiresForwardSecrecy</key>
+          <false/>
+        </dict>
+      </dict>
+    </dict>
 </dict>
 </plist>

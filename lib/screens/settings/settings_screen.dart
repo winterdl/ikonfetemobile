@@ -62,6 +62,20 @@ class SettingsScreen extends StatelessWidget {
             }
           }
 
+          if (settingsState.enableDeezerResult != null) {
+            final result = settingsState.enableDeezerResult;
+            if (!result.first) {
+              ScreenUtils.onWidgetDidBuild(() {
+                scaffoldKey.currentState.showSnackBar(
+                  SnackBar(
+                    content: Text(result.second),
+                    backgroundColor: errorColor,
+                  ),
+                );
+              });
+            }
+          }
+
           if (settingsState.saveSettingsResult != null) {
             final result = settingsState.saveSettingsResult;
             if (result.first) {
@@ -109,7 +123,7 @@ class SettingsScreen extends StatelessWidget {
                 SizedBox(height: 30.0),
                 _buildSpotifyConnector(settingsState),
                 SizedBox(height: 30.0),
-                _buildDeezerConnector(settingsState),
+                _buildDeezerConnector(context, settingsState),
                 SizedBox(height: 40.0),
                 _buildNotificationSettings(settingsState),
                 SizedBox(height: 30.0),
@@ -189,7 +203,8 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDeezerConnector(SettingsState settingsState) {
+  Widget _buildDeezerConnector(
+      BuildContext context, SettingsState settingsState) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -209,10 +224,7 @@ class SettingsScreen extends StatelessWidget {
         Text("Deezer", style: settingHeaderTextStyle),
         Expanded(child: Container()),
         CupertinoSwitch(
-//          value: _deezerEnabled, TODO:
-          value: settingsState.settings == null
-              ? false
-              : !StringUtils.isNullOrEmpty(settingsState.settings.deezerUserId),
+          value: settingsState.deezerEnabled,
           onChanged: (val) => settingsBloc.dispatch(EnableDeezerEvent(val)),
           activeColor: primaryColor,
         ),

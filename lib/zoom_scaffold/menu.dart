@@ -44,7 +44,7 @@ Map<MenuItem, Screen> zoomScaffoldMenuItems(
   final menu = <MenuItem, Screen>{};
 
   menu[MenuItem(id: MenuIDs.profile, title: 'Profile', display: false)] =
-      profileScreen;
+      profileScreen(uid);
 
   menu[MenuItem(id: MenuIDs.home, title: 'Home', isDefault: true)] =
       homeScreen(uid);
