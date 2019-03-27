@@ -93,7 +93,7 @@ class DeezerApi {
   Future logout() async {
     try {
       await _methodChannel.invokeMethod("logout");
-    } on PlatformException catch (e) {
+    } on PlatformException {
       return;
     }
   }

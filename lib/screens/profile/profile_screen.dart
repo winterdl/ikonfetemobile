@@ -8,12 +8,15 @@ import 'package:ikonfete/app_config.dart';
 import 'package:ikonfete/colors.dart';
 import 'package:ikonfete/icons.dart';
 import 'package:ikonfete/screen_utils.dart';
+import 'package:ikonfete/screens/profile/edit_profile_dialog.dart';
 import 'package:ikonfete/screens/profile/profile_screen_bloc.dart';
-import 'package:ikonfete/utils/strings.dart';
+import 'package:ikonfete/widget/form_fields.dart';
 import 'package:ikonfete/widget/hud_overlay.dart';
 import 'package:ikonfete/widget/ikonfete_buttons.dart';
 import 'package:ikonfete/widget/overlays.dart';
+import 'package:ikonfete/zoom_scaffold/menu_ids.dart';
 import 'package:ikonfete/zoom_scaffold/zoom_scaffold.dart';
+import 'package:ikonfete/zoom_scaffold/zoom_scaffold_screen.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 Screen profileScreen(String uid) {
@@ -70,7 +73,7 @@ class ProfileScreen extends StatelessWidget {
         body: BlocBuilder<ProfileScreenEvent, ProfileScreenState>(
           bloc: bloc,
           builder: (BuildContext bldrContext, ProfileScreenState state) {
-            _checkForErrors(state);
+            _checkForErrors(bldrContext, state);
 
             final children = <Widget>[
               OverlayBuilder(
@@ -108,27 +111,69 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  _checkForErrors(ProfileScreenState state) {
+  _checkForErrors(BuildContext context, ProfileScreenState state) {
     if (state.loadUserResult != null && !state.loadUserResult.first) {
       ScreenUtils.onWidgetDidBuild(() {
-        scaffoldKey.currentState
-            .showSnackBar(SnackBar(content: Text(state.loadUserResult.second)));
+        scaffoldKey.currentState.showSnackBar(SnackBar(
+          content: Text(state.loadUserResult.second),
+          backgroundColor: errorColor,
+        ));
       });
     }
 
     if (state.enableFacebookResult != null &&
         !state.enableFacebookResult.first) {
       ScreenUtils.onWidgetDidBuild(() {
-        scaffoldKey.currentState.showSnackBar(
-            SnackBar(content: Text(state.enableFacebookResult.second)));
+        scaffoldKey.currentState.showSnackBar(SnackBar(
+          content: Text(state.enableFacebookResult.second),
+          backgroundColor: errorColor,
+        ));
       });
     }
 
     if (state.enableTwitterResult != null && !state.enableTwitterResult.first) {
       ScreenUtils.onWidgetDidBuild(() {
-        scaffoldKey.currentState.showSnackBar(
-            SnackBar(content: Text(state.enableTwitterResult.second)));
+        scaffoldKey.currentState.showSnackBar(SnackBar(
+          content: Text(state.enableTwitterResult.second),
+          backgroundColor: errorColor,
+        ));
       });
+    }
+
+    if (state.updateProfileResult != null) {
+      if (state.updateProfileResult.first) {
+        ScreenUtils.onWidgetDidBuild(() async {
+          // show success dialog
+          final goHome = await showDialog<bool>(
+            context: context,
+            builder: (ctx) => AlertDialog(
+                  title: Text("Profile Updated"),
+                  content: Text("Your profile has been updated."),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text("GO TO HOME"),
+                      onPressed: () => Navigator.of(ctx).pop(true),
+                    ),
+                    FlatButton(
+                      child: Text("STAY HERE"),
+                      onPressed: () => Navigator.of(ctx).pop(false),
+                    )
+                  ],
+                ),
+          );
+          if (goHome) {
+            ZoomScaffoldScreen.getState(context)
+                .changeActiveScreen(MenuIDs.home);
+          }
+        });
+      } else {
+        ScreenUtils.onWidgetDidBuild(() {
+          scaffoldKey.currentState.showSnackBar(SnackBar(
+            content: Text(state.updateProfileResult.second),
+            backgroundColor: errorColor,
+          ));
+        });
+      }
     }
   }
 
@@ -150,11 +195,6 @@ class ProfileScreen extends StatelessWidget {
               radius: 45.0,
               foregroundColor: Colors.black45,
               backgroundColor: Colors.black45,
-//              backgroundImage: state.newProfilePicture != null
-//                  ? FileImage(state.newProfilePicture)
-//                  : StringUtils.isNullOrEmpty(state.profilePictureUrl)
-//                      ? MemoryImage(kTransparentImage)
-//                      : CachedNetworkImageProvider(state.profilePictureUrl),
               backgroundImage: state.profilePicture != null
                   ? (state.profilePicture.isFirst
                       ? CachedNetworkImageProvider(state.profilePicture.first)
@@ -206,17 +246,19 @@ class ProfileScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
-                RichText(
-                  text: TextSpan(
-                    text: "Edit",
-                    recognizer: editProfileTapHandler,
-                    style: TextStyle(
-                      color: primaryColor,
-                      fontFamily: "SanFranciscoDisplay",
-                      fontSize: 16.0,
-                    ),
-                  ),
-                ),
+                state.user == null
+                    ? Container()
+                    : RichText(
+                        text: TextSpan(
+                          text: "Edit",
+                          recognizer: editProfileTapHandler,
+                          style: TextStyle(
+                            color: primaryColor,
+                            fontFamily: "SanFranciscoDisplay",
+                            fontSize: 16.0,
+                          ),
+                        ),
+                      ),
               ],
             ),
           ],
@@ -226,21 +268,20 @@ class ProfileScreen extends StatelessWidget {
   }
 
   void _editProfileInfo(BuildContext context, ProfileScreenState state) async {
-//    final result = await Navigator.of(context).push<EditProfileInfoResult>(
-//      CupertinoPageRoute(
-//        builder: (ctx) => EditProfileInfoScreen(
-//              bloc: bloc,
-//            ),
-//      ),
-//    );
-//    if (result != null) {
-//      bloc.dispatch(ProfileInfoChange(
-//        profilePicture: result.profilePicture,
-//        country: result.country,
-//        countryIsoCode: result.countryIsoCode,
-//        displayName: result.displayName,
-//      ));
-//    }
+    final editProfileResult = await Navigator.of(context)
+        .push<EditProfileInfoResult>(EditProfileDialog(
+            name: state.user.name,
+            username: state.user?.username,
+            profilePictureUrl: state.user?.profilePictureUrl ?? "",
+            countryCode: state.user?.countryIsoCode,
+            countryName: state.user?.country));
+    if (editProfileResult != null) {
+      bloc.dispatch(ProfileInfoEdited(
+          profilePicture: editProfileResult.profilePicture,
+          displayName: editProfileResult.displayName,
+          countryIsoCode: editProfileResult.countryIsoCode,
+          country: editProfileResult.country));
+    }
   }
 
   Widget _buildEmail(ProfileScreenState state) {
@@ -268,11 +309,6 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildBio(BuildContext context, ProfileScreenState state) {
-    final editBioTapHandler = TapGestureRecognizer();
-    editBioTapHandler.onTap = () {
-      _editBio(context, state);
-    };
-
     return Container(
       padding: const EdgeInsets.only(bottom: 40.0),
       child: Column(
@@ -280,72 +316,77 @@ class ProfileScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            "Bio",
+            state.editBio ? "Edit Bio" : "Bio",
             style: subHeaderTextStyle,
           ),
           SizedBox(height: 10.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: <Widget>[
-              Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () {},
-                  splashColor: Colors.grey.withOpacity(0.3),
-                  child: SizedBox(
-                    width: 280.0,
-                    height: 70.0,
-                    child: Text(
-                      state.bio,
-                      textAlign: TextAlign.start,
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: true,
-                      maxLines: 4,
-                      style: TextStyle(
-                        fontFamily: "SanFranciscoDisplay",
-                        fontSize: 14.0,
-                        color: Colors.black54,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(child: Container()),
-              Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: <Widget>[
-                  RichText(
-                    text: TextSpan(
-                      text: "Edit",
-                      recognizer: editBioTapHandler,
-                      style: TextStyle(
-                        color: primaryColor,
-                        fontFamily: "SanFranciscoDisplay",
-                        fontSize: 16.0,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          )
+          state.editBio ? _bioEditor(state) : _bioDetails(state),
         ],
       ),
     );
   }
 
-  void _editBio(BuildContext context, ProfileScreenState state) async {
-//    String updatedBio = await Navigator.of(context).push(
-//      CupertinoPageRoute(
-//        builder: (ctx) {
-//          return EditBioScreen(bio: state.bio);
-//        },
-//      ),
-//    );
-//    bloc.dispatch(BioUpdated(updatedBio));
+  Widget _bioDetails(ProfileScreenState state) {
+    final editBioTapHandler = TapGestureRecognizer();
+    editBioTapHandler.onTap = () {
+      bloc.dispatch(EditBio());
+    };
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: <Widget>[
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {},
+            splashColor: Colors.grey.withOpacity(0.3),
+            child: SizedBox(
+              width: 280.0,
+              height: 70.0,
+              child: Text(
+                state.bio,
+                textAlign: TextAlign.start,
+                overflow: TextOverflow.ellipsis,
+                softWrap: true,
+                maxLines: 4,
+                style: TextStyle(
+                  fontFamily: "SanFranciscoDisplay",
+                  fontSize: 14.0,
+                  color: Colors.black54,
+                ),
+              ),
+            ),
+          ),
+        ),
+        Expanded(child: Container()),
+        Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: <Widget>[
+            RichText(
+              text: TextSpan(
+                text: "Edit",
+                recognizer: editBioTapHandler,
+                style: TextStyle(
+                  color: primaryColor,
+                  fontFamily: "SanFranciscoDisplay",
+                  fontSize: 16.0,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _bioEditor(ProfileScreenState state) {
+    return BioEditorForm(
+      initialBio: state.bio,
+      onCancel: () => bloc.dispatch(CancelEditBio()),
+      onSave: (newBio) => bloc.dispatch(BioEdited(newBio)),
+    );
   }
 
   Widget _buildSocialProfileConnector(ProfileScreenState state) {
@@ -426,39 +467,85 @@ class ProfileScreen extends StatelessWidget {
       activeColor: primaryButtonActiveColor,
       text: "SAVE SETTINGS",
       disabled: !state.changesMade,
-      onTap: () {
-        _saveChanges(state);
-      },
+      onTap: () => bloc.dispatch(SaveProfile()),
     );
   }
+}
 
-//  bool _changesMade(ProfileScreenState state) {
-//    return state.displayName != state.newDisplayName ||
-//        state.newProfilePicture != null ||
-//        state.countryIsoCode != state.newCountryIsoCode ||
-//        state.country != state.newCountry ||
-//        state.bio != state.newBio ||
-//        state.facebookId != state.newFacebookId ||
-//        state.twitterId != state.newTwitterId;
-//  }
+class BioEditorForm extends StatefulWidget {
+  final String initialBio;
+  final Function onCancel;
+  final Function(String) onSave;
 
-  void _saveChanges(ProfileScreenState state) async {
-//    final data = EditProfileData();
-//    data.isArtist = isArtist;
-//    data.uid = uid;
-//    data.displayName = state.newDisplayName.trim();
-//    data.facebookId = state.newFacebookId;
-//    data.twitterId = state.newTwitterId;
-//    data.bio = state.newBio.trim();
-//    data.countryIsoCode = state.newCountryIsoCode;
-//    data.profilePicture = state.newProfilePicture;
-//    data.oldProfilePictureUrl = state.profilePictureUrl;
-//    data.removeFacebook = !StringUtils.isNullOrEmpty(state.facebookId) &&
-//        StringUtils.isNullOrEmpty(state.newFacebookId) &&
-//        !state.facebookEnabled;
-//    data.removeTwitter = !StringUtils.isNullOrEmpty(state.twitterId) &&
-//        StringUtils.isNullOrEmpty(state.newTwitterId) &&
-//        !state.twitterEnabled;
-//    bloc.dispatch(EditProfile(data));
+  BioEditorForm({
+    this.initialBio = "",
+    @required this.onCancel,
+    @required this.onSave,
+  });
+
+  @override
+  _BioEditorFormState createState() => _BioEditorFormState();
+}
+
+class _BioEditorFormState extends State<BioEditorForm> {
+  TextEditingController _bioController;
+
+  @override
+  void initState() {
+    super.initState();
+    _bioController = TextEditingController(text: widget.initialBio);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cancelTapHandler = TapGestureRecognizer();
+    cancelTapHandler.onTap = () => widget.onCancel();
+
+    final saveTapHandler = TapGestureRecognizer();
+    saveTapHandler.onTap = () => widget.onSave(_bioController.text);
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: <Widget>[
+        LoginFormField(
+          maxLines: 4,
+          controller: _bioController,
+          textAlign: TextAlign.start,
+          validator: FormFieldValidators.notEmpty("Bio"),
+        ),
+        SizedBox(height: 5.0),
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            RichText(
+              text: TextSpan(
+                text: "Cancel",
+                recognizer: cancelTapHandler,
+                style: TextStyle(
+                  color: primaryColor,
+                  fontFamily: "SanFranciscoDisplay",
+                  fontSize: 16.0,
+                ),
+              ),
+            ),
+            SizedBox(width: 20),
+            RichText(
+              text: TextSpan(
+                text: "Save",
+                recognizer: saveTapHandler,
+                style: TextStyle(
+                  color: primaryColor,
+                  fontFamily: "SanFranciscoDisplay",
+                  fontSize: 16.0,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 }

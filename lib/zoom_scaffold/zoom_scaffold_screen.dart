@@ -13,10 +13,6 @@ Widget zoomScaffoldScreen(
     screenId: screenId,
     zoomScaffoldBloc: ZoomScaffoldBloc(uid: uid, isArtist: isArtist),
   );
-//  return BlocProvider<ZoomScaffoldBloc>(
-//    bloc: ZoomScaffoldBloc(uid: uid, isArtist: isArtist),
-//    child: ZoomScaffoldScreen(isArtist: isArtist, uid: uid, screenId: screenId),
-//  );
 }
 
 class ZoomScaffoldScreen extends StatefulWidget {

@@ -65,16 +65,17 @@ class DeezerLoginView extends StatelessWidget {
   }
 
   JavascriptChannel _deezerAuthJavascriptChannel(BuildContext context) {
-    return JavascriptChannel(
-        name: 'DeezerAuth',
-        onMessageReceived: (JavascriptMessage message) {
-          print("RECIEVED MESSAGE: ${message.message}");
-          final decodedJson = jsonDecode(message.message);
-          print("DECODED JSON");
-//          Scaffold.of(context).showSnackBar(
-//            SnackBar(content: Text(message.message)),
-//          );
-        });
+    return null;
+//    return JavascriptChannel(
+//        name: 'DeezerAuth',
+//        onMessageReceived: (JavascriptMessage message) {
+//          print("RECIEVED MESSAGE: ${message.message}");
+//          final decodedJson = jsonDecode(message.message);
+//          print("DECODED JSON");
+////          Scaffold.of(context).showSnackBar(
+////            SnackBar(content: Text(message.message)),
+////          );
+//        });
   }
 }
 

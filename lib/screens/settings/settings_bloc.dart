@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/services.dart';
 import 'package:ikonfete/deezer/deezer_api.dart';
-import 'package:ikonfete/deezer/deezer_login.dart';
 import 'package:ikonfete/model/settings.dart';
 import 'package:ikonfete/registry.dart';
 import 'package:ikonfete/repository/settings_repository.dart';

@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/services.dart';
 import 'package:ikonfete/model/artist.dart';
 import 'package:ikonfete/model/user.dart';
 import 'package:ikonfete/registry.dart';
@@ -12,6 +14,7 @@ import 'package:ikonfete/utils/facebook_auth.dart';
 import 'package:ikonfete/utils/strings.dart';
 import 'package:ikonfete/utils/twitter_auth.dart';
 import 'package:ikonfete/utils/types.dart';
+import 'package:ikonfete/utils/upload_helper.dart';
 import 'package:meta/meta.dart';
 
 class EditProfileData {
@@ -45,13 +48,23 @@ class EnableTwitter extends ProfileScreenEvent {
   EnableTwitter(this.enabled);
 }
 
-class ProfileInfoChange extends ProfileScreenEvent {
+class EditBio extends ProfileScreenEvent {}
+
+class CancelEditBio extends ProfileScreenEvent {}
+
+class BioEdited extends ProfileScreenEvent {
+  final String newVal;
+
+  BioEdited(this.newVal);
+}
+
+class ProfileInfoEdited extends ProfileScreenEvent {
   final File profilePicture;
   final String displayName;
   final String countryIsoCode;
   final String country;
 
-  ProfileInfoChange({
+  ProfileInfoEdited({
     @required this.profilePicture,
     @required this.displayName,
     @required this.countryIsoCode,
@@ -59,23 +72,9 @@ class ProfileInfoChange extends ProfileScreenEvent {
   });
 }
 
-class BioUpdated extends ProfileScreenEvent {
-  final String bio;
+class SaveProfile extends ProfileScreenEvent {}
 
-  BioUpdated(this.bio);
-}
-
-class EditProfile extends ProfileScreenEvent {
-  final EditProfileData data;
-
-  EditProfile(this.data);
-}
-
-class _EditProfile extends ProfileScreenEvent {
-  final EditProfileData data;
-
-  _EditProfile(this.data);
-}
+class _SaveProfile extends ProfileScreenEvent {}
 
 class ProfileScreenState extends Equatable {
   final bool isLoading;
@@ -85,38 +84,45 @@ class ProfileScreenState extends Equatable {
   final String newTwitterId;
   final Pair<bool, String> enableFacebookResult;
   final Pair<bool, String> enableTwitterResult;
+  final bool editBio;
+  final String newBio;
+  final File newProfilePicture;
+  final String newDisplayName;
+  final String newCountryCode;
+  final String newCountryName;
+  final Pair<bool, String> updateProfileResult;
 
   ExclusivePair<String, File> get profilePicture {
-    // todo: check for updates to profile
-    if (user == null || StringUtils.isNullOrEmpty(user.profilePictureUrl)) {
+    if (newProfilePicture != null)
+      return ExclusivePair.withSecond(newProfilePicture);
+
+    if (user == null || StringUtils.isNullOrEmpty(user.profilePictureUrl))
       return null;
-    }
 
     return ExclusivePair.withFirst(user.profilePictureUrl);
   }
 
   String get displayName {
-    // todo check for updates
+    if (!StringUtils.isNullOrEmpty(newDisplayName)) return newDisplayName;
     return user?.name ?? "";
   }
 
   String get username {
-    // todo
+    // todo: allow updates to usernames
     return user?.username ?? "";
   }
 
   String get country {
-    // todo
+    if (!StringUtils.isNullOrEmpty(newCountryName)) return newCountryName;
     return user?.country ?? "";
   }
 
   String get email {
-    // todo
     return user?.email ?? "";
   }
 
   String get bio {
-    // todo
+    if (!StringUtils.isNullOrEmpty(newBio)) return newBio;
     if (user == null) return "";
     return user is Artist ? (user as Artist).bio : "";
   }
@@ -133,52 +139,26 @@ class ProfileScreenState extends Equatable {
     return !StringUtils.isNullOrEmpty(user.twitterId);
   }
 
-  bool get changesMade => false;
+  bool get changesMade {
+    if (user == null) return false;
 
-//  final bool hasError;
-//  final String errorMessage;
-//  final bool editProfileResult;
-//
-//  final String displayName;
-//  final String profilePictureUrl;
-//  final String username;
-//  final String country;
-//  final String countryIsoCode;
-//  final String email;
-//  final String bio;
-//  final bool facebookEnabled;
-//  final bool twitterEnabled;
-//  final String facebookId;
-//  final String twitterId;
-//
-//  final String newDisplayName;
-//  final File newProfilePicture;
-//  final String newCountry;
-//  final String newCountryIsoCode;
-//  final String newBio;
-//  final String newFacebookId;
-//  final String newTwitterId;
+    if (user is Artist) {
+      if (!StringUtils.isNullOrEmpty(newBio) &&
+          newBio != (user as Artist).bio) {
+        return true;
+      }
+    }
 
-  //    @required this.errorMessage,
-//    @required this.editProfileResult,
-//    @required this.displayName,
-//    @required this.profilePictureUrl,
-//    @required this.username,
-//    @required this.country,
-//    @required this.countryIsoCode,
-//    @required this.email,
-//    @required this.bio,
-//    @required this.facebookEnabled,
-//    @required this.twitterEnabled,
-//    @required this.facebookId,
-//    @required this.twitterId,
-//    @required this.newDisplayName,
-//    @required this.newProfilePicture,
-//    @required this.newCountry,
-//    @required this.newCountryIsoCode,
-//    @required this.newBio,
-//    @required this.newFacebookId,
-//    @required this.newTwitterId,
+    return (!StringUtils.isNullOrEmpty(newFacebookId) &&
+            newFacebookId != user.facebookId) ||
+        (!StringUtils.isNullOrEmpty(newTwitterId) &&
+            newTwitterId != user.twitterId) ||
+        newProfilePicture != null ||
+        (!StringUtils.isNullOrEmpty(newDisplayName) &&
+            newDisplayName != user.name) ||
+        (!StringUtils.isNullOrEmpty(newCountryCode) &&
+            newCountryCode.toLowerCase() != user.countryIsoCode.toLowerCase());
+  }
 
   ProfileScreenState({
     @required this.isLoading,
@@ -188,6 +168,13 @@ class ProfileScreenState extends Equatable {
     @required this.newTwitterId,
     @required this.enableFacebookResult,
     @required this.enableTwitterResult,
+    @required this.editBio,
+    @required this.newBio,
+    @required this.newProfilePicture,
+    @required this.newDisplayName,
+    @required this.newCountryCode,
+    @required this.newCountryName,
+    @required this.updateProfileResult,
   }) : super([
           isLoading,
           user,
@@ -195,30 +182,15 @@ class ProfileScreenState extends Equatable {
           newFacebookId,
           newTwitterId,
           enableFacebookResult,
-          enableTwitterResult
+          enableTwitterResult,
+          editBio,
+          newBio,
+          newProfilePicture,
+          newDisplayName,
+          newCountryCode,
+          newCountryName,
+          updateProfileResult,
         ]);
-
-  //      hasError: false,
-//      errorMessage: "",
-//      editProfileResult: false,
-//      displayName: "",
-//      profilePictureUrl: "",
-//      username: "",
-//      country: "",
-//      countryIsoCode: "",
-//      email: "",
-//      bio: "",
-//      facebookEnabled: false,
-//      twitterEnabled: false,
-//      facebookId: "",
-//      twitterId: "",
-//      newDisplayName: "",
-//      newProfilePicture: null,
-//      newCountry: "",
-//      newCountryIsoCode: "",
-//      newBio: "",
-//      newFacebookId: "",
-//      newTwitterId: "",
 
   factory ProfileScreenState.initial() {
     return ProfileScreenState(
@@ -229,6 +201,13 @@ class ProfileScreenState extends Equatable {
       newTwitterId: null,
       enableFacebookResult: null,
       enableTwitterResult: null,
+      editBio: false,
+      newBio: null,
+      newProfilePicture: null,
+      newDisplayName: null,
+      newCountryCode: null,
+      newCountryName: null,
+      updateProfileResult: null,
     );
   }
 
@@ -240,26 +219,13 @@ class ProfileScreenState extends Equatable {
     String newTwitterId,
     Pair<bool, String> enableFacebookResult,
     Pair<bool, String> enableTwitterResult,
-//    bool editProfileResult,
-//    String profilePictureUrl,
-//    String username,
-//    String country,
-//    String countryIsoCode,
-//    String email,
-//    String bio,
-//    bool facebookEnabled,
-//    bool twitterEnabled,
-//    String facebookId,
-//    String twitterId,
-//    bool hasError,
-//    String errorMessage,
-//    String newDisplayName,
-//    File newProfilePicture,
-//    String newCountry,
-//    String newCountryIsoCode,
-//    String newBio,
-//    String newFacebookId,
-//    String newTwitterId,
+    bool editBio,
+    String newBio,
+    File newProfilePicture,
+    String newDisplayName,
+    String newCountryCode,
+    String newCountryName,
+    Pair<bool, String> updateProfileResult,
   }) {
     return ProfileScreenState(
       isLoading: isLoading ?? this.isLoading,
@@ -269,26 +235,13 @@ class ProfileScreenState extends Equatable {
       newTwitterId: newTwitterId ?? this.newTwitterId,
       enableFacebookResult: enableFacebookResult ?? null,
       enableTwitterResult: enableTwitterResult ?? null,
-//      displayName: displayName ?? this.displayName,
-//      profilePictureUrl: profilePictureUrl ?? this.profilePictureUrl,
-//      username: username ?? this.username,
-//      country: country ?? this.country,
-//      countryIsoCode: countryIsoCode ?? this.countryIsoCode,
-//      email: email ?? this.email,
-//      bio: bio ?? this.bio,
-//      facebookEnabled: facebookEnabled ?? this.facebookEnabled,
-//      twitterEnabled: twitterEnabled ?? this.twitterEnabled,
-//      facebookId: facebookId ?? this.facebookId,
-//      twitterId: twitterId ?? this.twitterId,
-//      hasError: hasError ?? this.hasError,
-//      errorMessage: errorMessage ?? this.errorMessage,
-//      newDisplayName: newDisplayName ?? this.newDisplayName,
-//      newProfilePicture: newProfilePicture ?? this.newProfilePicture,
-//      newCountryIsoCode: newCountryIsoCode ?? this.newCountryIsoCode,
-//      newCountry: newCountry ?? this.newCountry,
-//      newBio: newBio ?? this.newBio,
-//      newFacebookId: newFacebookId ?? this.newFacebookId,
-//      newTwitterId: newTwitterId ?? this.newTwitterId,
+      editBio: editBio ?? this.editBio,
+      newBio: newBio ?? this.newBio,
+      newProfilePicture: newProfilePicture ?? this.newProfilePicture,
+      newDisplayName: newDisplayName ?? this.newDisplayName,
+      newCountryCode: newCountryCode ?? this.newCountryCode,
+      newCountryName: newCountryName ?? this.newCountryName,
+      updateProfileResult: updateProfileResult ?? null,
     );
   }
 }
@@ -315,8 +268,8 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
       Transition<ProfileScreenEvent, ProfileScreenState> transition) {
     super.onTransition(transition);
     final event = transition.event;
-    if (event is EditProfile) {
-      dispatch(_EditProfile(event.data));
+    if (event is SaveProfile) {
+      dispatch(_SaveProfile());
     }
   }
 
@@ -375,181 +328,94 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
         }
       }
     }
-//    if (event is InitProfile) {
-//
-//      final artist = isArtist ? event.appState.artistOrFan.first : null;
-//      final fan = isArtist ? null : event.appState.artistOrFan.second;
-//      final displayName = isArtist ? artist.name : fan.name;
-//      final profilePictureUrl =
-//          isArtist ? artist.profilePictureUrl : fan.profilePictureUrl;
-//      final username = isArtist ? artist.username : fan.username;
-//      final country = isArtist ? artist.country : fan.country;
-//      final countryIsoCode =
-//          isArtist ? artist.countryIsoCode : fan.countryIsoCode;
-//      final email = isArtist ? artist.email : fan.email;
-//      final bio = isArtist ? artist.bio : "";
-//      final facebookEnabled = isArtist
-//          ? !StringUtils.isNullOrEmpty(artist.facebookId)
-//          : !StringUtils.isNullOrEmpty(fan.facebookId);
-//      final twitterEnabled = isArtist
-//          ? !StringUtils.isNullOrEmpty(artist.twitterId)
-//          : !StringUtils.isNullOrEmpty(fan.twitterId);
-//      final facebookId = isArtist ? artist.facebookId : fan.facebookId;
-//      final twitterId = isArtist ? artist.twitterId : fan.twitterId;
-//
-//      yield state.copyWith(
-//        isLoading: false,
-//        hasError: false,
-//        errorMessage: "",
-//        displayName: displayName,
-//        profilePictureUrl: profilePictureUrl,
-//        username: username,
-//        country: country,
-//        countryIsoCode: countryIsoCode,
-//        email: email,
-//        bio: bio,
-//        facebookEnabled: facebookEnabled,
-//        twitterEnabled: twitterEnabled,
-//        facebookId: facebookId,
-//        twitterId: twitterId,
-//        newDisplayName: "",
-//        newCountry: "",
-//        newCountryIsoCode: "",
-//        newBio: "",
-//        newFacebookId: facebookId,
-//        newTwitterId: twitterId,
-//      );
-//    }
-//
-//    if (event is EditProfile) {
-//      yield state.copyWith(isLoading: true, hasError: false, errorMessage: "");
-//    }
-//
-//    if (event is _EditProfile) {
-//      try {
-//        final success = await _editProfile(event.data);
-//        yield state.copyWith(
-//            hasError: false, errorMessage: "", editProfileResult: success);
-//      } on Exception catch (e) {
-//        yield state.copyWith(
-//            isLoading: false, hasError: true, errorMessage: e.toString());
-//      }
-//    }
-//
-//    if (event is ProfileInfoChange) {
-//      yield state.copyWith(
-//        hasError: false,
-//        countryIsoCode: event.countryIsoCode,
-//        country: event.country,
-//        newProfilePicture: event.profilePicture,
-//        newDisplayName: event.displayName,
-//      );
-//    }
-//
-//    if (event is BioUpdated) {
-//      yield state.copyWith(
-//          hasError: false, errorMessage: "", newBio: event.bio);
-//    }
-//
-//    try {
-//      if (event is FacebookEnabled) {
-//        if (event.enabled) {
-//          // enable facebook
-//          final result = await _enableFacebook();
-//          if (result.success) {
-//            yield state.copyWith(
-//                hasError: false,
-//                errorMessage: "",
-//                facebookEnabled: event.enabled,
-//                newFacebookId: result.facebookUID);
-//          } else {
-//            yield state.copyWith(
-//              hasError: false,
-//              errorMessage: "",
-//              facebookEnabled: false,
-//              newFacebookId: "",
-//            );
-//          }
-//        } else {
-//          yield state.copyWith(
-//            hasError: false,
-//            errorMessage: "",
-//            facebookEnabled: false,
-//            newFacebookId: "",
-//          );
-//        }
-//      }
-//
-//      if (event is TwitterEnabled) {
-//        if (event.enabled) {
-//          final result = await _enableTwitter();
-//          if (result.success) {
-//            yield state.copyWith(
-//                hasError: false,
-//                errorMessage: "",
-//                twitterEnabled: event.enabled,
-//                newTwitterId: result.twitterUID);
-//          } else {
-//            yield state.copyWith(
-//                hasError: false,
-//                errorMessage: "",
-//                twitterEnabled: false,
-//                newTwitterId: "");
-//          }
-//        } else {
-//          yield state.copyWith(
-//              hasError: false,
-//              errorMessage: "",
-//              twitterEnabled: false,
-//              newTwitterId: "");
-//        }
-//      }
-//    } on Exception catch (e) {
-//      yield state.copyWith(hasError: true, errorMessage: e.toString());
-//    }
+
+    if (event is EditBio) {
+      yield state.copyWith(editBio: true);
+    }
+
+    if (event is CancelEditBio) {
+      yield state.copyWith(editBio: false);
+    }
+
+    if (event is BioEdited) {
+      yield state.copyWith(newBio: event.newVal, editBio: false);
+    }
+
+    if (event is ProfileInfoEdited) {
+      yield state.copyWith(
+        newProfilePicture: event.profilePicture,
+        newDisplayName: event.displayName,
+        newCountryCode: event.countryIsoCode,
+        newCountryName: event.country,
+      );
+    }
+
+    if (event is SaveProfile) {
+      yield state.copyWith(isLoading: true);
+    }
+
+    if (event is _SaveProfile) {
+      final result = await _saveProfile(state);
+      yield state.copyWith(isLoading: false, updateProfileResult: result);
+    }
   }
 
-  Future<FacebookAuthResult> _enableFacebook() async {
-    final facebookAuth = FacebookAuth();
-    final result = await facebookAuth.facebookAuth();
-    return result;
-  }
+  Future<Pair<bool, String>> _saveProfile(ProfileScreenState state) async {
+    final user = state.user;
 
-  Future<TwitterAuthResult> _enableTwitter() async {
-//    final twitterAuth = TwitterAuth(appConfig: appConfig);
-//    final result = await twitterAuth.twitterAuth();
-//    return result;
-    return null;
-  }
+    if (state.newProfilePicture != null) {
+      try {
+        final uploadHelper = CloudStorageUploadHelper();
+        bool deleted = await uploadHelper.deleteProfilePicture(
+            FirebaseStorage.instance, uid);
+        if (!deleted) {
+          return Pair.from(false, "Failed to delete old profile picture");
+        }
 
-  Future<bool> _editProfile(EditProfileData data) async {
-//    try {
-//      if (data.profilePicture != null) {
-//        // delete the old profilePicture
-//        final uploadHelper = CloudStorageUploadHelper();
-//        try {
-//          if (!StringUtils.isNullOrEmpty(data.oldProfilePictureUrl)) {
-//            uploadHelper.deleteProfilePicture(
-//                FirebaseStorage.instance, data.uid);
-//          }
-//        } on PlatformException catch (e) {} // if deletion fails, do nothing
-//
-//        // upload a new profile picture, if one was specified
-//        final uploadResult = await uploadHelper.uploadProfilePicture(
-//            FirebaseStorage.instance, data.uid, data.profilePicture);
-//        data.profilePictureUrl = uploadResult.fileDownloadUrl;
-//      }
-//
-//      // make call to update profile api
-//      final profileApi = ProfileApi(appConfig.serverBaseUrl);
-//      bool updated = await profileApi.updateProfile(data);
-//      return updated;
-//    } on ApiException catch (e) {
-//      throw e;
-//    } on PlatformException catch (e) {
-//      throw ApiException(e.message);
-//    } on Exception catch (e) {
-//      throw ApiException(e.toString());
-//    }
+        final uploadResult = await uploadHelper.uploadProfilePicture(
+            FirebaseStorage.instance, uid, state.newProfilePicture);
+        user.profilePictureUrl = uploadResult.fileDownloadUrl;
+        user.profilePictureName = uploadResult.fileName;
+      } on PlatformException catch (e) {
+        return Pair.from(false, e.message);
+      } on Exception catch (e) {
+        return Pair.from(false, e.toString());
+      }
+    }
+
+    if (isArtist && !StringUtils.isNullOrEmpty(state.newBio)) {
+      (user as Artist).bio = state.newBio;
+    }
+
+    if (!StringUtils.isNullOrEmpty(state.newFacebookId)) {
+      user.facebookId = state.newFacebookId;
+    }
+
+    if (!StringUtils.isNullOrEmpty(state.newTwitterId)) {
+      user.twitterId = state.newTwitterId;
+    }
+
+    if (!StringUtils.isNullOrEmpty(state.newDisplayName)) {
+      user.name = state.newDisplayName;
+    }
+
+    if (!StringUtils.isNullOrEmpty(state.newCountryCode)) {
+      user.countryIsoCode = state.newCountryCode;
+      user.country = state.newCountryName;
+    }
+
+    // update the artist or fan
+    try {
+      if (isArtist) {
+        await _artistRepository.update(user.id, user);
+      } else {
+        await _fanRepository.update(user.id, user);
+      }
+      return Pair.from(true, null);
+    } on PlatformException catch (e) {
+      return Pair.from(false, e.message);
+    } on Exception catch (e) {
+      return Pair.from(false, e.toString());
+    }
   }
 }
