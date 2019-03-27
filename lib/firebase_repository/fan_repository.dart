@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:ikonfete/firebase_repository/firebase_repository.dart';
 import 'package:ikonfete/model/fan.dart';
@@ -75,5 +77,35 @@ class FirebaseFanRepository extends FirestoreRepository<Fan>
         .child(collection)
         .child(id)
         .update(json);
+  }
+
+  @override
+  Stream<Fan> streamByUID(String uid) {
+    return firestore
+        .collection(collection)
+        .where("uid", isEqualTo: uid)
+        .limit(1)
+        .snapshots()
+        .map<Fan>((qs) {
+      return qs.documents.isEmpty ? null : Fan()
+        ..fromJson(qs.documents.first.data);
+    });
+  }
+
+  @override
+  Future<List<Fan>> findByTeamId(String teamId) async {
+    final qs = await firestore
+        .collection(collection)
+        .where("currentTeamId", isEqualTo: teamId)
+        .getDocuments();
+    final docs = qs.documents;
+    if (docs.isEmpty) {
+      return [];
+    }
+
+    final fans = qs.documents
+        .map((docSnapshot) => Fan()..fromJson(docSnapshot.data))
+        .toList();
+    return fans;
   }
 }

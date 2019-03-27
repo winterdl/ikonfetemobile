@@ -11,4 +11,6 @@ abstract class ArtistRepository implements Repository<Artist, String> {
   Future<List<Artist>> searchByNameOrUsername(String query);
 
   Future<bool> addTeamMember(String artistId, String fanId);
+
+  Stream<Artist> streamByUID(String uid);
 }

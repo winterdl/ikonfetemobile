@@ -271,7 +271,8 @@ class _LoginFormState extends State<LoginForm> {
     final loginBloc = BlocProvider.of<LoginBloc>(context);
 
     final forgotPasswordTapHandler = TapGestureRecognizer();
-    forgotPasswordTapHandler.onTap = () {}; // TODO: handle password reset
+    forgotPasswordTapHandler.onTap =
+        () => Navigator.of(context).pushNamed(Routes.resetPassword);
 
     final switchModeTapHandler = TapGestureRecognizer();
     switchModeTapHandler.onTap = () {
@@ -308,7 +309,6 @@ class _LoginFormState extends State<LoginForm> {
               validator: FormFieldValidators.minLength("password", 6),
               onFieldSubmitted: (newVal) {
                 passwordFocusNode.unfocus();
-//                _formSubmitted(); TODO:
               },
               onSaved: (val) => loginBloc.dispatch(PasswordEntered(val)),
             ),

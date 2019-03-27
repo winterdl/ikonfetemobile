@@ -44,7 +44,7 @@ Map<MenuItem, Screen> zoomScaffoldMenuItems(
   final menu = <MenuItem, Screen>{};
 
   menu[MenuItem(id: MenuIDs.profile, title: 'Profile', display: false)] =
-      profileScreen;
+      profileScreen(uid);
 
   menu[MenuItem(id: MenuIDs.home, title: 'Home', isDefault: true)] =
       homeScreen(uid);
@@ -52,7 +52,7 @@ Map<MenuItem, Screen> zoomScaffoldMenuItems(
   menu[MenuItem(id: MenuIDs.superFans, title: 'Super Fans')] = superfansScreen;
 
   if (isArtist) {
-    menu[MenuItem(id: MenuIDs.team, title: 'Team')] = teamScreen;
+    menu[MenuItem(id: MenuIDs.team, title: 'Team')] = teamScreen(uid);
   } else {
     // fan menu
     menu[MenuItem(id: MenuIDs.ikon, title: 'Ikon')] = ikonScreen;
@@ -60,7 +60,7 @@ Map<MenuItem, Screen> zoomScaffoldMenuItems(
 
   menu[MenuItem(id: MenuIDs.music, title: 'Music')] = musicScreen;
   menu[MenuItem(id: MenuIDs.messaging, title: 'Messaging')] = messagingScreen;
-  menu[MenuItem(id: MenuIDs.settings, title: 'Settings')] = settingsScreen;
+  menu[MenuItem(id: MenuIDs.settings, title: 'Settings')] = settingsScreen(uid);
   return menu;
 }
 

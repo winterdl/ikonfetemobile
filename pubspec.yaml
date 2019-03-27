@@ -82,6 +82,7 @@ flutter:
   - assets/images/alert.svg
   - assets/images/dark_grunge_bk.jpg
   - assets/images/deezer.png
+  - assets/deezer/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.io/assets-and-images/#resolution-aware.

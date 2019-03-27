@@ -6,6 +6,7 @@ import 'package:ikonfete/registry.dart';
 import 'package:ikonfete/repository/auth_repository.dart';
 import 'package:ikonfete/screens/login/login_screen.dart';
 import 'package:ikonfete/screens/pending_verification/pending_verification_screen.dart';
+import 'package:ikonfete/screens/reset_password/reset_password_screen.dart';
 import 'package:ikonfete/screens/signup/signup_main_screen.dart';
 import 'package:ikonfete/screens/team_selection/team_selection_screen.dart';
 import 'package:ikonfete/screens/verification/verification_screen.dart';
@@ -26,6 +27,13 @@ void defineRoutes(Router router) {
     Routes.signup,
     handler: Handler(
       handlerFunc: (ctx, params) => signupMainScreen(ctx),
+    ),
+  );
+
+  router.define(
+    Routes.resetPassword,
+    handler: Handler(
+      handlerFunc: (ctx, params) => resetPasswordScreen(ctx),
     ),
   );
 
@@ -59,12 +67,7 @@ void defineRoutes(Router router) {
     Routes.artistHomeScreenRoute(),
     handler: Handler(handlerFunc: (ctx, params) {
       final uid = params["uid"][0];
-      return ZoomScaffoldScreen(
-        screenId: 'home',
-        isArtist: true,
-        uid: uid,
-        params: <String, String>{},
-      );
+      return zoomScaffoldScreen(ctx, true, uid, 'home');
     }),
   );
 
@@ -72,12 +75,7 @@ void defineRoutes(Router router) {
     Routes.fanHomeScreenRoute(),
     handler: Handler(handlerFunc: (ctx, params) {
       final uid = params["uid"][0];
-      return ZoomScaffoldScreen(
-        screenId: 'home',
-        uid: uid,
-        isArtist: false,
-        params: <String, String>{},
-      );
+      return zoomScaffoldScreen(ctx, false, uid, 'home');
     }),
   );
 }
@@ -85,6 +83,7 @@ void defineRoutes(Router router) {
 class Routes {
   static final String login = "/login";
   static final String signup = "/signup";
+  static final String resetPassword = "/reset_password";
 
   static String teamSelection({String uid}) {
     return "/team_selection/${uid == null || uid.isEmpty ? ":uid" : uid}";
@@ -118,12 +117,14 @@ class Routes {
         return BlocBuilder<AppEvent, AppState>(
           bloc: appBloc,
           builder: (ctx, appState) {
-            return ZoomScaffoldScreen(
-              screenId: 'home',
-              uid: currentUser.uid,
-              isArtist: currentUser.isArtist,
-              params: <String, String>{},
-            );
+            return zoomScaffoldScreen(
+                ctx, currentUser.isArtist, currentUser.uid, 'home');
+//            return ZoomScaffoldScreen(
+//              screenId: 'home',
+//              uid: currentUser.uid,
+//              isArtist: currentUser.isArtist,
+//              params: <String, String>{},
+//            );
           },
         );
       } else if (currentUser.isArtistPendingVerification) {
@@ -139,12 +140,14 @@ class Routes {
         return BlocBuilder<AppEvent, AppState>(
           bloc: appBloc,
           builder: (ctx, appState) {
-            return ZoomScaffoldScreen(
-              screenId: 'home',
-              uid: currentUser.uid,
-              isArtist: currentUser.isArtist,
-              params: <String, String>{},
-            );
+            return zoomScaffoldScreen(
+                ctx, currentUser.isArtist, currentUser.uid, 'home');
+//            return ZoomScaffoldScreen(
+//              screenId: 'home',
+//              uid: currentUser.uid,
+//              isArtist: currentUser.isArtist,
+//              params: <String, String>{},
+//            );
           },
         );
       } else {

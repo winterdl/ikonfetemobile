@@ -31,10 +31,11 @@ class FontAwesome5Icons {
   static final solidUser = IconData(0xf007, fontFamily: fontFamilySolid);
   static final alignLeft = IconData(0xf036, fontFamily: fontFamilySolid);
   static final exclamationTriangle =
-  IconData(0xf071, fontFamily: fontFamilySolid);
+      IconData(0xf071, fontFamily: fontFamilySolid);
   static final powerOff = IconData(0xf011, fontFamily: fontFamilySolid);
   static final spotify = IconData(0xf1bc, fontFamily: fontFamilyBrands);
   static final soundCloud = IconData(0xf1be, fontFamily: fontFamilyBrands);
+  static final itunes = IconData(0xf3b5, fontFamily: fontFamilyBrands);
   static final comment = IconData(0xf075, fontFamily: fontFamilySolid);
   static final stream = IconData(0xf550, fontFamily: fontFamilySolid);
   static final play = IconData(0xf04b, fontFamily: fontFamilySolid);

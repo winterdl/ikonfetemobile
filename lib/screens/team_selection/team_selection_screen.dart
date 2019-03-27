@@ -258,7 +258,6 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
               ),
             ),
             enabled: true,
-//            onTap: () => bloc.dispatch(ArtistSelected(artist)),
             onTap: () => _artistSelected(artist),
           );
         },

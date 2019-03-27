@@ -54,6 +54,7 @@ class AppState {
     bool isOnBoarded,
     bool isLoggedIn,
     bool isArtist,
+    CurrentUserHolder currentUser,
   }) {
     return AppState(
       isOnBoarded: isOnBoarded ?? this.isOnBoarded,
