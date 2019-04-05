@@ -3,6 +3,7 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ikonfete/app_bloc.dart';
 import 'package:ikonfete/colors.dart';
 import 'package:ikonfete/registry.dart';
@@ -64,16 +65,22 @@ class IkonfeteAppState extends State<IkonfeteApp> {
             settings: settings,
           );
         },
-        home: BlocBuilder<AppEvent, AppState>(
-          bloc: _appBloc,
-          builder: (context, appState) {
-            return FutureBuilder<Widget>(
-              builder: (context, snapshot) => snapshot.data,
-              future: _getHomeScreen(_appBloc),
-              initialData: LoadingScreen(),
-            );
-          },
-        ),
+        builder: (context, _) {
+          ScreenUtil.instance =
+              ScreenUtil(width: 375, height: 812, allowFontScaling: true)
+                ..init(context);
+
+          return BlocBuilder<AppEvent, AppState>(
+            bloc: _appBloc,
+            builder: (context, appState) {
+              return FutureBuilder<Widget>(
+                builder: (context, snapshot) => snapshot.data,
+                future: _getHomeScreen(_appBloc),
+                initialData: LoadingScreen(),
+              );
+            },
+          );
+        },
       ),
     );
   }
