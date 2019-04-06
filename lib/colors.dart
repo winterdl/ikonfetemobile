@@ -55,12 +55,10 @@ class IkColors {
   );
 
   static const Color lightGrey = const Color(0xFF8d92a3);
+  static const Color lighterGrey = const Color(0xFFd9d9d9);
   static const Color disabled_color = const Color(0xFFe5e5e5);
   static const Color smoke = const Color(0xFFF6F6F6);
   static const Color primary = const Color(base_primary);
   static const Color background = const Color(0xFFFBFBFB);
-  static const Color background2 = const Color(0xFFF8F8F8);
-  static const Color background3 = const Color(0xFFF7F7F7);
-  static const Color lighterGrey = const Color(0xFFEFEFEF);
   static const Color google = const Color(0xFFD62D20);
 }

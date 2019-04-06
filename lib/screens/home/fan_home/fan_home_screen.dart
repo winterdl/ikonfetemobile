@@ -4,7 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ikonfete/app_bloc.dart';
 import 'package:ikonfete/colors.dart';
 import 'package:ikonfete/screen_utils.dart';
-import 'package:ikonfete/widget/post_cards.dart';
+import 'package:ikonfete/widget/event_slide.dart';
+import 'package:ikonfete/widget/post_cards/video_post_card.dart';
 
 Widget fanHomeScreen(BuildContext context, String uid) {
   return FanHomeScreen();
@@ -30,11 +31,7 @@ class _FanHomeScreenState extends State<FanHomeScreen> {
             length: 3,
             child: SafeArea(
               child: NotificationListener<ScrollUpdateNotification>(
-                onNotification: (not) {
-                  if (not.metrics.maxScrollExtent == not.metrics.pixels) {
-                    isScrolledTop.value = true;
-                  }
-                },
+                onNotification: (not) {},
                 child: NestedScrollView(
                   controller: _controller,
                   headerSliverBuilder:
@@ -71,29 +68,7 @@ class _FanHomeScreenState extends State<FanHomeScreen> {
                           maxHeight: sh(50),
                           child: Container(
                             color: Colors.white,
-                            child: TabBar(
-                                isScrollable: true,
-                                unselectedLabelColor: IkColors.lightGrey,
-                                labelColor: IkColors.dark,
-                                indicatorColor: primaryColor,
-                                indicatorWeight: (3),
-                                indicator: BoxDecoration(
-                                    gradient: LinearGradient(colors: [
-                                      IkColors.primary,
-                                      Colors.transparent,
-                                    ]),
-                                    color: Colors.transparent,
-                                    border: null),
-                                labelStyle: TextStyle(
-                                  fontSize: sf(16),
-                                  fontWeight: FontWeight.bold,
-                                  color: primaryColor,
-                                ),
-                                tabs: [
-                                  Text("Artist Feed"),
-                                  Text("Team Feed"),
-                                  Text("LeaderBoard"),
-                                ]),
+                            child: _BuildTabs(),
                           ),
                         ),
                       ),
@@ -116,16 +91,34 @@ class _FanHomeScreenState extends State<FanHomeScreen> {
                                           .sliverOverlapAbsorberHandleFor(
                                               context),
                                     ),
+                                    // SliverToBoxAdapter(
+                                    //   child: ValueListenableBuilder<bool>(
+                                    //     valueListenable: isScrolledTop,
+                                    //     builder: (BuildContext context,
+                                    //         isScrolled, Widget child) {
+                                    //       print(isScrolled);
+                                    //       return AnimatedContainer(
+                                    //         child: SizedBox(),
+                                    //         duration:
+                                    //             Duration(milliseconds: 500),
+                                    //         height: isScrolled ? 0 : sh(100),
+                                    //       );
+                                    //     },
+                                    //   ),
+                                    // ),
                                     SliverPersistentHeader(
                                       floating: false,
-                                      pinned: true,
+                                      pinned: false,
                                       delegate: _SliverAppBarDelegate(
-                                        minHeight: sh(50),
-                                        maxHeight: sh(50),
+                                        minHeight: sh(120),
+                                        maxHeight: sh(120),
                                         child: Container(
                                           color: Colors.white,
-                                          child:
-                                              Container(child: _BuildStories()),
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: sh(20)),
+                                            child: _BuildStories(),
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -174,6 +167,42 @@ class _FanHomeScreenState extends State<FanHomeScreen> {
   }
 }
 
+class _BuildTabs extends StatelessWidget {
+  const _BuildTabs({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return TabBar(
+        isScrollable: true,
+        unselectedLabelColor: IkColors.lightGrey,
+        labelColor: IkColors.dark,
+        indicatorColor: primaryColor,
+        indicatorWeight: (3),
+        indicator: BoxDecoration(
+            gradient: LinearGradient(colors: [
+              IkColors.primary,
+              Colors.transparent,
+            ]),
+            color: Colors.transparent,
+            border: null),
+        labelStyle: TextStyle(
+          fontSize: sf(14),
+          fontWeight: FontWeight.bold,
+          color: primaryColor,
+        ),
+        tabs: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text("Artist Feed"),
+          ),
+          Text("Team Feed"),
+          Text("LeaderBoard"),
+        ]);
+  }
+}
+
 class _BuildStories extends StatelessWidget {
   const _BuildStories({
     Key key,
@@ -189,122 +218,35 @@ class _BuildStories extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
           return Container(
+            width: sw(50),
+            height: sh(80),
             margin: EdgeInsets.only(right: sw(20)),
-            child: AspectRatio(
-              aspectRatio: 1 / 1,
-              child: Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(100)),
-                    border: Border.all(color: IkColors.primary, width: 2)),
-                padding: EdgeInsets.all(3),
-                child: CircleAvatar(
-                  radius: sw(24),
-                  child: Container(),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class EventSlide extends StatelessWidget {
-  const EventSlide({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.only(right: sw(16)),
-      color: Colors.white,
-      alignment: Alignment.center,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Stack(
-            alignment: Alignment.bottomCenter,
-            children: <Widget>[
-              Container(
-                height: sh(100),
-                margin: EdgeInsets.symmetric(horizontal: sw(26)),
-                decoration: BoxDecoration(boxShadow: [
-                  BoxShadow(blurRadius: sf(20), color: Color(0xFF3e131c))
-                ]),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image: AssetImage(
-                        'assets/images/onboard_background3.png',
-                      )),
-                  borderRadius: BorderRadius.all(Radius.circular(sw(8))),
-                ),
-                height: sh(180),
-                child: Container(
-                  alignment: Alignment.bottomLeft,
-                  child: Padding(
-                    padding: EdgeInsets.only(bottom: sh(16)),
-                    child: Row(
-                      children: <Widget>[
-                        SizedBox(width: sw(16)),
-                        Tags(title: 'CONCERT'),
-                        SizedBox(width: sw(16)),
-                        Tags(title: 'ROCK'),
-                      ],
+            child: Column(
+              children: <Widget>[
+                AspectRatio(
+                  aspectRatio: 1 / 1,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(100)),
+                        border: Border.all(color: IkColors.primary, width: 2)),
+                    padding: EdgeInsets.all(3),
+                    child: CircleAvatar(
+                      radius: sw(24),
+                      child: Container(),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          SizedBox(height: sh(24)),
-          Text(
-            'Imagine Dragons',
-            style: TextStyle(fontSize: sf(20), fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: sh(8)),
-          Text('Moscow, big sports arena | Luzhniki',
-              style: TextStyle(fontSize: sf(15))),
-          SizedBox(height: sh(8)),
-          Text('August 29, 19:00', style: TextStyle(fontSize: sf(15))),
-        ],
-      ),
-    );
-  }
-}
-
-class Tags extends StatelessWidget {
-  const Tags({
-    Key key,
-    @required this.title,
-    this.onTap,
-  }) : super(key: key);
-
-  final String title;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: sw(6), vertical: sw(6)),
-        child: Text(
-          title.toUpperCase(),
-          style: TextStyle(
-            fontSize: sf(12),
-            color: Colors.white,
-          ),
-        ),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(.4),
-          borderRadius: BorderRadius.all(Radius.circular(sw(4))),
-        ),
+                Text(
+                  'Name',
+                  style: TextStyle(
+                    height: 1.2,
+                    color: IkColors.lightGrey,
+                  ),
+                )
+              ],
+            ),
+          );
+        },
       ),
     );
   }
