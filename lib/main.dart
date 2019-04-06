@@ -52,6 +52,7 @@ class IkonfeteAppState extends State<IkonfeteApp> {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.blue,
+          textTheme: TextTheme(),
           fontFamily: "SanFranciscoDisplay",
         ),
         onGenerateRoute: (settings) {

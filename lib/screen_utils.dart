@@ -9,16 +9,11 @@ class ScreenUtils {
   }
 }
 
-void sf(int fontSize, {bool fontScaling = false}) {
-  fontScaling
-      ? ScreenUtil.getInstance().setSp(fontSize)
-      : ScreenUtil(allowFontScaling: true).setSp(fontSize);
-}
+double sf(int fontSize, {bool fontScaling = false}) => fontScaling
+    ? ScreenUtil.getInstance().setSp(fontSize)
+    : ScreenUtil(allowFontScaling: true).setSp(fontSize);
 
-void sh(int height) {
-  ScreenUtil.getInstance().setWidth(height);
-}
+double sh(int height) => ScreenUtil.getInstance().setWidth(height);
 
-void sw(int width) {
-  ScreenUtil.getInstance().setWidth(width);
-}
+double sw(int width) => ScreenUtil.getInstance().setWidth(width);
+MediaQueryData get mq => ScreenUtil.mediaQueryData;

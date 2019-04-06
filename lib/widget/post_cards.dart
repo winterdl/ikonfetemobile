@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ikonfete/colors.dart';
+import 'package:ikonfete/screen_utils.dart';
 import 'package:ikonfete/widget/album_art.dart';
 
 class VideoPostCard extends StatefulWidget {
@@ -12,18 +13,18 @@ class _VideoPostCardState extends State<VideoPostCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(bottom: 40.0),
+      margin: EdgeInsets.only(bottom: sh(40)),
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.all(
-            Radius.circular(10.0),
+            Radius.circular(sw(10)),
           ),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.05),
               spreadRadius: 5.0,
-              blurRadius: 20.0,
-              offset: Offset(0.0, 10.0),
+              blurRadius: sh(20),
+              offset: Offset(0.0, sh(10)),
             )
           ]),
       child: Column(
@@ -32,14 +33,14 @@ class _VideoPostCardState extends State<VideoPostCard> {
           _buildHeader(),
           _buildVideoPlayer(),
           Container(
-            padding: EdgeInsets.all(20.0),
+            padding: EdgeInsets.all(sw(20)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
                   "Artist Name - Song Name",
                   style: TextStyle(
-                    fontSize: 20.0,
+                    fontSize: sf(14),
                     fontFamily: "SanFranciscoDisplay",
                     fontWeight: FontWeight.bold,
                   ),
@@ -47,12 +48,12 @@ class _VideoPostCardState extends State<VideoPostCard> {
                 Text(
                   '129 209 2999 views'.toUpperCase(),
                   style: TextStyle(
-                    fontSize: 13.0,
+                    fontSize: sf(13),
                     color: Color(0xFF0707070),
                   ),
                 ),
                 SizedBox(
-                  height: 40.0,
+                  height: sh(40),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -70,16 +71,29 @@ class _VideoPostCardState extends State<VideoPostCard> {
   }
 
   Widget _buildHeader() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: sw(20), vertical: sh(15)),
+      child: Row(
+        children: <Widget>[
+          CircleAvatar(
+            radius: sw(14),
+            backgroundImage:
+                AssetImage('assets/images/onboard_background1.png'),
+          ),
+        ],
+      ),
+    );
+
     return ListTile(
-      contentPadding: EdgeInsets.symmetric(horizontal: 20.0),
+      contentPadding: EdgeInsets.symmetric(horizontal: sw(20)),
       leading: CircleAvatar(
-        radius: 18.0,
+        radius: sw(14),
         backgroundImage: AssetImage('assets/images/onboard_background1.png'),
       ),
       title: Text(
         'Jane Foster',
         style: TextStyle(
-          fontSize: 16.0,
+          fontSize: sf(12),
           color: primaryColor,
           fontWeight: FontWeight.bold,
         ),
@@ -91,7 +105,7 @@ class _VideoPostCardState extends State<VideoPostCard> {
       subtitle: Text(
         '10 MINS AGO'.toUpperCase(),
         style: TextStyle(
-          fontSize: 13.0,
+          fontSize: sf(10),
           color: Color(0xFF0707070),
         ),
       ),
