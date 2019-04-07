@@ -30,7 +30,7 @@ class _VideoPostCardState extends State<VideoPostCard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           _BuildHeader(),
-          _buildVideoPlayer(),
+          _BuildVideoPLayer(),
           Container(
             padding: EdgeInsets.all(sw(20)),
             child: Column(
@@ -70,36 +70,6 @@ class _VideoPostCardState extends State<VideoPostCard> {
     );
   }
 
-  Widget _buildVideoPlayer() {
-    return AspectRatio(
-      aspectRatio: 16 / 9,
-      child: Stack(children: <Widget>[
-        Container(
-          width: double.infinity,
-          // to be replaced with video
-          child: Image.asset(
-            "assets/images/onboard_background1.png",
-            fit: BoxFit.cover,
-          ),
-        ),
-        Center(
-          child: Container(
-            decoration:
-                BoxDecoration(color: primaryColor, shape: BoxShape.circle),
-            child: CupertinoButton(
-              onPressed: () {},
-              child: Icon(
-                Icons.play_arrow,
-                size: 30.0,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        )
-      ]),
-    );
-  }
-
   Widget _buildLikes() {
     return Row(
       children: <Widget>[
@@ -121,7 +91,7 @@ class _VideoPostCardState extends State<VideoPostCard> {
           ),
         ),
         SizedBox(
-          width: 10.0,
+          width: sw(10),
         ),
         Stack(
           children: <Widget>[
@@ -178,6 +148,43 @@ class _VideoPostCardState extends State<VideoPostCard> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _BuildVideoPLayer extends StatelessWidget {
+  const _BuildVideoPLayer({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AspectRatio(
+      aspectRatio: 16 / 9,
+      child: Stack(children: <Widget>[
+        Container(
+          width: double.infinity,
+          // to be replaced with video
+          child: Image.asset(
+            "assets/images/onboard_background1.png",
+            fit: BoxFit.cover,
+          ),
+        ),
+        Center(
+          child: Container(
+            decoration:
+                BoxDecoration(color: primaryColor, shape: BoxShape.circle),
+            child: CupertinoButton(
+              onPressed: () {},
+              child: Icon(
+                Icons.play_arrow,
+                size: 30.0,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        )
+      ]),
     );
   }
 }
