@@ -6,6 +6,8 @@ import 'package:ikonfete/widget/post_cards/partials/_footer.dart';
 import 'package:ikonfete/widget/post_cards/partials/_header.dart';
 
 class TextPostCard extends StatefulWidget {
+  //TODO make it more accessible
+
   @override
   _TextPostCardState createState() => _TextPostCardState();
 }
@@ -39,7 +41,7 @@ class _TextPostCardState extends State<TextPostCard> {
                 Text(
                   'Lorem Bloody Ipsum illo inventore veritatis et quasi architecto beatae vitae dicta sunui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam',
                   style: TextStyle(
-                    fontSize: sf(14),
+                    fontSize: sf(15),
                     color: IkColors.lightGrey,
                   ),
                 ),

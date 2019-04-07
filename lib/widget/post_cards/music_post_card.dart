@@ -6,6 +6,8 @@ import 'package:ikonfete/widget/album_art.dart';
 import 'package:ikonfete/widget/post_cards/partials/_header.dart';
 
 class MusicPostCard extends StatefulWidget {
+  //TODO make it more accessible
+
   @override
   _MusicPostCardState createState() => _MusicPostCardState();
 }

@@ -7,6 +7,8 @@ import 'package:ikonfete/widget/post_cards/partials/_header.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class VideoPostCard extends StatefulWidget {
+  //TODO make it more accessible
+
   @override
   _VideoPostCardState createState() => _VideoPostCardState();
 }

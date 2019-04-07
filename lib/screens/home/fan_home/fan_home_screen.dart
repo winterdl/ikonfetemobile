@@ -5,8 +5,8 @@ import 'package:ikonfete/app_bloc.dart';
 import 'package:ikonfete/colors.dart';
 import 'package:ikonfete/screen_utils.dart';
 import 'package:ikonfete/widget/event_slide.dart';
-import 'package:ikonfete/widget/post_cards.dart';
 import 'package:ikonfete/widget/post_cards/music_post_card.dart';
+import 'package:ikonfete/widget/post_cards/text_post_card.dart';
 import 'package:ikonfete/widget/post_cards/video_post_card.dart';
 
 Widget fanHomeScreen(BuildContext context, String uid) {
@@ -214,6 +214,7 @@ class _BuildTabs extends StatelessWidget {
 }
 
 class _BuildStories extends StatelessWidget {
+  //TODO make it more accessible
   const _BuildStories({
     Key key,
   }) : super(key: key);
