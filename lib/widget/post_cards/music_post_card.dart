@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ikonfete/colors.dart';
 import 'package:ikonfete/screen_utils.dart';
 import 'package:ikonfete/widget/album_art.dart';
-import 'package:ikonfete/widget/post_cards/partials/_headers.dart';
+import 'package:ikonfete/widget/post_cards/partials/_header.dart';
 
 class MusicPostCard extends StatefulWidget {
   @override
@@ -34,7 +34,7 @@ class _MusicPostCardState extends State<MusicPostCard> {
               )
             ],
             borderRadius: BorderRadius.all(
-              Radius.circular(10.0),
+              Radius.circular(sw(10)),
             ),
           ),
           child: Column(
@@ -43,7 +43,7 @@ class _MusicPostCardState extends State<MusicPostCard> {
               BuildHeader(),
               _BuildPostText(),
               SizedBox(
-                height: 20.0,
+                height: sh(20),
               ),
               _BuildSong(),
             ],
@@ -83,6 +83,7 @@ class _BuildSong extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: <Widget>[
+        SizedBox(width: sw(20)),
         SizedBox(
           height: sw(64),
           child: AspectRatio(

@@ -5,6 +5,7 @@ import 'package:ikonfete/app_bloc.dart';
 import 'package:ikonfete/colors.dart';
 import 'package:ikonfete/screen_utils.dart';
 import 'package:ikonfete/widget/event_slide.dart';
+import 'package:ikonfete/widget/post_cards.dart';
 import 'package:ikonfete/widget/post_cards/music_post_card.dart';
 import 'package:ikonfete/widget/post_cards/video_post_card.dart';
 
@@ -129,6 +130,9 @@ class _FanHomeScreenState extends State<FanHomeScreen> {
                                       sliver: SliverList(
                                         delegate: SliverChildBuilderDelegate(
                                             (context, index) {
+                                          if (index == 0) {
+                                            return TextPostCard();
+                                          }
                                           if (index.isOdd) {
                                             return VideoPostCard();
                                           }
