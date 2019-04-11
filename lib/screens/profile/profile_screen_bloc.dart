@@ -366,10 +366,12 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
     if (state.newProfilePicture != null) {
       try {
         final uploadHelper = CloudStorageUploadHelper();
-        bool deleted = await uploadHelper.deleteProfilePicture(
-            FirebaseStorage.instance, uid);
-        if (!deleted) {
-          return Pair.from(false, "Failed to delete old profile picture");
+        if (!StringUtils.isNullOrEmpty(state.user.profilePictureUrl)) {
+          bool deleted = await uploadHelper.deleteProfilePicture(
+              FirebaseStorage.instance, uid);
+          if (!deleted) {
+            return Pair.from(false, "Failed to delete old profile picture");
+          }
         }
 
         final uploadResult = await uploadHelper.uploadProfilePicture(

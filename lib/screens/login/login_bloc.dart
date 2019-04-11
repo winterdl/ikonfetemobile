@@ -67,7 +67,7 @@ class LoginState {
       isLoading: isLoading ?? this.isLoading,
       email: email ?? this.email,
       password: password ?? this.password,
-      emailAuthResult: emailAuthResult,
+      emailAuthResult: emailAuthResult ?? null,
     );
   }
 

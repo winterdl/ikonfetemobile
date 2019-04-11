@@ -117,13 +117,6 @@ class _MenuScreenState extends State<MenuScreen> with TickerProviderStateMixin {
         break;
     }
 
-//    final isArtist = appState.isArtist;
-//    final artist = isArtist ? appState.artistOrFan?.first ?? null : null;
-//    final fan = isArtist ? null : appState.artistOrFan?.second ?? null;
-//    final photoUrl = isArtist
-//        ? artist?.profilePictureUrl ?? null
-//        : fan?.profilePictureUrl ?? null;
-
     final photoUrl = widget.currentUser?.user?.profilePictureUrl ?? null;
 
     return Transform(
@@ -144,20 +137,6 @@ class _MenuScreenState extends State<MenuScreen> with TickerProviderStateMixin {
                     .firstWhere((item) => item.id == MenuIDs.profile);
                 widget.onMenuItemSelected(profileMenuItem.id);
                 menuController.close();
-                // TODO: fix
-//                    final result = router.navigateTo(
-//                      context,
-//                      RouteNames.profile(
-//                          uid: initState.currentUser.uid,
-//                          isArtist: initState.isArtist),
-//                      replace: false,
-//                      transition: TransitionType.inFromRight,
-//                    );
-//                    if (result != null &&
-//                        (result is bool) &&
-//                        (result as bool) == true) {
-//                      setState(() {});
-//                    }
               },
               leading: CircleAvatar(
                 backgroundColor: primaryColor,
@@ -167,7 +146,6 @@ class _MenuScreenState extends State<MenuScreen> with TickerProviderStateMixin {
                     : MemoryImage(kTransparentImage),
               ),
               title: Text(
-//                appState.isArtist ? artist?.name ?? "" : fan?.name ?? "",
                 widget.currentUser?.user?.name ?? "NAME",
                 style: TextStyle(
                   color: Colors.white,
@@ -176,9 +154,6 @@ class _MenuScreenState extends State<MenuScreen> with TickerProviderStateMixin {
                 ),
               ),
               subtitle: Text(
-//                isArtist
-//                    ? "@${artist?.username ?? ""}"
-//                    : "@${fan?.username ?? ""}",
                 "@${widget.currentUser?.user?.username ?? "username"}",
                 style: TextStyle(
                   color: Colors.white,
@@ -251,9 +226,6 @@ class _MenuScreenState extends State<MenuScreen> with TickerProviderStateMixin {
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
             Text(
-//              isArtist
-//                  ? artist?.feteScore.toString() ?? ""
-//                  : fan?.feteScore.toString() ?? "",
               widget.currentUser?.user?.feteScore?.toString() ?? "0",
               style: TextStyle(fontSize: 50.0, color: Color(0xFFF0F0F0)),
             ),
@@ -349,7 +321,6 @@ class _MenuScreenState extends State<MenuScreen> with TickerProviderStateMixin {
               color: Colors.transparent,
               child: new Stack(
                 children: [
-//              createMenuTitle(menuController),
                   createMenuItems(menuController),
                   createMenuProfileDetails(menuController),
                   createFeteScore(menuController),

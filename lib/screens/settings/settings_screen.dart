@@ -7,9 +7,7 @@ import 'package:ikonfete/icons.dart';
 import 'package:ikonfete/screen_utils.dart';
 import 'package:ikonfete/screens/settings/settings_bloc.dart';
 import 'package:ikonfete/utils/strings.dart';
-import 'package:ikonfete/widget/hud_overlay.dart';
 import 'package:ikonfete/widget/ikonfete_buttons.dart';
-import 'package:ikonfete/widget/overlays.dart';
 import 'package:ikonfete/zoom_scaffold/zoom_scaffold.dart';
 
 Screen settingsScreen(String uid) {
@@ -109,11 +107,11 @@ class SettingsScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                OverlayBuilder(
-                  child: Container(),
-                  showOverlay: settingsState.isLoading,
-                  overlayBuilder: (context) => HudOverlay.getOverlay(),
-                ),
+//                OverlayBuilder(
+//                  child: Container(),
+//                  showOverlay: settingsState.isLoading,
+//                  overlayBuilder: (context) => HudOverlay.getOverlay(),
+//                ),
                 Text(
                   "Connected Streaming Accounts",
                   style: settingHeaderTextStyle,

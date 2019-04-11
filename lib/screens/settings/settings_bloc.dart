@@ -167,6 +167,7 @@ class SettingsBloc extends Bloc<SettingsScreenEvent, SettingsState> {
           } else {
             deezerSession = await deezerApi.authenticate();
           }
+
           if (deezerSession.success) {
             yield state.copyWith(
                 isLoading: false,
@@ -182,6 +183,7 @@ class SettingsBloc extends Bloc<SettingsScreenEvent, SettingsState> {
           print("Failed to enable Deezer. ${e.message}");
           yield state.copyWith(
               isLoading: false,
+              deezerUid: "",
               enableDeezerResult: Pair.from(false, "Failed to enable Deezer"));
         }
       } else {

@@ -41,13 +41,13 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
     super.initState();
     final bloc = BlocProvider.of<TeamSelectionBloc>(context);
     bloc.dispatch(LoadFan(widget.uid));
-    bloc.state.listen((state) {
-      if (state.loadFanResult != null) {
-        if (state.loadFanResult.first) {
-          bloc.dispatch(SearchEvent(""));
-        }
-      }
-    });
+//    bloc.state.listen((state) {
+//      if (state.loadFanResult != null) {
+//        if (!state.loadFanResult.first) {
+//          bloc.dispatch(SearchEvent(""));
+//        }
+//      }
+//    });
   }
 
   Future<bool> _canLogout(BuildContext context) async {
@@ -73,6 +73,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
         body: BlocBuilder<TeamSelectionEvent, TeamSelectionState>(
           bloc: bloc,
           builder: (BuildContext ctx, TeamSelectionState state) {
+            /*
             if (state.loadFanResult != null) {
               final result = state.loadFanResult;
               if (!result.first) {
@@ -113,6 +114,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
                 });
               }
             }
+            */
 
             return Container(
               alignment: Alignment.topLeft,
@@ -141,9 +143,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
                         children: <Widget>[
                           SizedBox(height: 30.0),
                           Text(
-                            state.fan == null
-                                ? ""
-                                : "Hello, ${state?.fan?.name ?? ""}!\nJoin your favourite Artist's Team",
+                            "Hello ${state?.fan?.name ?? ""}!\nJoin your favourite Artist's Team",
                             textAlign: TextAlign.left,
                             style: TextStyle(
                               height: 1.4,
@@ -155,6 +155,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
                           SearchField(
                             onChanged: (String value) =>
                                 bloc.dispatch(SearchEvent(value)),
+                            onCancel: () => bloc.dispatch(SearchEvent("")),
                           ),
                           SizedBox(height: 20.0),
                           _buildList(context, state),
