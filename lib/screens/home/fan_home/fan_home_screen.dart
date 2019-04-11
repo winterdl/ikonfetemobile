@@ -53,7 +53,7 @@ class _FanHomeScreenState extends State<FanHomeScreen> {
                               height: sh(300),
                               child: PageView.builder(
                                 controller:
-                                    PageController(viewportFraction: .9),
+                                    PageController(viewportFraction: .85),
                                 itemBuilder: (ctx, index) {
                                   return EventSlide();
                                 },
@@ -86,6 +86,7 @@ class _FanHomeScreenState extends State<FanHomeScreen> {
                             Builder(
                               builder: (BuildContext context) {
                                 return CustomScrollView(
+                                  //TODO  maintain scroll postion on tab switch
                                   key: PageStorageKey('ArtistFeed'),
                                   slivers: <Widget>[
                                     SliverOverlapInjector(
@@ -154,7 +155,7 @@ class _FanHomeScreenState extends State<FanHomeScreen> {
                         bottom: false,
                         child: Builder(
                           builder: (BuildContext context) {
-                            return Text('hello');
+                            return Center(child: Text('Team Feed'));
                           },
                         ),
                       ),
@@ -163,7 +164,7 @@ class _FanHomeScreenState extends State<FanHomeScreen> {
                         bottom: false,
                         child: Builder(
                           builder: (BuildContext context) {
-                            return Text('hello');
+                            return Center(child: Text('Leader Board'));
                           },
                         ),
                       ),
