@@ -55,7 +55,7 @@ Map<MenuItem, Screen> zoomScaffoldMenuItems(
     menu[MenuItem(id: MenuIDs.team, title: 'Team')] = teamScreen(uid);
   } else {
     // fan menu
-    menu[MenuItem(id: MenuIDs.ikon, title: 'Ikon')] = ikonScreen;
+    menu[MenuItem(id: MenuIDs.ikon, title: 'Ikon')] = ikonScreen(uid);
   }
 
   menu[MenuItem(id: MenuIDs.music, title: 'Music')] = musicScreen;

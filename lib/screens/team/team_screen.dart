@@ -98,7 +98,7 @@ class TeamScreen extends StatelessWidget {
     return Expanded(
       child: ListView.builder(
         scrollDirection: Axis.vertical,
-        itemCount: state.teamMembers.length,
+        itemCount: state.teamMembers?.length ?? 0,
         itemExtent: 84.0,
         itemBuilder: (BuildContext context, int index) {
           final fan =

@@ -103,8 +103,11 @@ class FirebaseArtistRepository extends FirestoreRepository<Artist>
           .once();
     }
     final artists = <Artist>[];
-    for (final val in dataSnapshot.value.values) {
-      artists.add(Artist()..fromJson(val));
+    if (dataSnapshot.value != null && dataSnapshot.value.values != null) {
+      for (final val in dataSnapshot.value.values) {
+        if (val == null) continue;
+        artists.add(Artist()..fromJson(val));
+      }
     }
     return artists;
   }

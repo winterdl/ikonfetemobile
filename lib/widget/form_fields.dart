@@ -194,6 +194,7 @@ class SearchField extends StatefulWidget {
   final textInputAction;
   final focusNode;
   final Function(String) onChanged;
+  final Function onCancel;
   final FormFieldValidator<String> validator;
   final Function(String) onSaved;
   final TextStyle textStyle;
@@ -207,6 +208,7 @@ class SearchField extends StatefulWidget {
     this.validator,
     this.onSaved,
     this.textStyle,
+    this.onCancel,
   });
 
   @override
@@ -284,6 +286,9 @@ class _SearchFieldState extends State<SearchField> {
                   setState(() {
                     _isTyping = false;
                     _controller.clear();
+                    if (widget.onCancel != null) {
+                      widget.onCancel();
+                    }
                   });
                 },
               )

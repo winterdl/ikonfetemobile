@@ -45,20 +45,21 @@ class ProfilePictureChooserState extends State<ProfilePictureChooser> {
     final decorationImage = _imageFile != null
         ? DecorationImage(image: FileImage(_imageFile), fit: BoxFit.cover)
         : (!StringUtils.isNullOrEmpty(widget.imageUrl)
-        ? DecorationImage(
-        image: CachedNetworkImageProvider(widget.imageUrl),
-        fit: BoxFit.cover)
-        : null);
+            ? DecorationImage(
+                image: CachedNetworkImageProvider(widget.imageUrl),
+                fit: BoxFit.cover)
+            : null);
 
-    final placeHolder = StringUtils.isNullOrEmpty(widget.imageUrl)
-        ? ClipOval(
-      child: Icon(
-        FontAwesome5Icons.solidUser,
-        color: primaryColor.withOpacity(0.5),
-        size: 80.0,
-      ),
-    )
-        : Container();
+    final placeHolder =
+        StringUtils.isNullOrEmpty(widget.imageUrl) && _imageFile == null
+            ? ClipOval(
+                child: Icon(
+                  FontAwesome5Icons.solidUser,
+                  color: primaryColor.withOpacity(0.5),
+                  size: 80.0,
+                ),
+              )
+            : Container();
 
     return Column(
       children: <Widget>[
@@ -95,7 +96,7 @@ class ProfilePictureChooserState extends State<ProfilePictureChooser> {
                 ),
                 _isImageLoading
                     ? CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(primaryColor))
+                        valueColor: AlwaysStoppedAnimation<Color>(primaryColor))
                     : Container(),
               ],
             ),
