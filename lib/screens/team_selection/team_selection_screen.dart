@@ -98,6 +98,8 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
               }
             }
 
+            
+            */
             if (state.teamSelectionResult != null) {
               final result = state.teamSelectionResult;
               if (result.first) {
@@ -114,7 +116,6 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
                 });
               }
             }
-            */
 
             return Container(
               alignment: Alignment.topLeft,
@@ -287,137 +288,4 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
       bloc.dispatch(JoinTeam(artistUid: artist.uid, fanUid: widget.uid));
     }
   }
-
-//  Widget _buildArtistModal(BuildContext context, Artist artist, Fan fan) {
-//    final widthRatio = 0.8;
-//    final heightRatio = 0.5;
-//    final screenSize = MediaQuery.of(context).size;
-//    final maxHeight = heightRatio * screenSize.height;
-//    final maxWidth = widthRatio * screenSize.width;
-//    final contentBackgroundColor = Colors.white;
-//    final borderRadius = BorderRadius.circular(10.0);
-//
-//    return Stack(
-//      children: [
-//        Container(
-//          width: double.infinity,
-//          height: double.infinity,
-//          color: const Color(0x77000000),
-//        ),
-//        Positioned(
-//          left: (screenSize.width - maxWidth) / 2,
-//          width: maxWidth,
-//          top: (screenSize.height - maxHeight) / 2,
-//          height: maxHeight,
-//          child: Theme(
-//            data: Theme.of(context).copyWith(),
-//            child: Container(
-//              decoration: BoxDecoration(
-//                color: contentBackgroundColor,
-//                borderRadius: borderRadius,
-//              ),
-//              child: _buildTeamDetailDialogContent(artist, fan),
-//            ),
-//          ),
-//        ),
-//      ],
-//    );
-//  }
-//
-//  Widget _buildTeamDetailDialogContent(Artist artist, Fan fan) {
-//    final bloc = BlocProvider.of<TeamSelectionBloc>(context);
-//    final whiteText = Colors.white.withOpacity(0.9);
-//    return Container(
-//      color: Colors.transparent,
-//      child: Column(
-//        children: <Widget>[
-//          Expanded(
-//            flex: 2,
-//            child: Container(
-//              decoration: BoxDecoration(
-//                borderRadius: BorderRadius.only(
-//                  topLeft: Radius.circular(10.0),
-//                  topRight: Radius.circular(10.0),
-//                ),
-//                image: DecorationImage(
-//                  image: CachedNetworkImageProvider(artist.profilePictureUrl),
-//                  fit: BoxFit.cover,
-//                ),
-//              ),
-//            ),
-//          ),
-//          Expanded(
-//            flex: 3,
-//            child: Container(
-//              decoration: BoxDecoration(
-//                borderRadius: BorderRadius.only(
-//                  bottomLeft: Radius.circular(10.0),
-//                  bottomRight: Radius.circular(10.0),
-//                ),
-//                color: const Color(0xFFCC181F),
-//              ),
-//              child: Container(
-//                padding: const EdgeInsets.all(10.0),
-//                width: double.infinity,
-//                height: double.infinity,
-//                child: Column(
-//                  mainAxisAlignment: MainAxisAlignment.start,
-//                  mainAxisSize: MainAxisSize.max,
-//                  crossAxisAlignment: CrossAxisAlignment.start,
-//                  children: <Widget>[
-//                    Text(
-//                      artist.name,
-//                      style: Theme.of(context).textTheme.body1.copyWith(
-//                            fontSize: 20.0,
-//                            fontWeight: FontWeight.w500,
-//                            color: whiteText,
-//                          ),
-//                    ),
-//                    SizedBox(height: 10.0),
-//                    SizedBox(
-//                      height: 100.0,
-//                      child: Text(
-//                        artist.bio,
-//                        overflow: TextOverflow.ellipsis,
-//                        maxLines: 7,
-//                        textAlign: TextAlign.start,
-//                        style: Theme.of(context)
-//                            .textTheme
-//                            .body1
-//                            .copyWith(color: whiteText),
-//                      ),
-//                    ),
-//                    Expanded(child: Container()),
-//                    Row(
-//                      mainAxisAlignment: MainAxisAlignment.center,
-//                      mainAxisSize: MainAxisSize.max,
-//                      crossAxisAlignment: CrossAxisAlignment.center,
-//                      children: <Widget>[
-//                        FlatButton(
-//                          child: Text(
-//                            "Cancel",
-//                            style: TextStyle(color: Colors.white),
-//                          ),
-////                          onPressed: () => bloc.dispatch(ClearSelectedTeam()), todo:
-//                          onPressed: () => {},
-//                        ),
-//                        Expanded(child: Container()),
-//                        FlatButton(
-//                          child: Text("Join Team",
-//                              style: TextStyle(color: Colors.white),
-//                              overflow: TextOverflow.ellipsis),
-////                          onPressed: () => bloc.dispatch(AddFanToTeam(teamId: team.id, fanUid: fan.uid)),// TODO:
-//                          onPressed: () => null,
-//                        ),
-//                      ],
-//                    ),
-//                  ],
-//                ),
-//              ),
-//            ),
-//          )
-//        ],
-//      ),
-//    );
-//  }
 }

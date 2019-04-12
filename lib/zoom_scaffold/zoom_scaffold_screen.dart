@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ikonfete/app_bloc.dart';
 import 'package:ikonfete/zoom_scaffold/menu.dart';
 import 'package:ikonfete/zoom_scaffold/menu_screen.dart';
 import 'package:ikonfete/zoom_scaffold/zoom_scaffold.dart';
-import 'package:ikonfete/zoom_scaffold/zoom_scaffold_screen_bloc.dart';
 
 Widget zoomScaffoldScreen(
     BuildContext context, bool isArtist, String uid, String screenId) {
@@ -11,7 +11,6 @@ Widget zoomScaffoldScreen(
     isArtist: isArtist,
     uid: uid,
     screenId: screenId,
-    zoomScaffoldBloc: ZoomScaffoldBloc(uid: uid, isArtist: isArtist),
   );
 }
 
@@ -20,13 +19,11 @@ class ZoomScaffoldScreen extends StatefulWidget {
   final String uid;
   final String screenId;
   final Map<String, String> params;
-  final ZoomScaffoldBloc zoomScaffoldBloc;
 
   ZoomScaffoldScreen({
     @required this.isArtist,
     @required this.uid,
     @required this.screenId,
-    @required this.zoomScaffoldBloc,
     this.params,
   });
 
@@ -47,8 +44,6 @@ class ZoomScaffoldScreenState extends State<ZoomScaffoldScreen> {
   @override
   void initState() {
     super.initState();
-//    final bloc = BlocProvider.of<ZoomScaffoldBloc>(context);
-    widget.zoomScaffoldBloc.dispatch(LoadCurrentUser());
     selectedMenuItemId =
         defaultMenuItem(isArtist: widget.isArtist, uid: widget.uid).id;
     activeScreen = defaultScreen(isArtist: widget.isArtist, uid: widget.uid);
@@ -56,8 +51,9 @@ class ZoomScaffoldScreenState extends State<ZoomScaffoldScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ZoomScaffoldScreenEvent, ZoomScaffoldBlocState>(
-      bloc: widget.zoomScaffoldBloc,
+    final appBloc = BlocProvider.of<AppBloc>(context);
+    return BlocBuilder<AppEvent, AppState>(
+      bloc: appBloc,
       builder: (context, state) {
         return ZoomScaffold(
           menuScreen: MenuScreen(
