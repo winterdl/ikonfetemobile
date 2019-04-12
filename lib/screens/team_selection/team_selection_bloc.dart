@@ -164,7 +164,9 @@ class TeamSelectionBloc extends Bloc<TeamSelectionEvent, TeamSelectionState> {
 
     if (event is _LoadFan) {
       try {
+        print("Loading fan...");
         final fan = await _loadFan(event.uid);
+        print("Loaded fan");
         yield state.copyWith(
             isLoading: false, fan: fan, loadFanResult: Pair.from(true, null));
       } on AppException catch (e) {
@@ -190,12 +192,12 @@ class TeamSelectionBloc extends Bloc<TeamSelectionEvent, TeamSelectionState> {
       }
     }
 
-//    if (event is _JoinTeam) {
-//      final result = await _addFanToArtistTeam(
-//          artistUid: event.artistUid, fanUid: event.fanUid);
-//      yield state.copyWith(
-//          isLoading: false, isSearching: false, teamSelectionResult: result);
-//    }
+    if (event is _JoinTeam) {
+      final result = await _addFanToArtistTeam(
+          artistUid: event.artistUid, fanUid: event.fanUid);
+      yield state.copyWith(
+          isLoading: false, isSearching: false, teamSelectionResult: result);
+    }
   }
 
   Future<Fan> _loadFan(String uid) async {

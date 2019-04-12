@@ -119,12 +119,6 @@ class Routes {
           builder: (ctx, appState) {
             return zoomScaffoldScreen(
                 ctx, currentUser.isArtist, currentUser.uid, 'home');
-//            return ZoomScaffoldScreen(
-//              screenId: 'home',
-//              uid: currentUser.uid,
-//              isArtist: currentUser.isArtist,
-//              params: <String, String>{},
-//            );
           },
         );
       } else if (currentUser.isArtistPendingVerification) {
@@ -142,12 +136,6 @@ class Routes {
           builder: (ctx, appState) {
             return zoomScaffoldScreen(
                 ctx, currentUser.isArtist, currentUser.uid, 'home');
-//            return ZoomScaffoldScreen(
-//              screenId: 'home',
-//              uid: currentUser.uid,
-//              isArtist: currentUser.isArtist,
-//              params: <String, String>{},
-//            );
           },
         );
       } else {

@@ -1,4 +1,3 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,6 +6,8 @@ import 'package:ikonfete/db_provider.dart';
 import 'package:ikonfete/facebook/facebook_config.dart';
 import 'package:ikonfete/main.dart';
 import 'package:ikonfete/preferences.dart';
+import 'package:ikonfete/registry.dart';
+import 'package:ikonfete/repository/auth_repository.dart';
 import 'package:ikonfete/twitter/twitter_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -31,13 +32,16 @@ void main() async {
 //  );
 
   await DbProvider.db.database; // init database
+  final registry = Registry();
   final sharedPreferences = await SharedPreferences.getInstance();
-  final currentUser = await FirebaseAuth.instance.currentUser();
-  final uid = sharedPreferences.getString(PreferenceKeys.uid);
-  var artistOrFan;
-  if (uid != null) {
-    artistOrFan = await DbProvider.db.getArtistOrFanByUid(uid);
-  }
+//  final currentUser = await FirebaseAuth.instance.currentUser();
+//  final uid = sharedPreferences.getString(PreferenceKeys.uid);
+  CurrentUserHolder currentUserHolder =
+      await registry.emailAuthRepository().getCurrentUser();
+//  var artistOrFan;
+//  if (uid != null) {
+//    artistOrFan = await DbProvider.db.getArtistOrFanByUid(uid);
+//  }
 
   var configuredApp = AppConfig(
     appName: "Ikonfete",
@@ -54,8 +58,7 @@ void main() async {
     ),
     child: IkonfeteApp(
       preferences: sharedPreferences,
-      currentUser: currentUser,
-      currentArtistOrFan: artistOrFan,
+      currentUser: currentUserHolder,
     ),
   );
   runApp(configuredApp);

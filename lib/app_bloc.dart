@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:ikonfete/model/artist.dart';
 import 'package:ikonfete/model/fan.dart';
 import 'package:ikonfete/preferences.dart';
@@ -22,21 +23,25 @@ class SwitchMode extends AppEvent {
   SwitchMode({@required this.isArtist});
 }
 
+class LoadCurrentUser extends AppEvent {}
+
 class Signout extends AppEvent {}
 
-class AppState {
+class AppState extends Equatable {
   final bool isOnBoarded;
   final bool isLoggedIn;
   final bool isArtist;
+  final CurrentUserHolder currentUser;
 
   AppState({
     this.isOnBoarded,
     this.isLoggedIn,
     this.isArtist,
-  });
+    this.currentUser,
+  }) : super([isOnBoarded, isLoggedIn, isArtist, currentUser]);
 
   factory AppState.initial(
-      SharedPreferences preferences, ExclusivePair<Artist, Fan> artistOrFan) {
+      SharedPreferences preferences, CurrentUserHolder currentUser) {
     // get shared prefs
     final isArtist = preferences.getBool(PreferenceKeys.isArtist) ?? false;
     final isOnBoarded =
@@ -47,6 +52,7 @@ class AppState {
       isOnBoarded: isOnBoarded,
       isLoggedIn: isLoggedIn,
       isArtist: isArtist,
+      currentUser: currentUser,
     );
   }
 
@@ -60,35 +66,22 @@ class AppState {
       isOnBoarded: isOnBoarded ?? this.isOnBoarded,
       isLoggedIn: isLoggedIn ?? this.isLoggedIn,
       isArtist: isArtist ?? this.isArtist,
+      currentUser: currentUser ?? this.currentUser,
     );
   }
-
-  @override
-  bool operator ==(other) =>
-      identical(this, other) &&
-      other is AppState &&
-      runtimeType == other.runtimeType &&
-      isOnBoarded == other.isOnBoarded &&
-      isLoggedIn == other.isLoggedIn &&
-      isArtist == other.isArtist;
-
-  @override
-  int get hashCode =>
-      isOnBoarded.hashCode ^ isLoggedIn.hashCode ^ isArtist.hashCode;
 }
 
 class AppBloc extends Bloc<AppEvent, AppState> {
   final SharedPreferences preferences;
-  final ExclusivePair<Artist, Fan> initialCurrentArtistOrFan;
+  final CurrentUserHolder initialCurrentUser;
   final EmailAuth emailAuthRepo;
 
-  AppBloc(
-      {@required this.preferences, @required this.initialCurrentArtistOrFan})
+  AppBloc({@required this.preferences, @required this.initialCurrentUser})
       : emailAuthRepo = Registry().emailAuthRepository();
 
   @override
   AppState get initialState =>
-      AppState.initial(preferences, initialCurrentArtistOrFan);
+      AppState.initial(preferences, initialCurrentUser);
 
   @override
   Stream<AppState> mapEventToState(AppState state, AppEvent event) async* {
@@ -103,6 +96,13 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       bool isArtist = event.isArtist;
       preferences.setBool(PreferenceKeys.isArtist, isArtist);
       yield state.copyWith(isArtist: isArtist);
+    }
+
+    if (event is LoadCurrentUser) {
+      print("LOADING CURRENT USER...");
+      final user = await emailAuthRepo.getCurrentUser();
+      print("LOADED CURRENT USER...");
+      yield currentState.copyWith(currentUser: user);
     }
 
     if (event is Signout) {

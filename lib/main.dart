@@ -8,6 +8,7 @@ import 'package:ikonfete/colors.dart';
 import 'package:ikonfete/registry.dart';
 import 'package:ikonfete/model/artist.dart';
 import 'package:ikonfete/model/fan.dart';
+import 'package:ikonfete/repository/auth_repository.dart';
 import 'package:ikonfete/routes.dart';
 import 'package:ikonfete/utils/types.dart';
 import 'package:ikonfete/widget/hud_overlay.dart';
@@ -15,13 +16,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class IkonfeteApp extends StatefulWidget {
   final SharedPreferences preferences;
-  final FirebaseUser currentUser;
-  final ExclusivePair<Artist, Fan> currentArtistOrFan;
+//  final FirebaseUser currentUser;
+  final CurrentUserHolder currentUser;
 
-  IkonfeteApp(
-      {@required this.preferences,
-      @required this.currentUser,
-      @required this.currentArtistOrFan});
+  IkonfeteApp({
+    @required this.preferences,
+//    @required this.currentUser,
+    @required this.currentUser,
+  });
 
   @override
   IkonfeteAppState createState() {
@@ -39,7 +41,7 @@ class IkonfeteAppState extends State<IkonfeteApp> {
 
     _appBloc = AppBloc(
       preferences: widget.preferences,
-      initialCurrentArtistOrFan: widget.currentArtistOrFan,
+      initialCurrentUser: widget.currentUser,
     );
   }
 

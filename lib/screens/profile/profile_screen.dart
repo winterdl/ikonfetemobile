@@ -10,6 +10,9 @@ import 'package:ikonfete/icons.dart';
 import 'package:ikonfete/screen_utils.dart';
 import 'package:ikonfete/screens/profile/edit_profile_dialog.dart';
 import 'package:ikonfete/screens/profile/profile_screen_bloc.dart';
+import 'package:ikonfete/twitter/twitter_config.dart';
+import 'package:ikonfete/utils/facebook_auth.dart';
+import 'package:ikonfete/utils/twitter_auth.dart';
 import 'package:ikonfete/widget/form_fields.dart';
 import 'package:ikonfete/widget/hud_overlay.dart';
 import 'package:ikonfete/widget/ikonfete_buttons.dart';
@@ -28,12 +31,15 @@ Screen profileScreen(String uid) {
         builder: (bldrCtx, appState) {
           final appConfig = AppConfig.of(ctx);
           final profileScreenBloc = ProfileScreenBloc(
-            twitterConfig: appConfig.twitterConfig,
             uid: uid,
             isArtist: appState.isArtist,
           );
           return ProfileScreen(
-              bloc: profileScreenBloc, isArtist: appState.isArtist, uid: uid);
+            bloc: profileScreenBloc,
+            isArtist: appState.isArtist,
+            uid: uid,
+            twitterConfig: appConfig.twitterConfig,
+          );
         },
       );
     },
@@ -51,9 +57,14 @@ class ProfileScreen extends StatelessWidget {
   final ProfileScreenBloc bloc;
   final bool isArtist;
   final String uid;
+  final TwitterConfig twitterConfig;
 
-  ProfileScreen(
-      {@required this.bloc, @required this.isArtist, @required this.uid}) {
+  ProfileScreen({
+    @required this.bloc,
+    @required this.isArtist,
+    @required this.uid,
+    @required this.twitterConfig,
+  }) {
     bloc.dispatch(LoadProfile());
   }
 
@@ -112,6 +123,7 @@ class ProfileScreen extends StatelessWidget {
   }
 
   _checkForErrors(BuildContext context, ProfileScreenState state) {
+    final appBloc = BlocProvider.of<AppBloc>(context);
     if (state.loadUserResult != null && !state.loadUserResult.first) {
       ScreenUtils.onWidgetDidBuild(() {
         scaffoldKey.currentState.showSnackBar(SnackBar(
@@ -121,50 +133,32 @@ class ProfileScreen extends StatelessWidget {
       });
     }
 
-    if (state.enableFacebookResult != null &&
-        !state.enableFacebookResult.first) {
-      ScreenUtils.onWidgetDidBuild(() {
-        scaffoldKey.currentState.showSnackBar(SnackBar(
-          content: Text(state.enableFacebookResult.second),
-          backgroundColor: errorColor,
-        ));
-      });
-    }
-
-    if (state.enableTwitterResult != null && !state.enableTwitterResult.first) {
-      ScreenUtils.onWidgetDidBuild(() {
-        scaffoldKey.currentState.showSnackBar(SnackBar(
-          content: Text(state.enableTwitterResult.second),
-          backgroundColor: errorColor,
-        ));
-      });
-    }
+//    if (state.enableFacebookResult != null &&
+//        !state.enableFacebookResult.first) {
+//      ScreenUtils.onWidgetDidBuild(() {
+//        scaffoldKey.currentState.showSnackBar(SnackBar(
+//          content: Text(state.enableFacebookResult.second),
+//          backgroundColor: errorColor,
+//        ));
+//      });
+//    }
+//
+//    if (state.enableTwitterResult != null && !state.enableTwitterResult.first) {
+//      ScreenUtils.onWidgetDidBuild(() {
+//        scaffoldKey.currentState.showSnackBar(SnackBar(
+//          content: Text(state.enableTwitterResult.second),
+//          backgroundColor: errorColor,
+//        ));
+//      });
+//    }
 
     if (state.updateProfileResult != null) {
       if (state.updateProfileResult.first) {
+        appBloc.dispatch(LoadCurrentUser());
+
         ScreenUtils.onWidgetDidBuild(() async {
-          // show success dialog
-          final goHome = await showDialog<bool>(
-            context: context,
-            builder: (ctx) => AlertDialog(
-                  title: Text("Profile Updated"),
-                  content: Text("Your profile has been updated."),
-                  actions: <Widget>[
-                    FlatButton(
-                      child: Text("GO TO HOME"),
-                      onPressed: () => Navigator.of(ctx).pop(true),
-                    ),
-                    FlatButton(
-                      child: Text("STAY HERE"),
-                      onPressed: () => Navigator.of(ctx).pop(false),
-                    )
-                  ],
-                ),
-          );
-          if (goHome) {
-            ZoomScaffoldScreen.getState(context)
-                .changeActiveScreen(MenuIDs.home);
-          }
+          scaffoldKey.currentState.showSnackBar(
+              SnackBar(content: Text("Your profile has been updated.")));
         });
       } else {
         ScreenUtils.onWidgetDidBuild(() {
@@ -418,12 +412,28 @@ class ProfileScreen extends StatelessWidget {
         CupertinoSwitch(
           value: state.facebookEnabled,
           onChanged: (val) {
-            bloc.dispatch(EnableFacebook(val));
+            _enableFacebook(val);
           },
           activeColor: primaryColor,
         ),
       ],
     );
+  }
+
+  void _enableFacebook(bool enable) async {
+    if (!enable) {
+      bloc.dispatch(UpdateFacebookId(""));
+    } else {
+      final result = await FacebookAuth().facebookAuth();
+      if (result.success) {
+        bloc.dispatch(UpdateFacebookId(result.facebookUID));
+      } else {
+        scaffoldKey.currentState.showSnackBar(SnackBar(
+          content: Text(result.errorMessage),
+          backgroundColor: errorColor,
+        ));
+      }
+    }
   }
 
   Widget _buildTwitterConnector(ProfileScreenState state) {
@@ -438,12 +448,31 @@ class ProfileScreen extends StatelessWidget {
         CupertinoSwitch(
           value: state.twitterEnabled,
           onChanged: (val) {
-            bloc.dispatch(EnableTwitter(val));
+            _enableTwitter(val);
           },
           activeColor: primaryColor,
         ),
       ],
     );
+  }
+
+  void _enableTwitter(bool enable) async {
+    if (!enable) {
+      bloc.dispatch(UpdateTwitterId(""));
+    } else {
+      final result = await TwitterAuth(
+              consumerSecret: twitterConfig.consumerSecret,
+              consumerKey: twitterConfig.consumerKey)
+          .twitterAuth();
+      if (result.success) {
+        bloc.dispatch(UpdateTwitterId(result.twitterUID));
+      } else {
+        scaffoldKey.currentState.showSnackBar(SnackBar(
+          content: Text(result.errorMessage),
+          backgroundColor: errorColor,
+        ));
+      }
+    }
   }
 
   Widget _buildSocialIcon(IconData iconData, Color iconBGColor) {

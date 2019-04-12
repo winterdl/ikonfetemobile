@@ -146,7 +146,7 @@ class _MenuScreenState extends State<MenuScreen> with TickerProviderStateMixin {
                     : MemoryImage(kTransparentImage),
               ),
               title: Text(
-                widget.currentUser?.user?.name ?? "NAME",
+                widget.currentUser?.user?.name ?? "",//NAME
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 20.0,
@@ -154,7 +154,7 @@ class _MenuScreenState extends State<MenuScreen> with TickerProviderStateMixin {
                 ),
               ),
               subtitle: Text(
-                "@${widget.currentUser?.user?.username ?? "username"}",
+                "@${widget.currentUser?.user?.username ?? ""}",//username
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 14.0,
