@@ -36,7 +36,7 @@ class EventSlide extends StatelessWidget {
                       )),
                   borderRadius: BorderRadius.all(Radius.circular(sw(8))),
                 ),
-                height: sh(180),
+                height: sf(180),
                 child: Container(
                   alignment: Alignment.bottomLeft,
                   child: Padding(

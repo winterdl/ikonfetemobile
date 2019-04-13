@@ -63,4 +63,5 @@ class IkColors {
   static const Color background = const Color(0xFFFBFBFB);
   static const Color google = const Color(0xFFD62D20);
   static const Color warning = const Color(0xFFf7b579);
+  static const Color success = const Color(0xFF51dc8e);
 }

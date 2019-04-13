@@ -11,8 +11,8 @@ class BuildHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: sh(60),
-      padding: EdgeInsets.symmetric(horizontal: sw(20), vertical: sh(15)),
+      height: sf(60),
+      padding: EdgeInsets.all(sf(16)),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[

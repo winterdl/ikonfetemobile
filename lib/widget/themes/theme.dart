@@ -31,7 +31,7 @@ class IkTheme extends InheritedWidget {
   TextStyle get smallLight => small.copyWith(fontWeight: FontWeight.w300);
   TextStyle get smallHint => small.copyWith(color: IkColors.lightGrey);
   TextStyle get smallBtn => smallMedium.copyWith(color: IkColors.primary);
-  TextStyle get body1 => _text13Style;
+  TextStyle get body1 => _text14Style;
   TextStyle get body2 => body1.copyWith(height: 1.5);
   TextStyle get body3 => _text14Style;
   TextStyle get body3Hint => body3.copyWith(color: Colors.grey);

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ikonfete/app_bloc.dart';
 import 'package:ikonfete/colors.dart';
 import 'package:ikonfete/screen_utils.dart';
+import 'package:ikonfete/widget/app_bar_delegate.dart';
 import 'package:ikonfete/widget/event_slide.dart';
 import 'package:ikonfete/widget/post_cards/music_post_card.dart';
 import 'package:ikonfete/widget/post_cards/text_post_card.dart';
@@ -45,12 +46,12 @@ class _FanHomeScreenState extends State<FanHomeScreen> {
                         child: SliverPersistentHeader(
                           pinned: false,
                           floating: false,
-                          delegate: _SliverAppBarDelegate(
-                            minHeight: sh(300),
-                            maxHeight: sh(300),
+                          delegate: SliverAppBarDelegate(
+                            minHeight: sf(320),
+                            maxHeight: sf(320),
                             child: Container(
                               width: mq.size.width,
-                              height: sh(300),
+                              height: sf(320),
                               child: PageView.builder(
                                 controller:
                                     PageController(viewportFraction: .85),
@@ -65,7 +66,7 @@ class _FanHomeScreenState extends State<FanHomeScreen> {
                       SliverPersistentHeader(
                         floating: true,
                         pinned: true,
-                        delegate: _SliverAppBarDelegate(
+                        delegate: SliverAppBarDelegate(
                           minHeight: sh(50),
                           maxHeight: sh(50),
                           child: Container(
@@ -112,14 +113,14 @@ class _FanHomeScreenState extends State<FanHomeScreen> {
                                     SliverPersistentHeader(
                                       floating: false,
                                       pinned: false,
-                                      delegate: _SliverAppBarDelegate(
+                                      delegate: SliverAppBarDelegate(
                                         minHeight: sh(120),
                                         maxHeight: sh(120),
                                         child: Container(
                                           color: Colors.white,
                                           child: Container(
                                             padding: EdgeInsets.symmetric(
-                                                vertical: sh(20)),
+                                                vertical: sh(10)),
                                             child: _BuildStories(),
                                           ),
                                         ),
@@ -261,32 +262,5 @@ class _BuildStories extends StatelessWidget {
         },
       ),
     );
-  }
-}
-
-class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
-  _SliverAppBarDelegate({
-    @required this.minHeight,
-    @required this.maxHeight,
-    @required this.child,
-  });
-  final double minHeight;
-  final double maxHeight;
-  final Widget child;
-  @override
-  double get minExtent => minHeight;
-  @override
-  double get maxExtent => math.max(maxHeight, minHeight);
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return new SizedBox.expand(child: child);
-  }
-
-  @override
-  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
-    return maxHeight != oldDelegate.maxHeight ||
-        minHeight != oldDelegate.minHeight ||
-        child != oldDelegate.child;
   }
 }

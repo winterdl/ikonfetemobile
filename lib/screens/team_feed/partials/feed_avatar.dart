@@ -35,7 +35,7 @@ class ActivityAvatar extends StatelessWidget {
             height: radius + 2,
             width: radius + 2,
             decoration: BoxDecoration(
-                color: IkColors.primary,
+                color: iconBgColor ?? IkColors.primary,
                 borderRadius: BorderRadius.all(Radius.circular(20)),
                 border: Border.all(
                   color: Colors.white,
