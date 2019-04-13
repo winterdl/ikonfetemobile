@@ -70,22 +70,19 @@ class IkonfeteAppState extends State<IkonfeteApp> {
                   settings: settings,
                 );
               },
-              builder: (context, _) {
-                ScreenUtil.instance =
-                    ScreenUtil(width: 375, height: 812, allowFontScaling: true)
-                      ..init(context);
-
-                return BlocBuilder<AppEvent, AppState>(
-                  bloc: _appBloc,
-                  builder: (context, appState) {
-                    return FutureBuilder<Widget>(
-                      builder: (context, snapshot) => snapshot.data,
-                      future: _getHomeScreen(_appBloc),
-                      initialData: LoadingScreen(),
-                    );
-                  },
-                );
-              },
+              home: BlocBuilder<AppEvent, AppState>(
+                bloc: _appBloc,
+                builder: (context, appState) {
+                  ScreenUtil.instance = ScreenUtil(
+                      width: 375, height: 812, allowFontScaling: true)
+                    ..init(context);
+                  return FutureBuilder<Widget>(
+                    builder: (context, snapshot) => snapshot.data,
+                    future: _getHomeScreen(_appBloc),
+                    initialData: LoadingScreen(),
+                  );
+                },
+              ),
             ),
           ),
         );
