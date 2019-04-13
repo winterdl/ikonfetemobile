@@ -3,8 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ikonfete/app_bloc.dart';
 import 'package:ikonfete/screens/home/artist_home_screen.dart';
 import 'package:ikonfete/screens/home/fan_home/fan_home_screen.dart';
-import 'package:ikonfete/screens/leaderboard/leaderboard_screen.dart';
-import 'package:ikonfete/screens/team_feed/team_feed_screen.dart';
 import 'package:ikonfete/zoom_scaffold/zoom_scaffold.dart';
 
 Screen homeScreen(String uid) {
@@ -18,8 +16,7 @@ Screen homeScreen(String uid) {
           if (appState.isArtist) {
             return artistHomeScreen(ctx, uid); // todo
           } else {
-            // return fanHomeScreen(ctx, uid);
-            return LeaderBoardScreeen();
+            return fanHomeScreen(ctx, uid);
           }
         },
       );
