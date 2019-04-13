@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/services.dart';
 import 'package:ikonfete/registry.dart';
 import 'package:ikonfete/exceptions.dart';
@@ -50,7 +51,7 @@ class _JoinTeam extends TeamSelectionEvent {
   _JoinTeam({@required this.artistUid, @required this.fanUid});
 }
 
-class TeamSelectionState {
+class TeamSelectionState extends Equatable {
   final bool isLoading;
   final Pair<bool, String> loadFanResult;
   final Fan fan;
@@ -67,7 +68,15 @@ class TeamSelectionState {
     @required this.searchResult,
     @required this.artists,
     @required this.teamSelectionResult,
-  });
+  }) : super([
+          isLoading,
+          loadFanResult,
+          fan,
+          isSearching,
+          searchResult,
+          artists,
+          teamSelectionResult
+        ]);
 
   factory TeamSelectionState.initial() {
     return TeamSelectionState(
@@ -94,34 +103,11 @@ class TeamSelectionState {
       fan: fan ?? this.fan,
       artists: artists ?? this.artists,
       isSearching: isSearching ?? this.isSearching,
-      loadFanResult: loadFanResult,
-      searchResult: searchResult,
-      teamSelectionResult: teamSelectionResult,
+      loadFanResult: loadFanResult ?? null,
+      searchResult: searchResult ?? null,
+      teamSelectionResult: teamSelectionResult ?? null,
     );
   }
-
-  @override
-  bool operator ==(other) =>
-      identical(this, other) &&
-      other is TeamSelectionState &&
-      runtimeType == other.runtimeType &&
-      isLoading == other.isLoading &&
-      fan == other.fan &&
-      artists == other.artists &&
-      isSearching == other.isSearching &&
-      loadFanResult == other.loadFanResult &&
-      searchResult == other.searchResult &&
-      teamSelectionResult == other.teamSelectionResult;
-
-  @override
-  int get hashCode =>
-      isLoading.hashCode ^
-      artists.hashCode ^
-      fan.hashCode ^
-      isSearching.hashCode ^
-      loadFanResult.hashCode ^
-      searchResult.hashCode ^
-      teamSelectionResult.hashCode;
 }
 
 class TeamSelectionBloc extends Bloc<TeamSelectionEvent, TeamSelectionState> {
@@ -133,7 +119,10 @@ class TeamSelectionBloc extends Bloc<TeamSelectionEvent, TeamSelectionState> {
         artistRepository = Registry().artistRepository();
 
   @override
-  TeamSelectionState get initialState => TeamSelectionState.initial();
+  TeamSelectionState get initialState {
+    print("Calling initialState");
+    return TeamSelectionState.initial();
+  }
 
   @override
   void onTransition(
@@ -154,18 +143,19 @@ class TeamSelectionBloc extends Bloc<TeamSelectionEvent, TeamSelectionState> {
     }
   }
 
-  @override
-  Stream<TeamSelectionEvent> transform(Stream<TeamSelectionEvent> events) {
-    return (events as Observable<TeamSelectionEvent>)
-        .debounce(Duration(milliseconds: 50));
-  }
+//  @override
+//  Stream<TeamSelectionEvent> transform(Stream<TeamSelectionEvent> events) {
+//    return (events as Observable<TeamSelectionEvent>)
+//        .debounce(Duration(milliseconds: 50));
+//  }
 
   // TODO: implement infinite scrolling list
   @override
   Stream<TeamSelectionState> mapEventToState(
       TeamSelectionState state, TeamSelectionEvent event) async* {
     if (event is LoadFan || event is JoinTeam) {
-      yield state.copyWith(isLoading: true);
+      yield state.copyWith(
+          isLoading: true, loadFanResult: state.teamSelectionResult);
     }
 
     if (event is SearchEvent) {
@@ -174,7 +164,9 @@ class TeamSelectionBloc extends Bloc<TeamSelectionEvent, TeamSelectionState> {
 
     if (event is _LoadFan) {
       try {
+        print("Loading fan...");
         final fan = await _loadFan(event.uid);
+        print("Loaded fan");
         yield state.copyWith(
             isLoading: false, fan: fan, loadFanResult: Pair.from(true, null));
       } on AppException catch (e) {

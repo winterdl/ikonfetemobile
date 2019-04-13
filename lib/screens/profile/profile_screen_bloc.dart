@@ -9,10 +9,7 @@ import 'package:ikonfete/model/user.dart';
 import 'package:ikonfete/registry.dart';
 import 'package:ikonfete/repository/artist_repository.dart';
 import 'package:ikonfete/repository/fan_repository.dart';
-import 'package:ikonfete/twitter/twitter_config.dart';
-import 'package:ikonfete/utils/facebook_auth.dart';
 import 'package:ikonfete/utils/strings.dart';
-import 'package:ikonfete/utils/twitter_auth.dart';
 import 'package:ikonfete/utils/types.dart';
 import 'package:ikonfete/utils/upload_helper.dart';
 import 'package:meta/meta.dart';
@@ -46,6 +43,18 @@ class EnableTwitter extends ProfileScreenEvent {
   final bool enabled;
 
   EnableTwitter(this.enabled);
+}
+
+class UpdateFacebookId extends ProfileScreenEvent {
+  final String facebookId;
+
+  UpdateFacebookId(this.facebookId);
+}
+
+class UpdateTwitterId extends ProfileScreenEvent {
+  final String twitterId;
+
+  UpdateTwitterId(this.twitterId);
 }
 
 class EditBio extends ProfileScreenEvent {}
@@ -82,8 +91,8 @@ class ProfileScreenState extends Equatable {
   final Pair<bool, String> loadUserResult;
   final String newFacebookId;
   final String newTwitterId;
-  final Pair<bool, String> enableFacebookResult;
-  final Pair<bool, String> enableTwitterResult;
+//  final Pair<bool, String> enableFacebookResult;
+//  final Pair<bool, String> enableTwitterResult;
   final bool editBio;
   final String newBio;
   final File newProfilePicture;
@@ -166,8 +175,8 @@ class ProfileScreenState extends Equatable {
     @required this.loadUserResult,
     @required this.newFacebookId,
     @required this.newTwitterId,
-    @required this.enableFacebookResult,
-    @required this.enableTwitterResult,
+//    @required this.enableFacebookResult,
+//    @required this.enableTwitterResult,
     @required this.editBio,
     @required this.newBio,
     @required this.newProfilePicture,
@@ -181,8 +190,8 @@ class ProfileScreenState extends Equatable {
           loadUserResult,
           newFacebookId,
           newTwitterId,
-          enableFacebookResult,
-          enableTwitterResult,
+//          enableFacebookResult,
+//          enableTwitterResult,
           editBio,
           newBio,
           newProfilePicture,
@@ -199,8 +208,8 @@ class ProfileScreenState extends Equatable {
       loadUserResult: null,
       newFacebookId: null,
       newTwitterId: null,
-      enableFacebookResult: null,
-      enableTwitterResult: null,
+//      enableFacebookResult: null,
+//      enableTwitterResult: null,
       editBio: false,
       newBio: null,
       newProfilePicture: null,
@@ -217,8 +226,8 @@ class ProfileScreenState extends Equatable {
     Pair<bool, String> loadUserResult,
     String newFacebookId,
     String newTwitterId,
-    Pair<bool, String> enableFacebookResult,
-    Pair<bool, String> enableTwitterResult,
+//    Pair<bool, String> enableFacebookResult,
+//    Pair<bool, String> enableTwitterResult,
     bool editBio,
     String newBio,
     File newProfilePicture,
@@ -233,8 +242,8 @@ class ProfileScreenState extends Equatable {
       loadUserResult: loadUserResult ?? null,
       newFacebookId: newFacebookId ?? this.newFacebookId,
       newTwitterId: newTwitterId ?? this.newTwitterId,
-      enableFacebookResult: enableFacebookResult ?? null,
-      enableTwitterResult: enableTwitterResult ?? null,
+//      enableFacebookResult: enableFacebookResult ?? null,
+//      enableTwitterResult: enableTwitterResult ?? null,
       editBio: editBio ?? this.editBio,
       newBio: newBio ?? this.newBio,
       newProfilePicture: newProfilePicture ?? this.newProfilePicture,
@@ -247,14 +256,12 @@ class ProfileScreenState extends Equatable {
 }
 
 class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
-  final TwitterConfig twitterConfig;
   final String uid;
   final bool isArtist;
   final ArtistRepository _artistRepository;
   final FanRepository _fanRepository;
 
   ProfileScreenBloc({
-    @required this.twitterConfig,
     @required this.uid,
     @required this.isArtist,
   })  : _artistRepository = Registry().artistRepository(),
@@ -288,45 +295,12 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
       );
     }
 
-    if (event is EnableFacebook) {
-      if (!event.enabled) {
-        yield state.copyWith(newFacebookId: "");
-      } else {
-        final authResult = await FacebookAuth().facebookAuth();
-        if (authResult.success) {
-          yield state.copyWith(
-            isLoading: false,
-            newFacebookId: authResult.facebookUID,
-            enableFacebookResult: Pair.from(true, null),
-          );
-        } else {
-          yield state.copyWith(
-              isLoading: false,
-              enableFacebookResult: Pair.from(false, authResult.errorMessage));
-        }
-      }
+    if (event is UpdateFacebookId) {
+      yield state.copyWith(newFacebookId: event.facebookId);
     }
 
-    if (event is EnableTwitter) {
-      if (!event.enabled) {
-        yield state.copyWith(newTwitterId: "");
-      } else {
-        final twitterAuth = TwitterAuth(
-            consumerKey: twitterConfig.consumerKey,
-            consumerSecret: twitterConfig.consumerSecret);
-        final authResult = await twitterAuth.twitterAuth();
-        if (authResult.success) {
-          yield state.copyWith(
-            isLoading: false,
-            newTwitterId: authResult.twitterUID,
-            enableTwitterResult: Pair.from(true, null),
-          );
-        } else {
-          yield state.copyWith(
-              isLoading: false,
-              enableTwitterResult: Pair.from(false, authResult.errorMessage));
-        }
-      }
+    if (event is UpdateTwitterId) {
+      yield state.copyWith(newTwitterId: event.twitterId);
     }
 
     if (event is EditBio) {
@@ -366,10 +340,12 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
     if (state.newProfilePicture != null) {
       try {
         final uploadHelper = CloudStorageUploadHelper();
-        bool deleted = await uploadHelper.deleteProfilePicture(
-            FirebaseStorage.instance, uid);
-        if (!deleted) {
-          return Pair.from(false, "Failed to delete old profile picture");
+        if (!StringUtils.isNullOrEmpty(state.user.profilePictureUrl)) {
+          bool deleted = await uploadHelper.deleteProfilePicture(
+              FirebaseStorage.instance, uid);
+          if (!deleted) {
+            return Pair.from(false, "Failed to delete old profile picture");
+          }
         }
 
         final uploadResult = await uploadHelper.uploadProfilePicture(

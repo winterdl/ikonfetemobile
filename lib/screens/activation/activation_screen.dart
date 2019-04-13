@@ -268,7 +268,7 @@ class _ActivationFormState extends State<ActivationForm> {
               focusNode: codeFocusNode,
               validator: FormFieldValidators.notEmpty("code"),
               textAlign: TextAlign.center,
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.text,
               textInputAction: TextInputAction.done,
               inputFormatters: [
                 LengthLimitingTextInputFormatter(6),
