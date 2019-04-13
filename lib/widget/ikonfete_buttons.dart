@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ikonfete/screen_utils.dart';
 
 class PrimaryButton extends StatefulWidget {
   final double width;
@@ -67,7 +68,7 @@ class _PrimaryButtonState extends State<PrimaryButton> {
             },
       child: Container(
         width: this.widget.width,
-        height: 50.0,
+        height: sh(50),
         child: Material(
           type: MaterialType.button,
           color: !widget.disabled
