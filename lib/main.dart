@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,12 +6,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ikonfete/app_bloc.dart';
 import 'package:ikonfete/colors.dart';
 import 'package:ikonfete/registry.dart';
-import 'package:ikonfete/model/artist.dart';
-import 'package:ikonfete/model/fan.dart';
 import 'package:ikonfete/repository/auth_repository.dart';
 import 'package:ikonfete/routes.dart';
-import 'package:ikonfete/screen_utils.dart';
-import 'package:ikonfete/utils/types.dart';
 import 'package:ikonfete/widget/hud_overlay.dart';
 import 'package:ikonfete/widget/themes/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
