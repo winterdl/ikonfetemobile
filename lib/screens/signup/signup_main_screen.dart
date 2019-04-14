@@ -13,6 +13,7 @@ import 'package:ikonfete/widget/form_fields.dart';
 import 'package:ikonfete/widget/hud_overlay.dart';
 import 'package:ikonfete/widget/ikonfete_buttons.dart';
 import 'package:ikonfete/widget/overlays.dart';
+import 'package:ikonfete/widget/themes/theme.dart';
 
 Widget signupMainScreen(BuildContext context) {
   return BlocProvider<SignupMainBloc>(
@@ -67,47 +68,49 @@ class _SignupMainScreenState extends State<SignupMainScreen> {
             }
           }
 
-          return Container(
-            color: Colors.white,
-            width: double.infinity,
-            height: double.infinity,
-            padding: EdgeInsets.only(
-                top: MediaQuery.of(context).viewInsets.top + 40),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                OverlayBuilder(
-                  child: Container(),
-                  showOverlay: state.isLoading,
-                  overlayBuilder: (context) => HudOverlay.getOverlay(),
-                ),
-                _buildTitleAndBackButton(context),
-                SizedBox(height: 20.0),
-                _buildIntroText(context),
-                SizedBox(height: 30.0),
-                BlocBuilder<AppEvent, AppState>(
-                  bloc: appBloc,
-                  builder: (context, state) {
-                    return SignupForm(
-                      isArtist: state.isArtist,
-                      formKey: formKey,
-                      onSwitchMode: (isArtist) {
-                        appBloc.dispatch(SwitchMode(isArtist: isArtist));
-                      },
-                    );
-                  },
-                ),
-                Expanded(child: Container()),
-                _buildPolicyText(context),
-                SizedBox(height: 10.0),
-                BlocBuilder<AppEvent, AppState>(
-                  bloc: appBloc,
-                  builder: (context, state) {
-                    return _buildButtons(context, state);
-                  },
-                ),
-                SizedBox(height: 40.0),
-              ],
+          return Center(
+            child: Container(
+              height: double.infinity,
+              width: sw(275),
+              constraints: BoxConstraints(maxWidth: sw(375)),
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).viewInsets.top + 40.0,
+              ),
+              child: ListView(
+                physics: BouncingScrollPhysics(),
+                children: <Widget>[
+                  OverlayBuilder(
+                    child: Container(),
+                    showOverlay: state.isLoading,
+                    overlayBuilder: (context) => HudOverlay.getOverlay(),
+                  ),
+                  _buildTitleAndBackButton(context),
+                  SizedBox(height: 20.0),
+                  _buildIntroText(context),
+                  SizedBox(height: 30.0),
+                  BlocBuilder<AppEvent, AppState>(
+                    bloc: appBloc,
+                    builder: (context, state) {
+                      return SignupForm(
+                        isArtist: state.isArtist,
+                        formKey: formKey,
+                        onSwitchMode: (isArtist) {
+                          appBloc.dispatch(SwitchMode(isArtist: isArtist));
+                        },
+                      );
+                    },
+                  ),
+                  _buildPolicyText(context),
+                  SizedBox(height: 10.0),
+                  BlocBuilder<AppEvent, AppState>(
+                    bloc: appBloc,
+                    builder: (context, state) {
+                      return _buildButtons(context, state);
+                    },
+                  ),
+                  SizedBox(height: 40.0),
+                ],
+              ),
             ),
           );
         },
@@ -125,7 +128,7 @@ class _SignupMainScreenState extends State<SignupMainScreen> {
           children: <Widget>[
             Text(
               "WELCOME",
-              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w100),
+              style: IkTheme.of(context).headline.copyWith(),
             ),
           ],
         ),
@@ -159,7 +162,7 @@ class _SignupMainScreenState extends State<SignupMainScreen> {
     };
 
     final signInText = TextSpan(
-      text: "Sign in",
+      text: " Sign in",
       recognizer: tapHandler,
       style: TextStyle(color: primaryColor),
     );
@@ -178,7 +181,9 @@ class _SignupMainScreenState extends State<SignupMainScreen> {
         return RichText(
           textAlign: TextAlign.center,
           text: TextSpan(
-            style: TextStyle(fontSize: 14.0, color: Colors.black),
+            style: IkTheme.of(context)
+                .subhead3
+                .copyWith(color: IkColors.lightGrey, height: 1.2),
             text: signupIntroText,
             children: <TextSpan>[
               signInText,
@@ -272,41 +277,71 @@ class _SignupMainScreenState extends State<SignupMainScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        PrimaryButton(
-          width: screenSize.width - 80,
-          height: 50.0,
-          defaultColor: primaryButtonColor,
-          activeColor: primaryButtonActiveColor,
-          text: "REGISTER",
-          // REGISTER
-          onTap: () => _formSubmitted(context, state),
+        Stack(
+          children: <Widget>[
+            Container(
+              width: sw(300),
+              height: sf(30),
+              child: SizedBox(),
+              decoration: BoxDecoration(boxShadow: [
+                BoxShadow(color: IkColors.dividerColor, blurRadius: sw(30))
+              ]),
+            ),
+            SizedBox(
+              width: mq.size.width,
+              child: CupertinoButton(
+                pressedOpacity: .7,
+                minSize: sf(60),
+                color: IkColors.primary,
+                child: Text('REGISTER'),
+                onPressed: () => _formSubmitted(context, state),
+              ),
+            ),
+          ],
         ),
         _buildButtonSeparator(context),
-        PrimaryButton(
-          width: screenSize.width - 80,
-          height: 50.0,
-          defaultColor: Colors.white,
-          activeColor: Colors.white70,
-          elevation: 3.0,
-          onTap: () => _doFacebookSignup(context, state),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
+        SizedBox(
+          width: mq.size.width,
+          child: Stack(
+            alignment: Alignment.bottomCenter,
             children: <Widget>[
               Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: facebookColor,
-                  ),
-                  width: 25.0,
-                  height: 25.0,
-                  child: Icon(
-                    ThemifyIcons.facebook,
-                    color: Colors.white,
-                    size: 15.0,
-                  )),
-              SizedBox(width: 10.0),
-              Text("Facebook", style: TextStyle(color: Colors.black)),
+                width: sw(300),
+                height: sf(30),
+                child: SizedBox(),
+                decoration: BoxDecoration(boxShadow: [
+                  BoxShadow(color: IkColors.dark.shade300, blurRadius: sw(30))
+                ]),
+              ),
+              CupertinoButton(
+                pressedOpacity: .7,
+                minSize: sf(60),
+                color: IkColors.white,
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: facebookColor,
+                          ),
+                          width: sf(25),
+                          height: sf(25),
+                          child: Icon(
+                            ThemifyIcons.facebook,
+                            color: Colors.white,
+                            size: sf(15),
+                          )),
+                      SizedBox(
+                        width: sw(10),
+                      ),
+                      Text(
+                        'Facebook',
+                        style: IkTheme.of(context).button,
+                      ),
+                    ]),
+                onPressed: () => _doFacebookSignup(context, state),
+              ),
             ],
           ),
         ),
@@ -315,7 +350,6 @@ class _SignupMainScreenState extends State<SignupMainScreen> {
   }
 
   Widget _buildButtonSeparator(BuildContext context) {
-    final dividerColor = Color(0xFF707070);
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 15.0),
       child: Row(
@@ -325,7 +359,7 @@ class _SignupMainScreenState extends State<SignupMainScreen> {
           Expanded(
             child: Container(
               height: 1.0,
-              color: dividerColor,
+              color: IkColors.dividerColor,
               margin: EdgeInsets.only(left: 40.0, right: 20.0),
             ),
           ),
@@ -333,7 +367,7 @@ class _SignupMainScreenState extends State<SignupMainScreen> {
           Expanded(
             child: Container(
               height: 1.0,
-              color: dividerColor,
+              color: IkColors.dividerColor,
               margin: EdgeInsets.only(right: 40.0, left: 20.0),
             ),
           ),
@@ -396,71 +430,66 @@ class _SignupFormState extends State<SignupForm> {
 
     return Form(
       key: widget.formKey,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 40.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            LoginFormField(
-              placeholder: "Name",
-              focusNode: nameFocusNode,
-              validator: FormFieldValidators.notEmpty("name"),
-              onFieldSubmitted: (newVal) {
-                nameFocusNode.unfocus();
-                FocusScope.of(context).requestFocus(emailFocusNode);
-              },
-              onSaved: (String val) => bloc.dispatch(NameEntered(val.trim())),
-            ),
-            SizedBox(height: 20.0),
-            LoginFormField(
-              placeholder: "Email",
-              focusNode: emailFocusNode,
-              keyboardType: TextInputType.emailAddress,
-              validator: FormFieldValidators.isValidEmail(),
-              onFieldSubmitted: (newVal) {
-                emailFocusNode.unfocus();
-                FocusScope.of(context).requestFocus(passwordFocusNode);
-              },
-              onSaved: (val) => bloc.dispatch(EmailEntered(val.trim())),
-            ),
-            SizedBox(height: 20.0),
-            LoginPasswordField(
-              placeholder: "Password",
-              focusNode: passwordFocusNode,
-              textInputAction: TextInputAction.done,
-              revealIcon: FontAwesome5Icons.eye,
-              hideIcon: FontAwesome5Icons.eyeSlash,
-              validator: FormFieldValidators.minLength("password", 6),
-              onFieldSubmitted: (newVal) {
-                passwordFocusNode.unfocus();
-              },
-              onSaved: (val) => bloc.dispatch(PasswordEntered(val.trim())),
-            ),
-            SizedBox(height: 10.0),
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Expanded(child: Container()),
-                RichText(
-                  text: TextSpan(
-                    recognizer: switchModeTapHandler,
-                    style: TextStyle(
-                      color: Color(0xFF999999),
-                      fontSize: 12.0,
-                      decoration: TextDecoration.underline,
-                      decorationStyle: TextDecorationStyle.solid,
-                    ),
-                    text:
-                        "Switch to ${widget.isArtist ? "Fan" : "Artist"} mode",
-                  ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          LoginFormField(
+            placeholder: "Name",
+            focusNode: nameFocusNode,
+            validator: FormFieldValidators.notEmpty("name"),
+            onFieldSubmitted: (newVal) {
+              nameFocusNode.unfocus();
+              FocusScope.of(context).requestFocus(emailFocusNode);
+            },
+            onSaved: (String val) => bloc.dispatch(NameEntered(val.trim())),
+          ),
+          SizedBox(height: sh(20)),
+          LoginFormField(
+            placeholder: "Email",
+            focusNode: emailFocusNode,
+            keyboardType: TextInputType.emailAddress,
+            validator: FormFieldValidators.isValidEmail(),
+            onFieldSubmitted: (newVal) {
+              emailFocusNode.unfocus();
+              FocusScope.of(context).requestFocus(passwordFocusNode);
+            },
+            onSaved: (val) => bloc.dispatch(EmailEntered(val.trim())),
+          ),
+          SizedBox(height: 20.0),
+          LoginPasswordField(
+            placeholder: "Password",
+            focusNode: passwordFocusNode,
+            textInputAction: TextInputAction.done,
+            revealIcon: FontAwesome5Icons.eye,
+            hideIcon: FontAwesome5Icons.eyeSlash,
+            validator: FormFieldValidators.minLength("password", 6),
+            onFieldSubmitted: (newVal) {
+              passwordFocusNode.unfocus();
+            },
+            onSaved: (val) => bloc.dispatch(PasswordEntered(val.trim())),
+          ),
+          SizedBox(height: sh(10)),
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Expanded(child: Container()),
+              RichText(
+                text: TextSpan(
+                  recognizer: switchModeTapHandler,
+                  style: IkTheme.of(context).smallHint.copyWith(
+                        decoration: TextDecoration.underline,
+                        decorationStyle: TextDecorationStyle.solid,
+                      ),
+                  text: "Switch to ${widget.isArtist ? "Fan" : "Artist"} mode",
                 ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+          SizedBox(height: sh(30)),
+        ],
       ),
     );
   }

@@ -252,7 +252,7 @@ class LoginScreenState extends State<LoginScreen> {
 
   Widget _buildButtonSeparator(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 15.0),
+      padding: EdgeInsets.symmetric(vertical: sh(15)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -261,7 +261,7 @@ class LoginScreenState extends State<LoginScreen> {
             child: Container(
               height: 1.0,
               color: IkColors.dividerColor,
-              margin: EdgeInsets.only(left: 40.0, right: 20.0),
+              margin: EdgeInsets.only(left: sw(40), right: sh(20)),
             ),
           ),
           Text("or"), // "or"
