@@ -8,50 +8,58 @@ import 'package:ikonfete/widget/super_fan/super_fan_tile.dart';
 import 'package:ikonfete/widget/themes/theme.dart';
 import 'package:ikonfete/zoom_scaffold/zoom_scaffold.dart';
 
-final messagingScreen = Screen(
-  title: "Messaging",
-  contentBuilder: (ctx) {
-    print("Messaging Screen");
+Screen messagingScreen(bool isArtist, String uid) {
+  return Screen(
+    title: "Messaging",
+    contentBuilder: (ctx) => MessagingScreen(),
+  );
+}
+
+class MessagingScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-        body: DefaultTabController(
-            length: 2,
-            child: SafeArea(
-              child: NestedScrollView(
-                headerSliverBuilder:
-                    (BuildContext context, bool innerBoxIsScrolled) {
-                  return <Widget>[
-                    SliverOverlapAbsorber(
-                      handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
-                          context),
-                      child: SliverPersistentHeader(
-                        floating: true,
-                        pinned: true,
-                        delegate: SliverAppBarDelegate(
-                          minHeight: sh(50),
-                          maxHeight: sh(50),
-                          child: Container(
-                            color: Colors.white,
-                            child: _BuildTabBar(),
-                          ),
-                        ),
+      body: DefaultTabController(
+        length: 2,
+        child: SafeArea(
+          child: NestedScrollView(
+            headerSliverBuilder:
+                (BuildContext context, bool innerBoxIsScrolled) {
+              return <Widget>[
+                SliverOverlapAbsorber(
+                  handle:
+                      NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                  child: SliverPersistentHeader(
+                    floating: true,
+                    pinned: true,
+                    delegate: SliverAppBarDelegate(
+                      minHeight: sh(50),
+                      maxHeight: sh(50),
+                      child: Container(
+                        color: Colors.white,
+                        child: _BuildTabBar(),
                       ),
                     ),
-                  ];
-                },
-                body: Builder(
-                  builder: (context) {
-                    return TabBarView(
-                      children: [
-                        _BuildTodayTab(),
-                        _BuildTodayTab(),
-                      ],
-                    );
-                  },
+                  ),
                 ),
-              ),
-            )));
-  },
-);
+              ];
+            },
+            body: Builder(
+              builder: (context) {
+                return TabBarView(
+                  children: [
+                    _BuildTodayTab(),
+                    _BuildTodayTab(),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class _BuildTabBar extends StatelessWidget {
   const _BuildTabBar({

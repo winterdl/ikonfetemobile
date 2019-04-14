@@ -7,7 +7,7 @@ import 'package:ikonfete/colors.dart';
 import 'package:ikonfete/model/artist.dart';
 import 'package:ikonfete/routes.dart';
 import 'package:ikonfete/screen_utils.dart';
-import 'package:ikonfete/screens/home/fan_home_screen.dart';
+//import 'package:ikonfete/screens/home/fan_home_screen.dart';
 import 'package:ikonfete/screens/team_selection/team_selection_bloc.dart';
 import 'package:ikonfete/utils/logout_helper.dart';
 import 'package:ikonfete/utils/strings.dart';
