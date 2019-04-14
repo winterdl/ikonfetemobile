@@ -7,6 +7,7 @@ import 'package:ikonfete/colors.dart';
 import 'package:ikonfete/model/artist.dart';
 import 'package:ikonfete/routes.dart';
 import 'package:ikonfete/screen_utils.dart';
+import 'package:ikonfete/screens/home/fan_home_screen.dart';
 import 'package:ikonfete/screens/team_selection/team_selection_bloc.dart';
 import 'package:ikonfete/utils/logout_helper.dart';
 import 'package:ikonfete/utils/strings.dart';
@@ -41,22 +42,6 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
     super.initState();
     final bloc = BlocProvider.of<TeamSelectionBloc>(context);
     bloc.dispatch(LoadFan(widget.uid));
-//    bloc.state.listen((state) {
-//      if (state.loadFanResult != null) {
-//        if (!state.loadFanResult.first) {
-//          bloc.dispatch(SearchEvent(""));
-//        }
-//      }
-//    });
-  }
-
-  Future<bool> _canLogout(BuildContext context) async {
-    final appBloc = BlocProvider.of<AppBloc>(context);
-    bool logout = await canLogout(context);
-    if (logout) {
-      appBloc.dispatch(Signout());
-    }
-    return false;
   }
 
   @override
@@ -65,7 +50,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
 
     return WillPopScope(
       onWillPop: () async {
-        return _canLogout(context);
+        return canLogout(context);
       },
       child: Scaffold(
         key: scaffoldKey,
@@ -73,36 +58,8 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
         body: BlocBuilder<TeamSelectionEvent, TeamSelectionState>(
           bloc: bloc,
           builder: (BuildContext ctx, TeamSelectionState state) {
-            /*
-            if (state.loadFanResult != null) {
-              final result = state.loadFanResult;
-              if (!result.first) {
-                ScreenUtils.onWidgetDidBuild(() {
-                  scaffoldKey.currentState.showSnackBar(SnackBar(
-                    content: Text(result.second),
-                    backgroundColor: errorColor,
-                  ));
-                });
-              }
-            }
-
-            if (state.searchResult != null) {
-              final result = state.searchResult;
-              if (!result.first) {
-                ScreenUtils.onWidgetDidBuild(() {
-                  scaffoldKey.currentState.showSnackBar(SnackBar(
-                    content: Text(result.second),
-                    backgroundColor: errorColor,
-                  ));
-                });
-              }
-            }
-
-            
-            */
             if (state.teamSelectionResult != null) {
-              final result = state.teamSelectionResult;
-              if (result.first) {
+              if (state.teamSelectionResult.first) {
                 ScreenUtils.onWidgetDidBuild(() {
                   Navigator.of(context).pushReplacementNamed(
                       Routes.fanHomeScreenRoute(uid: widget.uid));
@@ -110,7 +67,7 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
               } else {
                 ScreenUtils.onWidgetDidBuild(() {
                   scaffoldKey.currentState.showSnackBar(SnackBar(
-                    content: Text(result.second),
+                    content: Text(state.teamSelectionResult.second),
                     backgroundColor: errorColor,
                   ));
                 });
@@ -154,11 +111,12 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
                           ),
                           SizedBox(height: 20.0),
                           SearchField(
-                            onChanged: (String value) =>
-                                bloc.dispatch(SearchEvent(value)),
+                            onChanged: (String value) {
+                              bloc.dispatch(SearchEvent(value));
+                            },
                             onCancel: () => bloc.dispatch(SearchEvent("")),
                           ),
-                          SizedBox(height: 20.0),
+//                          SizedBox(height: 0.0),
                           _buildList(context, state),
                         ],
                       ),
@@ -174,6 +132,8 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
   }
 
   Widget _buildTitleAndBackButton(BuildContext context) {
+    final appBloc = BlocProvider.of<AppBloc>(context);
+
     return Stack(
       alignment: Alignment.centerLeft,
       children: <Widget>[
@@ -191,22 +151,20 @@ class _TeamSelectionScreenState extends State<TeamSelectionScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Navigator.canPop(context)
-                ? IconButton(
-                    icon: Icon(CupertinoIcons.back, color: Color(0xFF181D28)),
-                    onPressed: () async {
-                      bool logout = await _canLogout(context);
-                      if (logout) {
-                        if (Navigator.of(context).canPop()) {
-                          Navigator.of(context).pop();
-                        } else {
-                          Navigator.of(context)
-                              .pushReplacementNamed(Routes.login);
-                        }
-                      }
-                    },
-                  )
-                : Container(),
+            IconButton(
+              icon: Icon(CupertinoIcons.back, color: Color(0xFF181D28)),
+              onPressed: () async {
+                bool logout = await canLogout(context);
+                if (logout) {
+                  appBloc.dispatch(Signout());
+                  if (Navigator.of(context).canPop()) {
+                    Navigator.of(context).pop();
+                  } else {
+                    Navigator.of(context).pushReplacementNamed(Routes.login);
+                  }
+                }
+              },
+            ),
           ],
         )
       ],
