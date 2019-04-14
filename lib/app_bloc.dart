@@ -96,9 +96,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     }
 
     if (event is LoadCurrentUser) {
-      print("LOADING CURRENT USER...");
       final user = await emailAuthRepo.getCurrentUser();
-      print("LOADED CURRENT USER...");
       yield currentState.copyWith(currentUser: user);
     }
 

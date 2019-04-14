@@ -59,7 +59,8 @@ Map<MenuItem, Screen> zoomScaffoldMenuItems(
   }
 
   menu[MenuItem(id: MenuIDs.music, title: 'Music')] = musicScreen;
-  menu[MenuItem(id: MenuIDs.messaging, title: 'Messaging')] = messagingScreen;
+  menu[MenuItem(id: MenuIDs.messaging, title: 'Messaging')] =
+      messagingScreen(isArtist, uid);
   menu[MenuItem(id: MenuIDs.settings, title: 'Settings')] = settingsScreen(uid);
   return menu;
 }
