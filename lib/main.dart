@@ -16,6 +16,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class IkonfeteApp extends StatefulWidget {
   final SharedPreferences preferences;
+
 //  final FirebaseUser currentUser;
   final CurrentUserHolder currentUser;
 
@@ -83,7 +84,7 @@ class IkonfeteAppState extends State<IkonfeteApp> {
   Future<Widget> _getHomeScreen(AppBloc appBloc) async {
     final emailAuthRepo = Registry().emailAuthRepository();
     final currentUser = await emailAuthRepo.getCurrentUser();
-    return Routes.getHomePage(context, appBloc, currentUser);
+    return Routes.getHomePage(context, appBloc, currentUser, false);
   }
 }
 

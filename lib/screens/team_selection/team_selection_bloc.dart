@@ -134,20 +134,10 @@ class TeamSelectionBloc extends Bloc<TeamSelectionEvent, TeamSelectionState> {
       dispatch(_LoadFan(event.uid));
     }
 
-    if (event is SearchEvent) {
-      dispatch(_SearchEvent(event.query));
-    }
-
     if (event is JoinTeam) {
       dispatch(_JoinTeam(artistUid: event.artistUid, fanUid: event.fanUid));
     }
   }
-
-//  @override
-//  Stream<TeamSelectionEvent> transform(Stream<TeamSelectionEvent> events) {
-//    return (events as Observable<TeamSelectionEvent>)
-//        .debounce(Duration(milliseconds: 50));
-//  }
 
   // TODO: implement infinite scrolling list
   @override
@@ -158,10 +148,6 @@ class TeamSelectionBloc extends Bloc<TeamSelectionEvent, TeamSelectionState> {
           isLoading: true, loadFanResult: state.teamSelectionResult);
     }
 
-    if (event is SearchEvent) {
-      yield state.copyWith(isSearching: true);
-    }
-
     if (event is _LoadFan) {
       try {
         print("Loading fan...");
@@ -169,13 +155,16 @@ class TeamSelectionBloc extends Bloc<TeamSelectionEvent, TeamSelectionState> {
         print("Loaded fan");
         yield state.copyWith(
             isLoading: false, fan: fan, loadFanResult: Pair.from(true, null));
+        // search
+        final artists = await _searchForArtist("");
+        yield state.copyWith(isLoading: false, fan: fan, artists: artists);
       } on AppException catch (e) {
         yield state.copyWith(
             isLoading: false, loadFanResult: Pair.from(false, e.message));
       }
     }
 
-    if (event is _SearchEvent) {
+    if (event is SearchEvent) {
       try {
         final artists = await _searchForArtist(event.query);
         yield state.copyWith(

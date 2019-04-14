@@ -42,14 +42,16 @@ class IkonScreen extends StatelessWidget {
         builder: (ctx, state) {
           if (state.loadIkonResult != null) {
             final result = state.loadIkonResult;
-            ScreenUtils.onWidgetDidBuild(() {
-              scaffoldKey.currentState.showSnackBar(
-                SnackBar(
-                  content: Text(result.second),
-                  backgroundColor: errorColor,
-                ),
-              );
-            });
+            if (!result.first) {
+              ScreenUtils.onWidgetDidBuild(() {
+                scaffoldKey.currentState.showSnackBar(
+                  SnackBar(
+                    content: Text(result.second),
+                    backgroundColor: errorColor,
+                  ),
+                );
+              });
+            }
           }
 
           return CustomScrollView(

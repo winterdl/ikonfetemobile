@@ -105,8 +105,8 @@ class Routes {
     return "/fan_home/${uid == null || uid.isEmpty ? ":uid" : uid}";
   }
 
-  static Widget getHomePage(
-      BuildContext context, AppBloc appBloc, CurrentUserHolder currentUser) {
+  static Widget getHomePage(BuildContext context, AppBloc appBloc,
+      CurrentUserHolder currentUser, bool fromLogin) {
     if (currentUser == null || !currentUser.isEmailActivated) {
       return loginScreen(context);
     }
@@ -123,10 +123,10 @@ class Routes {
         );
       } else if (currentUser.isArtistPendingVerification) {
         // to pending verification screen
-        return pendingVerificationScreen(context, currentUser.uid);
+        return fromLogin ? pendingVerificationScreen(context, currentUser.uid) : loginScreen(context);
       } else {
         // to verification screen
-        return verificationScreen(context, currentUser.uid);
+        return fromLogin ?verificationScreen(context, currentUser.uid) : loginScreen(context);
       }
     } else {
       if (currentUser.isFanInTeam) {
@@ -140,7 +140,7 @@ class Routes {
         );
       } else {
         // to team selection screen
-        return teamSelectionScreen(context, currentUser.uid);
+        return fromLogin ? teamSelectionScreen(context, currentUser.uid) : loginScreen(context);
       }
     }
   }
