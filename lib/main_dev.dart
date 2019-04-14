@@ -1,11 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ikonfete/app_config.dart';
 import 'package:ikonfete/db_provider.dart';
 import 'package:ikonfete/facebook/facebook_config.dart';
 import 'package:ikonfete/main.dart';
-import 'package:ikonfete/preferences.dart';
 import 'package:ikonfete/registry.dart';
 import 'package:ikonfete/repository/auth_repository.dart';
 import 'package:ikonfete/twitter/twitter_config.dart';

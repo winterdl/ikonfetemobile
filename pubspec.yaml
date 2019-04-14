@@ -51,6 +51,10 @@ dependencies:
   flutter_swiper: ^1.1.5
   flutter_simple_dependency_injection: ^1.0.1
   equatable: ^0.1.0
+  flutter_screenutil: ^0.4.2
+  provider: ^1.6.1
+
+
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ikonfete/colors.dart';
+import 'package:ikonfete/screen_utils.dart';
+import 'package:ikonfete/widget/themes/theme.dart';
 
 class LoginFormField extends StatelessWidget {
   final String placeholder;
@@ -63,28 +65,29 @@ class LoginFormField extends StatelessWidget {
       onFieldSubmitted: onFieldSubmitted,
       validator: validator,
       onSaved: onSaved,
-      style: textStyle ??
-          Theme.of(context).textTheme.body1.copyWith(fontSize: 15.0),
+      style: textStyle ?? IkTheme.of(context).textfield,
       textAlign: textAlign ?? TextAlign.start,
       inputFormatters: inputFormatters,
       maxLines: maxLines,
       enabled: enabled,
+      cursorColor: IkColors.dark,
       decoration: InputDecoration(
         hintText: placeholder,
         hintStyle: TextStyle(color: Color(0xFF8F8F8F)),
         filled: true,
 //        fillColor: fillColor ?? Color(0xFFEFEFEF),
-        fillColor: fillColor ?? textBoxColor,
+        fillColor: fillColor ?? IkColors.lighterColdGrey,
         border: inputBorder,
+        errorStyle: IkTheme.of(context).errorStyle,
         focusedBorder: inputBorder,
+        hasFloatingPlaceholder: true,
         disabledBorder: inputBorder,
         enabledBorder: inputBorder,
         errorBorder: errorInputBorder,
-        contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
         suffixIcon: suffixIcon != null
             ? Icon(
                 suffixIcon,
-                size: 20.0,
+                size: sf(16),
                 color: Color(0xFF8F8F8F),
               )
             : null,
@@ -156,18 +159,20 @@ class _LoginPasswordFieldState extends State<LoginPasswordField> {
       onFieldSubmitted: widget.onFieldSubmitted,
       validator: widget.validator,
       onSaved: widget.onSaved,
-      style: widget.textStyle ?? Theme.of(context).textTheme.body1,
+      style: widget.textStyle ?? IkTheme.of(context).textfield,
       decoration: InputDecoration(
         hintText: widget.placeholder,
         hintStyle: TextStyle(color: Color(0xFF8F8F8F)),
         filled: true,
-        fillColor: widget.fillColor ?? textBoxColor,
+//        fillColor: fillColor ?? Color(0xFFEFEFEF),
+        fillColor: widget.fillColor ?? IkColors.lighterColdGrey,
         border: inputBorder,
         focusedBorder: inputBorder,
+        hasFloatingPlaceholder: true,
         disabledBorder: inputBorder,
         enabledBorder: inputBorder,
         errorBorder: errorInputBorder,
-        contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
+        errorStyle: IkTheme.of(context).errorStyle,
         errorMaxLines: 2,
         suffixIcon: widget.revealIcon != null
             ? IconButton(
@@ -262,7 +267,7 @@ class _SearchFieldState extends State<SearchField> {
       decoration: InputDecoration(
         hintText: "Search",
         hintStyle: TextStyle(
-          fontSize: 16.0,
+          fontSize: sf(16),
           color: Color(0xFF8F8F8F),
         ),
         filled: true,
@@ -294,7 +299,7 @@ class _SearchFieldState extends State<SearchField> {
               )
             : Icon(
                 Icons.search,
-                size: 20.0,
+                size: sf(20),
                 color: Color(0xff181D28),
               ),
       ),
