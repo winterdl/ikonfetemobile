@@ -52,17 +52,26 @@ abstract class AuthRepository {
   Future<void> signOut();
 }
 
-class EmailAuthResult {
+class AuthResult {
   final bool success;
   final CurrentUserHolder currentUserHolder;
   final String error;
+  final bool isThirdParty;
 
-  EmailAuthResult({@required this.success, this.currentUserHolder, this.error});
+  AuthResult(
+      {@required this.success,
+      this.isThirdParty: false,
+      this.currentUserHolder,
+      this.error});
 }
 
-abstract class EmailAuth extends AuthRepository {
+abstract class EmailAuthRepository extends AuthRepository {
   Future<EmailValidationResult> validateEmail(String email);
 
-  Future<EmailAuthResult> emailLogin(
-      bool isArtist, String email, String password);
+  Future<AuthResult> emailLogin(bool isArtist, String email, String password);
+}
+
+abstract class FacebookAuthRepository extends AuthRepository {
+  Future<AuthResult> facebookLogin(
+      bool isArtist, String facebookUid, String accessToken);
 }

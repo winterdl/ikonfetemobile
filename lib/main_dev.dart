@@ -35,7 +35,7 @@ void main() async {
 //  final currentUser = await FirebaseAuth.instance.currentUser();
 //  final uid = sharedPreferences.getString(PreferenceKeys.uid);
   CurrentUserHolder currentUserHolder =
-      await registry.emailAuthRepository().getCurrentUser();
+      await registry.authRepository().getCurrentUser();
 //  var artistOrFan;
 //  if (uid != null) {
 //    artistOrFan = await DbProvider.db.getArtistOrFanByUid(uid);

@@ -1,7 +1,10 @@
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:ikonfete/registry.dart';
 import 'package:ikonfete/repository/auth_repository.dart';
+import 'package:ikonfete/utils/facebook_auth.dart';
 import 'package:meta/meta.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 
 abstract class LoginEvent {}
 
@@ -35,25 +38,31 @@ class FacebookLoginEvent extends LoginEvent {
   FacebookLoginEvent({@required this.isArtist});
 }
 
-class LoginState {
+class _FacebookLoginEvent extends LoginEvent {
+  final bool isArtist;
+
+  _FacebookLoginEvent({@required this.isArtist});
+}
+
+class LoginState extends Equatable {
   final bool isLoading;
   final String email;
   final String password;
-  final EmailAuthResult emailAuthResult;
+  final AuthResult authResult;
 
   LoginState({
     this.isLoading,
     this.email,
     this.password,
-    this.emailAuthResult,
-  });
+    this.authResult,
+  }) : super([isLoading, email, password, authResult]);
 
   factory LoginState.initial() {
     return LoginState(
       isLoading: false,
       email: null,
       password: null,
-      emailAuthResult: null,
+      authResult: null,
     );
   }
 
@@ -61,38 +70,21 @@ class LoginState {
     bool isLoading,
     String email,
     String password,
-    EmailAuthResult emailAuthResult,
+    AuthResult authResult,
   }) {
     return LoginState(
       isLoading: isLoading ?? this.isLoading,
       email: email ?? this.email,
       password: password ?? this.password,
-      emailAuthResult: emailAuthResult ?? null,
+      authResult: authResult ?? null,
     );
   }
-
-  @override
-  bool operator ==(other) =>
-      identical(this, other) &&
-      other is LoginState &&
-      runtimeType == other.runtimeType &&
-      isLoading == other.isLoading &&
-      email == other.email &&
-      password == other.password &&
-      emailAuthResult == other.emailAuthResult;
-
-  @override
-  int get hashCode =>
-      isLoading.hashCode ^
-      email.hashCode ^
-      password.hashCode ^
-      emailAuthResult.hashCode;
 }
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  final EmailAuth emailAuthRepository;
+  final AuthRepository authRepository;
 
-  LoginBloc() : emailAuthRepository = Registry().emailAuthRepository();
+  LoginBloc() : authRepository = Registry().authRepository();
 
   @override
   LoginState get initialState => LoginState.initial();
@@ -104,6 +96,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
     if (event is EmailLogin) {
       dispatch(_EmailLogin(isArtist: event.isArtist));
+    }
+
+    if (event is FacebookLoginEvent) {
+      dispatch(_FacebookLoginEvent(
+        isArtist: event.isArtist,
+      ));
     }
   }
 
@@ -118,104 +116,33 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       yield state.copyWith(password: event.password);
     }
 
-    if (event is EmailLogin) {
+    if (event is EmailLogin || event is FacebookLoginEvent) {
       yield state.copyWith(isLoading: true);
     }
 
     if (event is _EmailLogin) {
-      final authResult = await emailAuthRepository.emailLogin(
-          event.isArtist, state.email, state.password);
-      yield state.copyWith(emailAuthResult: authResult, isLoading: false);
+      final authResult = await (authRepository as EmailAuthRepository)
+          .emailLogin(event.isArtist, state.email, state.password);
+      yield state.copyWith(authResult: authResult, isLoading: false);
     }
 
-//    if (event is FacebookLoginEvent) {
-//      final authResult = await _facebookLogin(state, event.isArtist);
-//      yield state.copyWith(loginResult: authResult);
-//    }
+    if (event is _FacebookLoginEvent) {
+      final authResult = await _facebookAuth(event.isArtist);
+      yield state.copyWith(isLoading: false, authResult: authResult);
+    }
   }
 
-//  Future<LoginResult> _emailLogin(LoginState state, bool isArtist) async {
-//    final authActionRequest = AuthActionRequest(
-//        provider: AuthProvider.email,
-//        userType: isArtist ? AuthUserType.artist : AuthUserType.fan);
-//
-//    final authResult = LoginResult(authActionRequest);
-//    try {
-//      final firebaseUser = await FirebaseAuth.instance
-//          .signInWithEmailAndPassword(
-//              email: state.email, password: state.password);
-//      return authResult;
-//    } on PlatformException catch (e) {
-//      switch (e.code) {
-//        case "Error 17020":
-//          authResult.errorMessage = "Network Error.";
-//          break;
-//        case "Error 17009":
-//        default:
-//          authResult.errorMessage = "Invalid email or password.";
-//          break;
-//      }
-//      return authResult;
-//    } on AppException catch (e) {
-//      authResult.errorMessage = e.message;
-//      return authResult;
-//    } on Exception {
-//      authResult.errorMessage = "An unknown error occurred";
-//      return authResult;
-//    }
-//  }
-//
-//  Future<LoginResult> _facebookLogin(LoginState state, bool isArtist) async {
-//    final authRequest = AuthActionRequest(
-//        provider: AuthProvider.facebook,
-//        userType: isArtist ? AuthUserType.artist : AuthUserType.fan);
-//    try {
-//      final authResult = LoginResult(authRequest);
-//
-//      final facebookLogin = FacebookLogin();
-//      facebookLogin.loginBehavior = FacebookLoginBehavior.webViewOnly;
-//      await facebookLogin.logOut();
-//      final result = await facebookLogin.logInWithReadPermissions(
-//        [
-//          'email',
-//          'public_profile',
-//          'user_posts',
-//          'user_events',
-//        ],
-//      );
-//      if (result.status != FacebookLoginStatus.loggedIn) {
-//        authResult.errorMessage =
-//            result.status == FacebookLoginStatus.cancelledByUser
-//                ? "Login Cancelled"
-//                : result.errorMessage;
-//        return authResult;
-//      }
-//
-////      final firebaseUser = await FirebaseAuth.instance
-////          .signInWithFacebook(accessToken: result.accessToken.token);
-//      final facebookCredential = FacebookAuthProvider.getCredential(
-//          accessToken: result.accessToken.token);
-//      final firebaseUser =
-//          await FirebaseAuth.instance.signInWithCredential(facebookCredential);
-//
-//      // find the user
-////      if (authRequest.isArtist) {
-////        final artistApi = ArtistApi(appConfig.serverBaseUrl);
-////        final artist = await artistApi.findByUID(firebaseUser.uid);
-////        authResult.artist = artist;
-////      } else {
-////        final fanApi = FanApi(appConfig.serverBaseUrl);
-////        final fan = await fanApi.findByUID(firebaseUser.uid);
-////        authResult.fan = fan;
-////      }
-////      authResult.firebaseUser = firebaseUser;
-//      return authResult;
-//    } on AppException catch (e) {
-//      return LoginResult(authRequest)..errorMessage = e.message;
-//    } on PlatformException catch (e) {
-//      return LoginResult(authRequest)..errorMessage = e.message;
-//    } on Exception catch (e) {
-//      return LoginResult(authRequest)..errorMessage = e.toString();
-//    }
-//  }
+  Future<AuthResult> _facebookAuth(bool isArtist) async {
+    final fbAuth = FacebookAuth();
+    final result = await fbAuth.facebookAuth(
+        loginBehaviour: FacebookLoginBehavior.nativeWithFallback);
+    if (result.success) {
+      final authResult = await (authRepository as FacebookAuthRepository)
+          .facebookLogin(isArtist, result.facebookUID, result.accessToken);
+      return authResult;
+    } else {
+      return AuthResult(
+          success: false, isThirdParty: true, error: result.errorMessage);
+    }
+  }
 }

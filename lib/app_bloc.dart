@@ -71,10 +71,10 @@ class AppState extends Equatable {
 class AppBloc extends Bloc<AppEvent, AppState> {
   final SharedPreferences preferences;
   final CurrentUserHolder initialCurrentUser;
-  final EmailAuth emailAuthRepo;
+  final AuthRepository authRepository;
 
   AppBloc({@required this.preferences, @required this.initialCurrentUser})
-      : emailAuthRepo = Registry().emailAuthRepository();
+      : authRepository = Registry().authRepository();
 
   @override
   AppState get initialState =>
@@ -96,12 +96,12 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     }
 
     if (event is LoadCurrentUser) {
-      final user = await emailAuthRepo.getCurrentUser();
+      final user = await authRepository.getCurrentUser();
       yield currentState.copyWith(currentUser: user);
     }
 
     if (event is Signout) {
-      await emailAuthRepo.signOut();
+      await authRepository.signOut();
       yield state.copyWith(isLoggedIn: false);
     }
   }

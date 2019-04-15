@@ -89,7 +89,7 @@ class IkonfeteAppState extends State<IkonfeteApp> {
   }
 
   Future<Widget> _getHomeScreen(AppBloc appBloc) async {
-    final emailAuthRepo = Registry().emailAuthRepository();
+    final emailAuthRepo = Registry().authRepository();
     final currentUser = await emailAuthRepo.getCurrentUser();
     return Routes.getHomePage(context, appBloc, currentUser, false);
   }

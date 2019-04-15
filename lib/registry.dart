@@ -46,8 +46,8 @@ class Registry {
 
   List<AuthRepository> authRepositories() => _injector.getAll<AuthRepository>();
 
-  EmailAuth emailAuthRepository() =>
-      authRepositories().firstWhere((repo) => repo is EmailAuth, orElse: null);
+  EmailAuthRepository authRepository() =>
+      authRepositories().firstWhere((repo) => repo is EmailAuthRepository, orElse: null);
 
   PendingVerificationRepository pendingVerificationRepository() =>
       _injector.get<PendingVerificationRepository>();

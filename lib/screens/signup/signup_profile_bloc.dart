@@ -114,13 +114,13 @@ class SignupProfileBloc
   final String name;
   final String email;
   final String password;
-  final EmailAuth authRepository;
+  final EmailAuthRepository authRepository;
 
   SignupProfileBloc({
     @required this.name,
     @required this.email,
     @required this.password,
-  }) : authRepository = Registry().emailAuthRepository();
+  }) : authRepository = Registry().authRepository();
 
   @override
   SignupProfileScreenState get initialState =>

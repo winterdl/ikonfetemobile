@@ -4,11 +4,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ikonfete/app_bloc.dart';
 import 'package:ikonfete/colors.dart';
 import 'package:ikonfete/screen_utils.dart';
+import 'package:ikonfete/screens/team_feed/team_feed_screen.dart';
 import 'package:ikonfete/widget/app_bar_delegate.dart';
 import 'package:ikonfete/widget/event_slide.dart';
 import 'package:ikonfete/widget/post_cards/music_post_card.dart';
 import 'package:ikonfete/widget/post_cards/text_post_card.dart';
 import 'package:ikonfete/widget/post_cards/video_post_card.dart';
+import 'package:ikonfete/screens/leaderboard/leaderboard_screen.dart';
 
 Widget fanHomeScreen(BuildContext context, String uid) {
   return FanHomeScreen();
@@ -79,102 +81,112 @@ class _FanHomeScreenState extends State<FanHomeScreen> {
                   },
                   body: TabBarView(
                     children: [
-                      SafeArea(
-                        top: false,
-                        bottom: false,
-                        child: Stack(
-                          children: <Widget>[
-                            Builder(
-                              builder: (BuildContext context) {
-                                return CustomScrollView(
-                                  //TODO  maintain scroll postion on tab switch
-                                  key: PageStorageKey('ArtistFeed'),
-                                  slivers: <Widget>[
-                                    SliverOverlapInjector(
-                                      handle: NestedScrollView
-                                          .sliverOverlapAbsorberHandleFor(
-                                              context),
-                                    ),
-                                    // SliverToBoxAdapter(
-                                    //   child: ValueListenableBuilder<bool>(
-                                    //     valueListenable: isScrolledTop,
-                                    //     builder: (BuildContext context,
-                                    //         isScrolled, Widget child) {
-                                    //       print(isScrolled);
-                                    //       return AnimatedContainer(
-                                    //         child: SizedBox(),
-                                    //         duration:
-                                    //             Duration(milliseconds: 500),
-                                    //         height: isScrolled ? 0 : sh(100),
-                                    //       );
-                                    //     },
-                                    //   ),
-                                    // ),
-                                    SliverPersistentHeader(
-                                      floating: false,
-                                      pinned: false,
-                                      delegate: SliverAppBarDelegate(
-                                        minHeight: sh(120),
-                                        maxHeight: sh(120),
-                                        child: Container(
-                                          color: Colors.white,
-                                          child: Container(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: sh(10)),
-                                            child: _BuildStories(),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    SliverPadding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: sw(25)),
-                                      sliver: SliverList(
-                                        delegate: SliverChildBuilderDelegate(
-                                            (context, index) {
-                                          if (index == 0) {
-                                            return TextPostCard();
-                                          }
-                                          if (index.isOdd) {
-                                            return VideoPostCard();
-                                          }
-                                          if (index.isEven) {
-                                            return MusicPostCard();
-                                          }
-                                        }),
-                                      ),
-                                    )
-                                  ],
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                      SafeArea(
-                        top: false,
-                        bottom: false,
-                        child: Builder(
-                          builder: (BuildContext context) {
-                            return Center(child: Text('Team Feed'));
-                          },
-                        ),
-                      ),
-                      SafeArea(
-                        top: false,
-                        bottom: false,
-                        child: Builder(
-                          builder: (BuildContext context) {
-                            return Center(child: Text('Leader Board'));
-                          },
-                        ),
-                      ),
+                      _artistFeed(),
+                      _teamFeed(),
+                      _leaderBoard(),
                     ],
                   ),
                 ),
               ),
             ));
       },
+    );
+  }
+
+  Widget _artistFeed() {
+    return SafeArea(
+      top: false,
+      bottom: false,
+      child: Stack(
+        children: <Widget>[
+          Builder(
+            builder: (BuildContext context) {
+              return CustomScrollView(
+                //TODO  maintain scroll postion on tab switch
+                key: PageStorageKey('ArtistFeed'),
+                slivers: <Widget>[
+                  SliverOverlapInjector(
+                    handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
+                        context),
+                  ),
+                  // SliverToBoxAdapter(
+                  //   child: ValueListenableBuilder<bool>(
+                  //     valueListenable: isScrolledTop,
+                  //     builder: (BuildContext context,
+                  //         isScrolled, Widget child) {
+                  //       print(isScrolled);
+                  //       return AnimatedContainer(
+                  //         child: SizedBox(),
+                  //         duration:
+                  //             Duration(milliseconds: 500),
+                  //         height: isScrolled ? 0 : sh(100),
+                  //       );
+                  //     },
+                  //   ),
+                  // ),
+                  SliverPersistentHeader(
+                    floating: false,
+                    pinned: false,
+                    delegate: SliverAppBarDelegate(
+                      minHeight: sh(120),
+                      maxHeight: sh(120),
+                      child: Container(
+                        color: Colors.white,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(vertical: sh(10)),
+                          child: _BuildStories(),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SliverPadding(
+                    padding: EdgeInsets.symmetric(horizontal: sw(25)),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        if (index == 0) {
+                          return TextPostCard();
+                        }
+                        if (index.isOdd) {
+                          return VideoPostCard();
+                        }
+                        if (index.isEven) {
+                          return MusicPostCard();
+                        }
+                      }),
+                    ),
+                  )
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _teamFeed() {
+    return SafeArea(
+      top: false,
+      bottom: false,
+      child: Builder(
+        builder: (BuildContext context) {
+//          return Center(child: Text('Team Feed'));
+          return TeamFeedScreen();
+        },
+      ),
+    );
+  }
+
+  Widget _leaderBoard() {
+    return SafeArea(
+      top: false,
+      bottom: false,
+      child: Builder(
+        builder: (BuildContext context) {
+//          return Center(child: Text('Leader Board'));
+          return LeaderBoardScreen();
+        },
+      ),
     );
   }
 }

@@ -299,52 +299,52 @@ class _SignupMainScreenState extends State<SignupMainScreen> {
             ),
           ],
         ),
-        _buildButtonSeparator(context),
-        SizedBox(
-          width: mq.size.width,
-          child: Stack(
-            alignment: Alignment.bottomCenter,
-            children: <Widget>[
-              Container(
-                width: sw(300),
-                height: sf(30),
-                child: SizedBox(),
-                decoration: BoxDecoration(boxShadow: [
-                  BoxShadow(color: IkColors.dark.shade300, blurRadius: sw(30))
-                ]),
-              ),
-              CupertinoButton(
-                pressedOpacity: .7,
-                minSize: sf(60),
-                color: IkColors.white,
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: facebookColor,
-                          ),
-                          width: sf(25),
-                          height: sf(25),
-                          child: Icon(
-                            ThemifyIcons.facebook,
-                            color: Colors.white,
-                            size: sf(15),
-                          )),
-                      SizedBox(
-                        width: sw(10),
-                      ),
-                      Text(
-                        'Facebook',
-                        style: IkTheme.of(context).button,
-                      ),
-                    ]),
-                onPressed: () => _doFacebookSignup(context, state),
-              ),
-            ],
-          ),
-        ),
+//        _buildButtonSeparator(context),
+//        SizedBox(
+//          width: mq.size.width,
+//          child: Stack(
+//            alignment: Alignment.bottomCenter,
+//            children: <Widget>[
+//              Container(
+//                width: sw(300),
+//                height: sf(30),
+//                child: SizedBox(),
+//                decoration: BoxDecoration(boxShadow: [
+//                  BoxShadow(color: IkColors.dark.shade300, blurRadius: sw(30))
+//                ]),
+//              ),
+//              CupertinoButton(
+//                pressedOpacity: .7,
+//                minSize: sf(60),
+//                color: IkColors.white,
+//                child: Row(
+//                    mainAxisAlignment: MainAxisAlignment.center,
+//                    children: <Widget>[
+//                      Container(
+//                          decoration: BoxDecoration(
+//                            shape: BoxShape.circle,
+//                            color: facebookColor,
+//                          ),
+//                          width: sf(25),
+//                          height: sf(25),
+//                          child: Icon(
+//                            ThemifyIcons.facebook,
+//                            color: Colors.white,
+//                            size: sf(15),
+//                          )),
+//                      SizedBox(
+//                        width: sw(10),
+//                      ),
+//                      Text(
+//                        'Facebook',
+//                        style: IkTheme.of(context).button,
+//                      ),
+//                    ]),
+//                onPressed: () => _doFacebookSignup(context, state),
+//              ),
+//            ],
+//          ),
+//        ),
       ],
     );
   }
