@@ -255,7 +255,7 @@ class _BuildTodayTab extends StatelessWidget {
                         ],
                       ),
                       margin: EdgeInsets.all(sw(16)),
-                      height: sf(150),
+                      height: sf(160),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(sw(8))),
                         color: Colors.white,
