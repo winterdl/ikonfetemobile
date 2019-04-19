@@ -2,9 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ikonfete/colors.dart';
 import 'package:ikonfete/screen_utils.dart';
+import 'package:ikonfete/screens/messaging/live_select_screen.dart';
 import 'package:ikonfete/widget/app_bar_delegate.dart';
-import 'package:ikonfete/widget/ikonfete_buttons.dart';
-import 'package:ikonfete/widget/super_fan/super_fan_tile.dart';
 import 'package:ikonfete/widget/themes/theme.dart';
 import 'package:ikonfete/zoom_scaffold/zoom_scaffold.dart';
 
@@ -346,7 +345,13 @@ class _BuildTodayTab extends StatelessWidget {
                                 minSize: sf(45),
                                 color: IkColors.primary,
                                 child: Text('GO LIVE NOW'),
-                                onPressed: () {},
+                                onPressed: () {
+                                  //REPLACE WITH FLURO ROUTES
+                                  Navigator.of(context).push(
+                                      CupertinoPageRoute(builder: (context) {
+                                    return LiveSelectScreen();
+                                  }));
+                                },
                               ),
                             ),
                             SizedBox(height: sf(8))
