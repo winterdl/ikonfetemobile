@@ -13,9 +13,7 @@ import 'package:ikonfete/zoom_scaffold/zoom_scaffold.dart';
 Screen settingsScreen(String uid) {
   return Screen(
     title: "Settings",
-    contentBuilder: (context) {
-      return SettingsScreen(SettingsBloc(uid: uid));
-    },
+    content: SettingsScreen(SettingsBloc(uid: uid)),
   );
 }
 

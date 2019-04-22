@@ -53,23 +53,25 @@ class _ZoomScaffoldState extends State<ZoomScaffold>
           elevation: 0.0,
           leading: new IconButton(
               icon:
-              new Icon(FontAwesome5Icons.alignLeft, color: Colors.black54),
+                  new Icon(FontAwesome5Icons.alignLeft, color: Colors.black54),
               onPressed: () {
                 menuController.toggle();
               }),
           centerTitle: true,
           title: widget.contentScreen.hasTitle
               ? new Text(
-            widget.contentScreen.title,
-            style: new TextStyle(
-              fontFamily: 'bebas-neue',
-              fontSize: 25.0,
-              color: Colors.black54,
-            ),
-          )
+                  widget.contentScreen.title,
+                  style: new TextStyle(
+                    fontFamily: 'bebas-neue',
+                    fontSize: 25.0,
+                    color: Colors.black54,
+                  ),
+                )
               : widget.contentScreen.titleBuilder(context),
         ),
-        body: widget.contentScreen.contentBuilder(context),
+        body: widget.contentScreen.contentBuilder != null
+            ? widget.contentScreen.contentBuilder(context)
+            : widget.contentScreen.content,
       ),
     ));
   }
@@ -162,8 +164,8 @@ class ZoomScaffoldMenuControllerState
 
   getMenuController(BuildContext context) {
     final scaffoldState =
-    context.ancestorStateOfType(new TypeMatcher<_ZoomScaffoldState>())
-    as _ZoomScaffoldState;
+        context.ancestorStateOfType(new TypeMatcher<_ZoomScaffoldState>())
+            as _ZoomScaffoldState;
     return scaffoldState.menuController;
   }
 
@@ -185,12 +187,14 @@ class Screen {
   final WidgetBuilder titleBuilder;
   final DecorationImage background;
   final WidgetBuilder contentBuilder;
+  final Widget content;
 
   Screen({
     this.title,
     this.titleBuilder,
     this.background,
     this.contentBuilder,
+    this.content,
   })  : assert(!(title == null && titleBuilder == null)),
         assert(!(title != null && titleBuilder != null));
 

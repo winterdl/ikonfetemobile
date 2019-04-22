@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:ikonfete/screens/home/home_screen.dart';
 import 'package:ikonfete/screens/ikon/ikon_screen.dart';
 import 'package:ikonfete/screens/messaging/messaging_screen.dart';
@@ -39,12 +40,12 @@ class MenuItem {
       other is MenuItem && other.id == id && other.title == title;
 }
 
-Map<MenuItem, Screen> zoomScaffoldMenuItems(
+Map<MenuItem, Screen> zoomScaffoldMenuItems(BuildContext context,
     {@required bool isArtist, @required String uid}) {
   final menu = <MenuItem, Screen>{};
 
   menu[MenuItem(id: MenuIDs.profile, title: 'Profile', display: false)] =
-      profileScreen(uid);
+      profileScreen(context, uid);
 
   menu[MenuItem(id: MenuIDs.home, title: 'Home', isDefault: true)] =
       homeScreen(uid);
@@ -66,9 +67,10 @@ Map<MenuItem, Screen> zoomScaffoldMenuItems(
   return menu;
 }
 
-Screen getZoomScaffoldScreen(String menuItemId,
+Screen getZoomScaffoldScreen(BuildContext context, String menuItemId,
     {@required bool isArtist, @required uid}) {
-  final menuItems = zoomScaffoldMenuItems(isArtist: isArtist, uid: uid);
+  final menuItems =
+      zoomScaffoldMenuItems(context, isArtist: isArtist, uid: uid);
   var menuItem =
       menuItems.keys.firstWhere((item) => item.id == menuItemId, orElse: null);
   if (menuItem == null) {
@@ -77,20 +79,25 @@ Screen getZoomScaffoldScreen(String menuItemId,
   return menuItems[menuItem];
 }
 
-Screen defaultScreen({@required bool isArtist, @required String uid}) {
-  final menuItem = defaultMenuItem(isArtist: isArtist, uid: uid);
-  return zoomScaffoldMenuItems(isArtist: isArtist, uid: uid)[menuItem];
+Screen defaultScreen(BuildContext context,
+    {@required bool isArtist, @required String uid}) {
+  final menuItem = defaultMenuItem(context, isArtist: isArtist, uid: uid);
+  return zoomScaffoldMenuItems(context, isArtist: isArtist, uid: uid)[menuItem];
 }
 
-MenuItem defaultMenuItem({@required bool isArtist, @required String uid}) {
-  final menuItem = zoomScaffoldMenuItems(isArtist: isArtist, uid: uid)
+MenuItem defaultMenuItem(BuildContext context,
+    {@required bool isArtist, @required String uid}) {
+  final menuItem = zoomScaffoldMenuItems(context, isArtist: isArtist, uid: uid)
       .keys
       .firstWhere((item) => item.isDefault);
   if (menuItem == null) throw ArgumentError("Default Menu Item not found");
   return menuItem;
 }
 
-Menu zoomScaffoldMenu({@required bool isArtist, @required String uid}) {
+Menu zoomScaffoldMenu(BuildContext context,
+    {@required bool isArtist, @required String uid}) {
   return Menu(
-      items: zoomScaffoldMenuItems(isArtist: isArtist, uid: uid).keys.toList());
+      items: zoomScaffoldMenuItems(context, isArtist: isArtist, uid: uid)
+          .keys
+          .toList());
 }

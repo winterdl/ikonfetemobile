@@ -45,8 +45,9 @@ class ZoomScaffoldScreenState extends State<ZoomScaffoldScreen> {
   void initState() {
     super.initState();
     selectedMenuItemId =
-        defaultMenuItem(isArtist: widget.isArtist, uid: widget.uid).id;
-    activeScreen = defaultScreen(isArtist: widget.isArtist, uid: widget.uid);
+        defaultMenuItem(context, isArtist: widget.isArtist, uid: widget.uid).id;
+    activeScreen =
+        defaultScreen(context, isArtist: widget.isArtist, uid: widget.uid);
   }
 
   @override
@@ -57,7 +58,8 @@ class ZoomScaffoldScreenState extends State<ZoomScaffoldScreen> {
       builder: (context, state) {
         return ZoomScaffold(
           menuScreen: MenuScreen(
-            menu: zoomScaffoldMenu(isArtist: widget.isArtist, uid: widget.uid),
+            menu: zoomScaffoldMenu(context,
+                isArtist: widget.isArtist, uid: widget.uid),
             selectedItemId: selectedMenuItemId,
             currentUser: state.currentUser,
             onMenuItemSelected: _onMenuItemSelected,
@@ -70,7 +72,7 @@ class ZoomScaffoldScreenState extends State<ZoomScaffoldScreen> {
 
   void _onMenuItemSelected(String itemId) {
     selectedMenuItemId = itemId;
-    final screen = getZoomScaffoldScreen(selectedMenuItemId,
+    final screen = getZoomScaffoldScreen(context, selectedMenuItemId,
         isArtist: widget.isArtist, uid: widget.uid);
     setState(() => activeScreen = screen);
   }
