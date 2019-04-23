@@ -5,11 +5,10 @@ import 'package:ikonfete/app_bloc.dart';
 import 'package:ikonfete/colors.dart';
 import 'package:ikonfete/screen_utils.dart';
 import 'package:ikonfete/widget/app_bar_delegate.dart';
-import 'package:ikonfete/widget/modal.dart';
 import 'package:ikonfete/widget/super_fan/super_fan_tile.dart';
 import 'package:ikonfete/widget/themes/theme.dart';
 
-class LeaderBoardScreeen extends StatelessWidget {
+class LeaderBoardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appBloc = BlocProvider.of<AppBloc>(context);

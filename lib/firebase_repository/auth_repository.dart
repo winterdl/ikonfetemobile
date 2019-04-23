@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/services.dart';
@@ -11,7 +13,8 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:ikonfete/repository/fan_repository.dart';
 import 'package:ikonfete/utils/upload_helper.dart';
 
-class FirebaseAuthRepository extends EmailAuth {
+class FirebaseAuthRepository
+    implements EmailAuthRepository, FacebookAuthRepository {
   final FirebaseAuth _firebaseAuth;
   final CloudFunctions _cloudFunctions;
   final FirebaseStorage _firebaseStorage;
@@ -155,14 +158,13 @@ class FirebaseAuthRepository extends EmailAuth {
   }
 
   @override
-  Future<EmailAuthResult> emailLogin(
+  Future<AuthResult> emailLogin(
       bool isArtist, String email, String password) async {
     try {
       final firebaseUser = await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
       if (firebaseUser == null) {
-        return EmailAuthResult(
-            success: false, error: "Incorrect email or password");
+        return AuthResult(success: false, error: "Incorrect email or password");
       }
       User user;
       if (isArtist) {
@@ -172,12 +174,12 @@ class FirebaseAuthRepository extends EmailAuth {
       }
 
       if (user == null) {
-        return EmailAuthResult(
+        return AuthResult(
             success: false,
             error: "${isArtist ? "Artist" : "Fan"} account not found");
       }
 
-      return EmailAuthResult(
+      return AuthResult(
           success: true,
           currentUserHolder: _FirebaseCurrentUserHolder(firebaseUser, user));
     } on PlatformException catch (e) {
@@ -200,11 +202,73 @@ class FirebaseAuthRepository extends EmailAuth {
           errMsg = "Too many attempts. Please wait for a while and retry";
           break;
       }
-      return EmailAuthResult(success: false, error: errMsg);
+      return AuthResult(success: false, error: errMsg);
     } on Exception catch (e) {
       print(e.toString());
-      return EmailAuthResult(
-          success: false, error: "An unknown error occurred");
+      return AuthResult(success: false, error: "An unknown error occurred");
+    }
+  }
+
+  @override
+  Future<AuthResult> facebookLogin(
+      bool isArtist, String facebookUid, String accessToken) async {
+    try {
+      // check if user is signed up
+      final credential =
+          FacebookAuthProvider.getCredential(accessToken: accessToken);
+      final firebaseUser = await _firebaseAuth.signInWithCredential(credential);
+      if (firebaseUser == null) {
+        throw PlatformException(
+            message: "Failed to sign in with Facebook", code: "");
+      }
+      final uid = firebaseUser.uid;
+      User user;
+      if (isArtist) {
+        user = await artistRepository.findByUID(uid);
+      } else {
+        user = await fanRepository.findByUID(uid);
+      }
+
+      bool isNewUser = user == null;
+      // if user is not signed up, create user
+      if (isNewUser) {
+        user = isArtist ? Artist() : Fan();
+        user.uid = uid;
+        user.email = firebaseUser.email;
+        user.name = firebaseUser.displayName;
+        user.profilePictureUrl = firebaseUser.photoUrl;
+        user.facebookId = facebookUid;
+        user.username = "";
+        user = await (isArtist
+            ? artistRepository.create(user)
+            : fanRepository.create(user));
+      }
+
+      final userHolder = _FirebaseCurrentUserHolder(firebaseUser, user);
+      return AuthResult(
+        success: true,
+        error: null,
+        currentUserHolder: userHolder,
+        isThirdParty: true,
+      );
+
+      // else just sign in
+    } on PlatformException catch (e) {
+      String msg = e.message;
+      switch (e.code) {
+        case "ERROR_ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL":
+          msg = "An account with this email already exists";
+          break;
+        case "ERROR_USER_DISABLED":
+          msg = "This account has been disabled";
+          break;
+      }
+
+      return AuthResult(success: false, error: msg, isThirdParty: true);
+    } on Exception catch (e) {
+      print("${e.toString()}");
+      return AuthResult(
+          success: false, error: e.toString(), isThirdParty: true);
     }
   }
 

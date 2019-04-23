@@ -8,6 +8,8 @@ import 'package:ikonfete/app_bloc.dart';
 import 'package:ikonfete/routes.dart';
 import 'package:ikonfete/screen_utils.dart';
 import 'package:ikonfete/screens/login/login_bloc.dart';
+import 'package:ikonfete/screens/signup/third_party_signup_profile_screen.dart';
+import 'package:ikonfete/utils/strings.dart';
 import 'package:ikonfete/widget/form_fields.dart';
 import 'package:ikonfete/widget/hud_overlay.dart';
 import 'package:ikonfete/widget/overlays.dart';
@@ -46,13 +48,22 @@ class LoginScreenState extends State<LoginScreen> {
           return BlocBuilder<LoginEvent, LoginState>(
             bloc: loginBloc,
             builder: (BuildContext ctx, LoginState loginState) {
-              if (loginState.emailAuthResult != null) {
-                final result = loginState.emailAuthResult;
+              if (loginState.authResult != null) {
+                final result = loginState.authResult;
                 if (result.success) {
-                  final currentUser = result.currentUserHolder;
-                  appBloc.dispatch(LoadCurrentUser());
-                  final newScreen =
-                      Routes.getHomePage(context, appBloc, currentUser, true);
+                  Widget newScreen;
+                  if (result.isThirdParty &&
+                      StringUtils.isNullOrEmpty(
+                          result.currentUserHolder.user.username)) {
+                    newScreen =
+                        thirdPartySignupProfileScreen(result.currentUserHolder);
+                  } else {
+                    final currentUser = result.currentUserHolder;
+                    appBloc.dispatch(LoadCurrentUser());
+                    newScreen =
+                        Routes.getHomePage(context, appBloc, currentUser, true);
+                  }
+
                   ScreenUtils.onWidgetDidBuild(() {
                     Navigator.of(context).pushReplacement(
                         CupertinoPageRoute(builder: (ctx) => newScreen));
@@ -241,8 +252,13 @@ class LoginScreenState extends State<LoginScreen> {
                         style: IkTheme.of(context).button,
                       ),
                     ]),
-                onPressed: () => loginBloc
-                    .dispatch(FacebookLoginEvent(isArtist: appState.isArtist)),
+                onPressed: () async {
+//                  loginBloc.dispatch(
+//                      FacebookLoginEvent(isArtist: appState.isArtist));
+                  scaffoldKey.currentState.showSnackBar(SnackBar(
+                    content: Text("Currently refactoring"),
+                  ));
+                },
               ),
             ],
           ),

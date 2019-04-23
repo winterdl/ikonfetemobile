@@ -13,12 +13,10 @@ import 'package:ikonfete/zoom_scaffold/zoom_scaffold_screen.dart';
 Screen ikonScreen(String fanUid) {
   return Screen(
     title: "Ikon",
-    contentBuilder: (context) {
-      return IkonScreen(
-        bloc: IkonScreenBloc(),
-        fanUid: fanUid,
-      );
-    },
+    content: IkonScreen(
+      bloc: IkonScreenBloc(),
+      fanUid: fanUid,
+    ),
   );
 }
 

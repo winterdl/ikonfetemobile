@@ -170,14 +170,6 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
           style: TextStyle(fontSize: 20.0, color: Colors.black45),
         ),
         centerTitle: true,
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(LineAwesomeIcons.check),
-            color: Colors.black54,
-            onPressed: _changesMade() ? _saveChanges : null,
-            tooltip: "Done",
-          ),
-        ],
       ),
       body: Container(
         padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),

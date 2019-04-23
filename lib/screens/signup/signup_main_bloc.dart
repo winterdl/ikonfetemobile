@@ -94,9 +94,9 @@ class SignupMainScreenState {
 
 class SignupMainBloc
     extends Bloc<SignupMainScreenEvent, SignupMainScreenState> {
-  final EmailAuth emailAuthRepository;
+  final EmailAuthRepository emailAuthRepository;
 
-  SignupMainBloc() : emailAuthRepository = Registry().emailAuthRepository();
+  SignupMainBloc() : emailAuthRepository = Registry().authRepository();
 
   @override
   SignupMainScreenState get initialState => SignupMainScreenState.initial();

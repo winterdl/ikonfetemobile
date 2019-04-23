@@ -17,32 +17,28 @@ import 'package:ikonfete/widget/form_fields.dart';
 import 'package:ikonfete/widget/hud_overlay.dart';
 import 'package:ikonfete/widget/ikonfete_buttons.dart';
 import 'package:ikonfete/widget/overlays.dart';
-import 'package:ikonfete/zoom_scaffold/menu_ids.dart';
 import 'package:ikonfete/zoom_scaffold/zoom_scaffold.dart';
-import 'package:ikonfete/zoom_scaffold/zoom_scaffold_screen.dart';
 import 'package:transparent_image/transparent_image.dart';
 
-Screen profileScreen(String uid) {
+Screen profileScreen(BuildContext ctx, String uid) {
   return Screen(
     title: "Profile",
-    contentBuilder: (ctx) {
-      return BlocBuilder<AppEvent, AppState>(
-        bloc: BlocProvider.of<AppBloc>(ctx),
-        builder: (bldrCtx, appState) {
-          final appConfig = AppConfig.of(ctx);
-          final profileScreenBloc = ProfileScreenBloc(
-            uid: uid,
-            isArtist: appState.isArtist,
-          );
-          return ProfileScreen(
-            bloc: profileScreenBloc,
-            isArtist: appState.isArtist,
-            uid: uid,
-            twitterConfig: appConfig.twitterConfig,
-          );
-        },
-      );
-    },
+    content: BlocBuilder<AppEvent, AppState>(
+      bloc: BlocProvider.of<AppBloc>(ctx),
+      builder: (bldrCtx, appState) {
+        final appConfig = AppConfig.of(ctx);
+        final profileScreenBloc = ProfileScreenBloc(
+          uid: uid,
+          isArtist: appState.isArtist,
+        );
+        return ProfileScreen(
+          bloc: profileScreenBloc,
+          isArtist: appState.isArtist,
+          uid: uid,
+          twitterConfig: appConfig.twitterConfig,
+        );
+      },
+    ),
   );
 }
 
@@ -132,25 +128,6 @@ class ProfileScreen extends StatelessWidget {
         ));
       });
     }
-
-//    if (state.enableFacebookResult != null &&
-//        !state.enableFacebookResult.first) {
-//      ScreenUtils.onWidgetDidBuild(() {
-//        scaffoldKey.currentState.showSnackBar(SnackBar(
-//          content: Text(state.enableFacebookResult.second),
-//          backgroundColor: errorColor,
-//        ));
-//      });
-//    }
-//
-//    if (state.enableTwitterResult != null && !state.enableTwitterResult.first) {
-//      ScreenUtils.onWidgetDidBuild(() {
-//        scaffoldKey.currentState.showSnackBar(SnackBar(
-//          content: Text(state.enableTwitterResult.second),
-//          backgroundColor: errorColor,
-//        ));
-//      });
-//    }
 
     if (state.updateProfileResult != null) {
       if (state.updateProfileResult.first) {
@@ -411,29 +388,26 @@ class ProfileScreen extends StatelessWidget {
         Expanded(child: Container()),
         CupertinoSwitch(
           value: state.facebookEnabled,
-          onChanged: (val) {
-            _enableFacebook(val);
+          onChanged: (val) async {
+            if (val) {
+              final result = await FacebookAuth().facebookAuth();
+              if (result.success) {
+                bloc.dispatch(EnableFacebook(true, result.facebookUID));
+              } else {
+                scaffoldKey.currentState.showSnackBar(SnackBar(
+                  content: Text("Failed to enable Facebook"),
+                  backgroundColor: errorColor,
+                ));
+                bloc.dispatch(EnableFacebook(false, null));
+              }
+            } else {
+              bloc.dispatch(EnableFacebook(false, null));
+            }
           },
           activeColor: primaryColor,
         ),
       ],
     );
-  }
-
-  void _enableFacebook(bool enable) async {
-    if (!enable) {
-      bloc.dispatch(UpdateFacebookId(""));
-    } else {
-      final result = await FacebookAuth().facebookAuth();
-      if (result.success) {
-        bloc.dispatch(UpdateFacebookId(result.facebookUID));
-      } else {
-        scaffoldKey.currentState.showSnackBar(SnackBar(
-          content: Text(result.errorMessage),
-          backgroundColor: errorColor,
-        ));
-      }
-    }
   }
 
   Widget _buildTwitterConnector(ProfileScreenState state) {
@@ -447,32 +421,29 @@ class ProfileScreen extends StatelessWidget {
         Expanded(child: Container()),
         CupertinoSwitch(
           value: state.twitterEnabled,
-          onChanged: (val) {
-            _enableTwitter(val);
+          onChanged: (val) async {
+            if (val) {
+              final result = await TwitterAuth(
+                      consumerSecret: twitterConfig.consumerSecret,
+                      consumerKey: twitterConfig.consumerKey)
+                  .twitterAuth();
+              if (result.success) {
+                bloc.dispatch(EnableTwitter(true, result.twitterUID));
+              } else {
+                scaffoldKey.currentState.showSnackBar(SnackBar(
+                  content: Text("Failed to enable Twitter"),
+                  backgroundColor: errorColor,
+                ));
+                bloc.dispatch(EnableTwitter(false, null));
+              }
+            } else {
+              bloc.dispatch(EnableTwitter(false, null));
+            }
           },
           activeColor: primaryColor,
         ),
       ],
     );
-  }
-
-  void _enableTwitter(bool enable) async {
-    if (!enable) {
-      bloc.dispatch(UpdateTwitterId(""));
-    } else {
-      final result = await TwitterAuth(
-              consumerSecret: twitterConfig.consumerSecret,
-              consumerKey: twitterConfig.consumerKey)
-          .twitterAuth();
-      if (result.success) {
-        bloc.dispatch(UpdateTwitterId(result.twitterUID));
-      } else {
-        scaffoldKey.currentState.showSnackBar(SnackBar(
-          content: Text(result.errorMessage),
-          backgroundColor: errorColor,
-        ));
-      }
-    }
   }
 
   Widget _buildSocialIcon(IconData iconData, Color iconBGColor) {

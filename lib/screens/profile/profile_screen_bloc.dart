@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:ikonfete/model/artist.dart';
 import 'package:ikonfete/model/user.dart';
@@ -35,26 +36,16 @@ class LoadProfile extends ProfileScreenEvent {}
 
 class EnableFacebook extends ProfileScreenEvent {
   final bool enabled;
+  final String facebookUid;
 
-  EnableFacebook(this.enabled);
+  EnableFacebook(this.enabled, this.facebookUid);
 }
 
 class EnableTwitter extends ProfileScreenEvent {
   final bool enabled;
+  final String twitterUid;
 
-  EnableTwitter(this.enabled);
-}
-
-class UpdateFacebookId extends ProfileScreenEvent {
-  final String facebookId;
-
-  UpdateFacebookId(this.facebookId);
-}
-
-class UpdateTwitterId extends ProfileScreenEvent {
-  final String twitterId;
-
-  UpdateTwitterId(this.twitterId);
+  EnableTwitter(this.enabled, this.twitterUid);
 }
 
 class EditBio extends ProfileScreenEvent {}
@@ -91,8 +82,6 @@ class ProfileScreenState extends Equatable {
   final Pair<bool, String> loadUserResult;
   final String newFacebookId;
   final String newTwitterId;
-//  final Pair<bool, String> enableFacebookResult;
-//  final Pair<bool, String> enableTwitterResult;
   final bool editBio;
   final String newBio;
   final File newProfilePicture;
@@ -100,6 +89,8 @@ class ProfileScreenState extends Equatable {
   final String newCountryCode;
   final String newCountryName;
   final Pair<bool, String> updateProfileResult;
+  final bool facebookEnabled;
+  final bool twitterEnabled;
 
   ExclusivePair<String, File> get profilePicture {
     if (newProfilePicture != null)
@@ -136,18 +127,6 @@ class ProfileScreenState extends Equatable {
     return user is Artist ? (user as Artist).bio : "";
   }
 
-  bool get facebookEnabled {
-    if (!StringUtils.isNullOrEmpty(newFacebookId)) return true;
-    if (user == null) return false;
-    return !StringUtils.isNullOrEmpty(user.facebookId);
-  }
-
-  bool get twitterEnabled {
-    if (!StringUtils.isNullOrEmpty(newTwitterId)) return true;
-    if (user == null) return false;
-    return !StringUtils.isNullOrEmpty(user.twitterId);
-  }
-
   bool get changesMade {
     if (user == null) return false;
 
@@ -158,10 +137,8 @@ class ProfileScreenState extends Equatable {
       }
     }
 
-    return (!StringUtils.isNullOrEmpty(newFacebookId) &&
-            newFacebookId != user.facebookId) ||
-        (!StringUtils.isNullOrEmpty(newTwitterId) &&
-            newTwitterId != user.twitterId) ||
+    return (newFacebookId != null && newFacebookId != user.facebookId) ||
+        (newTwitterId != null && newTwitterId != user.twitterId) ||
         newProfilePicture != null ||
         (!StringUtils.isNullOrEmpty(newDisplayName) &&
             newDisplayName != user.name) ||
@@ -175,8 +152,6 @@ class ProfileScreenState extends Equatable {
     @required this.loadUserResult,
     @required this.newFacebookId,
     @required this.newTwitterId,
-//    @required this.enableFacebookResult,
-//    @required this.enableTwitterResult,
     @required this.editBio,
     @required this.newBio,
     @required this.newProfilePicture,
@@ -184,14 +159,14 @@ class ProfileScreenState extends Equatable {
     @required this.newCountryCode,
     @required this.newCountryName,
     @required this.updateProfileResult,
+    @required this.facebookEnabled,
+    @required this.twitterEnabled,
   }) : super([
           isLoading,
           user,
           loadUserResult,
           newFacebookId,
           newTwitterId,
-//          enableFacebookResult,
-//          enableTwitterResult,
           editBio,
           newBio,
           newProfilePicture,
@@ -199,6 +174,8 @@ class ProfileScreenState extends Equatable {
           newCountryCode,
           newCountryName,
           updateProfileResult,
+          facebookEnabled,
+          twitterEnabled,
         ]);
 
   factory ProfileScreenState.initial() {
@@ -208,8 +185,6 @@ class ProfileScreenState extends Equatable {
       loadUserResult: null,
       newFacebookId: null,
       newTwitterId: null,
-//      enableFacebookResult: null,
-//      enableTwitterResult: null,
       editBio: false,
       newBio: null,
       newProfilePicture: null,
@@ -217,6 +192,8 @@ class ProfileScreenState extends Equatable {
       newCountryCode: null,
       newCountryName: null,
       updateProfileResult: null,
+      facebookEnabled: false,
+      twitterEnabled: false,
     );
   }
 
@@ -226,8 +203,6 @@ class ProfileScreenState extends Equatable {
     Pair<bool, String> loadUserResult,
     String newFacebookId,
     String newTwitterId,
-//    Pair<bool, String> enableFacebookResult,
-//    Pair<bool, String> enableTwitterResult,
     bool editBio,
     String newBio,
     File newProfilePicture,
@@ -235,6 +210,8 @@ class ProfileScreenState extends Equatable {
     String newCountryCode,
     String newCountryName,
     Pair<bool, String> updateProfileResult,
+    bool facebookEnabled,
+    bool twitterEnabled,
   }) {
     return ProfileScreenState(
       isLoading: isLoading ?? this.isLoading,
@@ -242,8 +219,6 @@ class ProfileScreenState extends Equatable {
       loadUserResult: loadUserResult ?? null,
       newFacebookId: newFacebookId ?? this.newFacebookId,
       newTwitterId: newTwitterId ?? this.newTwitterId,
-//      enableFacebookResult: enableFacebookResult ?? null,
-//      enableTwitterResult: enableTwitterResult ?? null,
       editBio: editBio ?? this.editBio,
       newBio: newBio ?? this.newBio,
       newProfilePicture: newProfilePicture ?? this.newProfilePicture,
@@ -251,6 +226,8 @@ class ProfileScreenState extends Equatable {
       newCountryCode: newCountryCode ?? this.newCountryCode,
       newCountryName: newCountryName ?? this.newCountryName,
       updateProfileResult: updateProfileResult ?? null,
+      facebookEnabled: facebookEnabled ?? this.facebookEnabled,
+      twitterEnabled: twitterEnabled ?? this.twitterEnabled,
     );
   }
 }
@@ -268,7 +245,10 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
         _fanRepository = Registry().fanRepository();
 
   @override
-  ProfileScreenState get initialState => ProfileScreenState.initial();
+  ProfileScreenState get initialState {
+    debugPrint("**********INITIAL STATE CALLED**********");
+    return ProfileScreenState.initial();
+  }
 
   @override
   void onTransition(
@@ -289,18 +269,12 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
           : _fanRepository.findByUID(uid));
       yield state.copyWith(
         isLoading: false,
+        facebookEnabled: !StringUtils.isNullOrEmpty(user.facebookId),
+        twitterEnabled: !StringUtils.isNullOrEmpty(user.twitterId),
         user: user,
         loadUserResult: Pair.from(
             user != null, user != null ? null : "Failed to load user"),
       );
-    }
-
-    if (event is UpdateFacebookId) {
-      yield state.copyWith(newFacebookId: event.facebookId);
-    }
-
-    if (event is UpdateTwitterId) {
-      yield state.copyWith(newTwitterId: event.twitterId);
     }
 
     if (event is EditBio) {
@@ -331,6 +305,17 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
     if (event is _SaveProfile) {
       final result = await _saveProfile(state);
       yield state.copyWith(isLoading: false, updateProfileResult: result);
+    }
+
+    if (event is EnableFacebook) {
+      yield state.copyWith(
+          facebookEnabled: event.enabled,
+          newFacebookId: event.facebookUid ?? "");
+    }
+
+    if (event is EnableTwitter) {
+      yield state.copyWith(
+          twitterEnabled: event.enabled, newTwitterId: event.twitterUid ?? "");
     }
   }
 
@@ -363,11 +348,11 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
       (user as Artist).bio = state.newBio;
     }
 
-    if (!StringUtils.isNullOrEmpty(state.newFacebookId)) {
+    if (state.newFacebookId != null) {
       user.facebookId = state.newFacebookId;
     }
 
-    if (!StringUtils.isNullOrEmpty(state.newTwitterId)) {
+    if (state.newTwitterId != null) {
       user.twitterId = state.newTwitterId;
     }
 
