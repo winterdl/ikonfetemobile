@@ -89,11 +89,10 @@ class DeezerApi {
     return dzrResult;
   }
 
-  // IOS ready, Android ready
+  // todo
   Future logout() async {
     try {
-      Map result = await _methodChannel.invokeMethod("logout");
-      print("${result.keys.toString()} <=> ${result.values.toString()}");
+      await _methodChannel.invokeMethod("logout");
     } on PlatformException {
       return;
     }

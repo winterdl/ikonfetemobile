@@ -1,10 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ikonfete/colors.dart';
-import 'package:ikonfete/deezer/deezer_api.dart';
 import 'package:ikonfete/icons.dart';
 import 'package:ikonfete/screen_utils.dart';
 import 'package:ikonfete/screens/settings/settings_bloc.dart';
@@ -60,19 +58,19 @@ class SettingsScreen extends StatelessWidget {
             }
           }
 
-//          if (settingsState.enableDeezerResult != null) {
-//            final result = settingsState.enableDeezerResult;
-//            if (!result.first) {
-//              ScreenUtils.onWidgetDidBuild(() {
-//                scaffoldKey.currentState.showSnackBar(
-//                  SnackBar(
-//                    content: Text(result.second),
-//                    backgroundColor: errorColor,
-//                  ),
-//                );
-//              });
-//            }
-//          }
+          if (settingsState.enableDeezerResult != null) {
+            final result = settingsState.enableDeezerResult;
+            if (!result.first) {
+              ScreenUtils.onWidgetDidBuild(() {
+                scaffoldKey.currentState.showSnackBar(
+                  SnackBar(
+                    content: Text(result.second),
+                    backgroundColor: errorColor,
+                  ),
+                );
+              });
+            }
+          }
 
           if (settingsState.saveSettingsResult != null) {
             final result = settingsState.saveSettingsResult;
@@ -107,6 +105,11 @@ class SettingsScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
+//                OverlayBuilder(
+//                  child: Container(),
+//                  showOverlay: settingsState.isLoading,
+//                  overlayBuilder: (context) => HudOverlay.getOverlay(),
+//                ),
                 Text(
                   "Connected Streaming Accounts",
                   style: settingHeaderTextStyle,
@@ -218,37 +221,7 @@ class SettingsScreen extends StatelessWidget {
         Expanded(child: Container()),
         CupertinoSwitch(
           value: settingsState.deezerEnabled,
-          onChanged: (val) async {
-            if (val) {
-              try {
-                final deezerApi = DeezerApi();
-                DeezerSession deezerSession;
-                bool isSessValid = await deezerApi.isSessionValid();
-                if (isSessValid) {
-                  await deezerApi.logout();
-                }
-                deezerSession = await deezerApi.authenticate();
-                if (deezerSession.success) {
-                  settingsBloc
-                      .dispatch(EnableDeezerEvent(true, deezerSession.userId));
-                } else {
-                  scaffoldKey.currentState.showSnackBar(SnackBar(
-                    content: Text("Failed to enable Deezer"),
-                    backgroundColor: errorColor,
-                  ));
-                  settingsBloc.dispatch(EnableDeezerEvent(false, null));
-                }
-              } on PlatformException catch (e) {
-                scaffoldKey.currentState.showSnackBar(SnackBar(
-                  content: Text("Failed to enable Deezer. ${e.message}"),
-                  backgroundColor: errorColor,
-                ));
-                settingsBloc.dispatch(EnableDeezerEvent(false, null));
-              }
-            } else {
-              settingsBloc.dispatch(EnableDeezerEvent(false, null));
-            }
-          },
+          onChanged: (val) => settingsBloc.dispatch(EnableDeezerEvent(val)),
           activeColor: primaryColor,
         ),
       ],
