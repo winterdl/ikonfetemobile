@@ -108,7 +108,9 @@ public class DeezerApi {
 
     void logout(final MethodChannel.Result result) {
         deezerConnect.logout(context);
-        result.success(null);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("success", true);
+        result.success(resultMap);
     }
 
     void getCurrentUser(final MethodChannel.Result result) {

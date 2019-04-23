@@ -4,6 +4,7 @@ import 'package:ikonfete/deezer/deezer_api.dart';
 import 'package:ikonfete/model/settings.dart';
 import 'package:ikonfete/registry.dart';
 import 'package:ikonfete/repository/settings_repository.dart';
+import 'package:ikonfete/utils/strings.dart';
 import 'package:ikonfete/utils/types.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
@@ -20,8 +21,9 @@ class _LoadSettings extends SettingsScreenEvent {
 
 class EnableDeezerEvent extends SettingsScreenEvent {
   final bool enable;
+  final String deezerUid;
 
-  EnableDeezerEvent(this.enable);
+  EnableDeezerEvent(this.enable, this.deezerUid);
 }
 
 class EnableNotificationsEvent extends SettingsScreenEvent {
@@ -40,14 +42,8 @@ class SettingsState extends Equatable {
   final Pair<bool, String> loadSettingsResult;
   final bool enableNotifications;
   final String deezerUid;
-  final Pair<bool, String> enableDeezerResult;
+  final bool deezerEnabled;
   final Pair<bool, String> saveSettingsResult;
-
-  bool get deezerEnabled =>
-      (deezerUid != null && deezerUid.trim().isNotEmpty) ||
-      (settings != null &&
-          settings.deezerUserId != null &&
-          settings.deezerUserId.isNotEmpty);
 
   SettingsState({
     @required this.isLoading,
@@ -55,8 +51,8 @@ class SettingsState extends Equatable {
     @required this.loadSettingsResult,
     @required this.enableNotifications,
     @required this.deezerUid,
+    @required this.deezerEnabled,
     @required this.saveSettingsResult,
-    @required this.enableDeezerResult,
   }) : super([
           isLoading,
           settings,
@@ -64,7 +60,7 @@ class SettingsState extends Equatable {
           enableNotifications,
           deezerUid,
           saveSettingsResult,
-          enableDeezerResult
+          deezerEnabled,
         ]);
 
   factory SettingsState.initial() {
@@ -75,7 +71,7 @@ class SettingsState extends Equatable {
       enableNotifications: null,
       deezerUid: null,
       saveSettingsResult: null,
-      enableDeezerResult: null,
+      deezerEnabled: false,
     );
   }
 
@@ -85,8 +81,8 @@ class SettingsState extends Equatable {
     Pair<bool, String> loadSettingsResult,
     bool enableNotifications,
     String deezerUid,
+    bool deezerEnabled,
     Pair<bool, String> saveSettingsResult,
-    Pair<bool, String> enableDeezerResult,
   }) {
     return SettingsState(
       isLoading: isLoading ?? this.isLoading,
@@ -95,16 +91,22 @@ class SettingsState extends Equatable {
       enableNotifications: enableNotifications ?? this.enableNotifications,
       deezerUid: deezerUid ?? this.deezerUid,
       saveSettingsResult: saveSettingsResult ?? null,
-      enableDeezerResult: enableDeezerResult ?? null,
+      deezerEnabled: deezerEnabled ?? this.deezerEnabled,
     );
   }
 
-  bool get changesMade =>
-      ((settings == null) &&
-          (enableNotifications != null || deezerUid != null)) ||
-      (settings != null &&
-          (enableNotifications != settings.enableNotifications ||
-              deezerUid != settings.deezerUserId));
+  bool get changesMade {
+    if (settings == null) {
+      if (enableNotifications != null) return true;
+      if (deezerUid != null && deezerUid.isNotEmpty) return true;
+    } else {
+      if (enableNotifications != null &&
+          enableNotifications != settings.enableNotifications) return true;
+      if (deezerUid != null && deezerUid != settings.deezerUserId) return true;
+    }
+
+    return false;
+  }
 }
 
 class SettingsBloc extends Bloc<SettingsScreenEvent, SettingsState> {
@@ -142,6 +144,7 @@ class SettingsBloc extends Bloc<SettingsScreenEvent, SettingsState> {
         yield state.copyWith(
           isLoading: false,
           settings: settings,
+          deezerEnabled: !StringUtils.isNullOrEmpty(settings.deezerUserId),
           loadSettingsResult: Pair.from(true, null),
         );
       } on PlatformException catch (e) {
@@ -158,37 +161,8 @@ class SettingsBloc extends Bloc<SettingsScreenEvent, SettingsState> {
     }
 
     if (event is EnableDeezerEvent) {
-      if (event.enable) {
-        try {
-          final deezerApi = DeezerApi();
-          DeezerSession deezerSession;
-          if ((await deezerApi.isSessionValid())) {
-            deezerSession = await deezerApi.getCurrentSession();
-          } else {
-            deezerSession = await deezerApi.authenticate();
-          }
-
-          if (deezerSession.success) {
-            yield state.copyWith(
-                isLoading: false,
-                deezerUid: deezerSession.userId,
-                enableDeezerResult: Pair.from(true, null));
-          } else {
-            yield state.copyWith(
-                isLoading: false,
-                enableDeezerResult:
-                    Pair.from(false, "Failed to enable deezer"));
-          }
-        } on PlatformException catch (e) {
-          print("Failed to enable Deezer. ${e.message}");
-          yield state.copyWith(
-              isLoading: false,
-              deezerUid: "",
-              enableDeezerResult: Pair.from(false, "Failed to enable Deezer"));
-        }
-      } else {
-        yield state.copyWith(isLoading: false, deezerUid: "");
-      }
+      yield state.copyWith(
+          deezerEnabled: event.enable, deezerUid: event.deezerUid ?? "");
     }
 
     if (event is EnableNotificationsEvent) {
@@ -196,8 +170,9 @@ class SettingsBloc extends Bloc<SettingsScreenEvent, SettingsState> {
     }
 
     if (event is _SaveSettings) {
+      Settings settings = state.settings == null ? Settings() : state.settings;
       try {
-        Settings settings = Settings()
+        settings
           ..uid = uid
           ..deezerUserId = state.deezerUid
           ..spotifyUserId = null
