@@ -277,7 +277,6 @@ class _SearchFieldState extends State<SearchField> {
         disabledBorder: inputBorder,
         enabledBorder: inputBorder,
         errorBorder: errorInputBorder,
-        contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
         errorMaxLines: 2,
         suffixStyle: TextStyle(color: Colors.red),
         suffixIcon: _isTyping
@@ -285,7 +284,7 @@ class _SearchFieldState extends State<SearchField> {
                 child: Icon(
                   Icons.close,
                   color: Color(0xff181D28),
-                  size: 20.0,
+                  size: sf(20),
                 ),
                 onTap: () {
                   setState(() {

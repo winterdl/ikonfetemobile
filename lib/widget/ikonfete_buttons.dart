@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:ikonfete/colors.dart';
 import 'package:ikonfete/screen_utils.dart';
+import 'package:ikonfete/widget/themes/theme.dart';
 
 class PrimaryButton extends StatefulWidget {
   final double width;
@@ -89,6 +91,48 @@ class _PrimaryButtonState extends State<PrimaryButton> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class IkOutlineButton extends StatelessWidget {
+  const IkOutlineButton({
+    Key key,
+    @required this.child,
+    @required this.onPressed,
+    this.color = IkColors.primary,
+    this.foregroundColor = IkColors.primary,
+    this.padding,
+  }) : super(key: key);
+
+  final Widget child;
+  final VoidCallback onPressed;
+  final EdgeInsets padding;
+  final Color color;
+  final Color foregroundColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlineButton(
+      color: Colors.red,
+      splashColor: Colors.red,
+      highlightColor: Colors.white,
+      disabledBorderColor: IkColors.primary,
+      highlightedBorderColor: IkColors.primary,
+      padding:
+          padding ?? EdgeInsets.symmetric(horizontal: sw(25), vertical: sh(16)),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(sw(10)))),
+      child: DefaultTextStyle(
+        style: IkTheme.of(context).button.copyWith(
+            color: foregroundColor,
+            fontWeight: FontWeight.w300,
+            fontSize: sf(16)),
+        child: child,
+      ),
+      onPressed: onPressed,
+      clipBehavior: Clip.none,
+      borderSide: BorderSide(color: color, width: 1.0),
     );
   }
 }
