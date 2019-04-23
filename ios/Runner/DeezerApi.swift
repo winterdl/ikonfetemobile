@@ -25,6 +25,7 @@ class DeezerApi : NSObject {
 //    var deezerPlayer: DZRPlayer!
 //    var deezerConnect: DeezerConnect!
     var loginResult: FlutterResult!
+    var logoutResult: FlutterResult!
 //    var logoutResult: FlutterResult!
 //    var trackRequest: DZRCancelable?
     
@@ -36,6 +37,17 @@ class DeezerApi : NSObject {
     func authorize(_ loginResult: @escaping FlutterResult) -> Void {
         self.loginResult = loginResult
         DeezerManager.sharedInstance.login()
+    }
+    
+    func logout(_ logoutResult: @escaping FlutterResult) -> Void {
+        self.logoutResult = logoutResult
+        DeezerManager.sharedInstance.logout();
+        //        if !deezerConnect.isSessionValid() {
+        //            return
+        //        }
+        //        deezerConnect.accessToken = nil
+        //        deezerConnect.expirationDate = nil
+        //        deezerConnect.logout()
     }
     
     func sessionDidLogin(result: ResultLogin, data: ResultLoginData?) {
@@ -50,6 +62,7 @@ class DeezerApi : NSObject {
             loginResult?(resultMap)
             break
         case .logout:
+            logoutResult?(["success": true])
             break
         case .error:
             let resultMap: NSDictionary = [
@@ -79,16 +92,6 @@ class DeezerApi : NSObject {
 //            result(String(token!))
 //        }
 //    }
-    
-    func logout(_ logoutResult: @escaping FlutterResult) -> Void {
-//        self.logoutResult = logoutResult
-//        if !deezerConnect.isSessionValid() {
-//            return
-//        }
-//        deezerConnect.accessToken = nil
-//        deezerConnect.expirationDate = nil
-//        deezerConnect.logout()
-    }
     
     func isSessionValid(_ result: @escaping FlutterResult) -> Void {
         let valid: Bool = DeezerManager.sharedInstance.sessionState == .connected
