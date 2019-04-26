@@ -108,4 +108,24 @@ class FirebaseFanRepository extends FirestoreRepository<Fan>
         .toList();
     return fans;
   }
+
+  @override
+  Future<void> regsterOnline(String uid) async {
+    final fan = await findByUID(uid);
+    if (fan == null) return null;
+    fan.lastSeen = DateTime.now();
+    fan.online = true;
+    await update(fan.id, fan);
+    await _firebaseDatabase
+        .reference()
+        .child("/status/fans/$uid")
+        .set("online");
+
+    return _firebaseDatabase
+        .reference()
+        .child("/status/fans/$uid")
+        .onDisconnect()
+        .set("offline");
+    // alternative: listen on firebase .info/connected
+  }
 }

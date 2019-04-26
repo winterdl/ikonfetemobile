@@ -16,6 +16,8 @@ abstract class User extends Model<String> {
   int feteScore = 0;
 
   Sex sex;
+  bool online;
+  DateTime lastSeen;
 
   DateTime dateCreated;
   DateTime dateUpdated;
@@ -35,7 +37,12 @@ abstract class User extends Model<String> {
       ..feteScore = json["feteScore"] ?? 0
       ..profilePictureUrl = json["profilePictureUrl"] ?? ""
       ..profilePictureName = json["profilePictureName"] ?? ""
-      ..sex = json["sex"] != null ? SexConverter.strToSex(json["sex"]) : null;
+      ..sex = json["sex"] != null ? SexConverter.strToSex(json["sex"]) : null
+      ..online = json["online"] ?? false
+      ..lastSeen = json["lastSeen"] != null
+          ? DateTime.fromMillisecondsSinceEpoch(json["lastSeen"])
+          : null;
+
     if (json["dateCreated"] != null) {
       this.dateCreated =
           new DateTime.fromMillisecondsSinceEpoch(json["dateCreated"]).toUtc();
@@ -64,6 +71,8 @@ abstract class User extends Model<String> {
       "dateCreated": this.dateCreated?.toUtc()?.millisecondsSinceEpoch ?? null,
       "dateUpdated": this.dateUpdated?.toUtc()?.millisecondsSinceEpoch ?? null,
       "sex": SexConverter.sexToStr(this.sex),
+      "online": this.online,
+      "lastSeen": this.lastSeen.millisecondsSinceEpoch,
     });
     return map;
   }

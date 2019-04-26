@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:ikonfete/model/presence.dart';
 import 'package:ikonfete/registry.dart';
-import 'package:ikonfete/repository/user_presence_repository.dart';
+import 'package:ikonfete/repository/auth_repository.dart';
+import 'package:ikonfete/repository/fan_repository.dart';
 import 'package:meta/meta.dart';
 
 abstract class FanHomeEvent {}
@@ -28,9 +28,12 @@ class FanHomeState extends Equatable {
 }
 
 class FanHomeBloc extends Bloc<FanHomeEvent, FanHomeState> {
-  final UserPresenceRepository userPresenceRepository;
+  final AuthRepository authRepository;
+  final FanRepository fanRepository;
 
-  FanHomeBloc() : userPresenceRepository = Registry().userPresenceRepository();
+  FanHomeBloc()
+      : fanRepository = Registry().fanRepository(),
+        authRepository = Registry().authRepository();
 
   @override
   FanHomeState get initialState => FanHomeState.initial();
@@ -39,13 +42,7 @@ class FanHomeBloc extends Bloc<FanHomeEvent, FanHomeState> {
   Stream<FanHomeState> mapEventToState(
       FanHomeState currentState, FanHomeEvent event) async* {
     if (event is RegisterOnline) {
-      UserPresence presence;
-      presence =
-          (await userPresenceRepository.findByUid(event.uid)) ?? UserPresence()
-            ..uid = event.uid;
-      presence.online = true;
-      presence.lastSeen = DateTime.now();
-      userPresenceRepository.registerPresence(presence);
+      fanRepository.regsterOnline(event.uid);
     }
   }
 }

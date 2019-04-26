@@ -54,6 +54,7 @@ dependencies:
   flutter_screenutil: ^0.4.2
   provider: ^1.6.1
   direct_select: ^1.0.0
+  flutter_circular_chart: ^0.1.0
 
 
 dev_dependencies:

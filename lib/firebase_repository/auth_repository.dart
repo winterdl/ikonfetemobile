@@ -11,7 +11,6 @@ import 'package:ikonfete/repository/artist_repository.dart';
 import 'package:ikonfete/repository/auth_repository.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:ikonfete/repository/fan_repository.dart';
-import 'package:ikonfete/repository/user_presence_repository.dart';
 import 'package:ikonfete/utils/upload_helper.dart';
 
 class FirebaseAuthRepository
