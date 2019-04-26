@@ -11,6 +11,7 @@ import 'package:ikonfete/repository/artist_repository.dart';
 import 'package:ikonfete/repository/auth_repository.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:ikonfete/repository/fan_repository.dart';
+import 'package:ikonfete/repository/user_presence_repository.dart';
 import 'package:ikonfete/utils/upload_helper.dart';
 
 class FirebaseAuthRepository
@@ -21,7 +22,8 @@ class FirebaseAuthRepository
   final ArtistRepository artistRepository;
   final FanRepository fanRepository;
 
-  FirebaseAuthRepository(this.artistRepository, this.fanRepository)
+  FirebaseAuthRepository(
+      this.artistRepository, this.fanRepository)
       : _firebaseAuth = FirebaseAuth.instance,
         _cloudFunctions = CloudFunctions.instance,
         _firebaseStorage = FirebaseStorage.instance;
@@ -200,6 +202,9 @@ class FirebaseAuthRepository
           break;
         case "ERROR_TOO_MANY_REQUESTS":
           errMsg = "Too many attempts. Please wait for a while and retry";
+          break;
+        case "ERROR_NETWORK_REQUEST_FAILED":
+          errMsg = "A network error occurred.";
           break;
       }
       return AuthResult(success: false, error: errMsg);

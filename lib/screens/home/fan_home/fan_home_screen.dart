@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ikonfete/app_bloc.dart';
 import 'package:ikonfete/colors.dart';
 import 'package:ikonfete/screen_utils.dart';
+import 'package:ikonfete/screens/home/fan_home/fan_home_bloc.dart';
 import 'package:ikonfete/screens/team_feed/team_feed_screen.dart';
 import 'package:ikonfete/widget/app_bar_delegate.dart';
 import 'package:ikonfete/widget/event_slide.dart';
@@ -13,10 +14,17 @@ import 'package:ikonfete/widget/post_cards/video_post_card.dart';
 import 'package:ikonfete/screens/leaderboard/leaderboard_screen.dart';
 
 Widget fanHomeScreen(BuildContext context, String uid) {
-  return FanHomeScreen();
+  return BlocProvider<FanHomeBloc>(
+    child: FanHomeScreen(uid: uid),
+    bloc: FanHomeBloc(),
+  );
 }
 
 class FanHomeScreen extends StatefulWidget {
+  final String uid;
+
+  FanHomeScreen({@required this.uid});
+
   @override
   _FanHomeScreenState createState() => _FanHomeScreenState();
 }
@@ -25,6 +33,13 @@ class _FanHomeScreenState extends State<FanHomeScreen> {
   final _controller = ScrollController();
 
   final ValueNotifier<bool> isScrolledTop = ValueNotifier(false);
+
+  @override
+  void initState() {
+    super.initState();
+    final bloc = BlocProvider.of<FanHomeBloc>(context);
+    bloc.dispatch(RegisterOnline(widget.uid));
+  }
 
   @override
   Widget build(BuildContext context) {

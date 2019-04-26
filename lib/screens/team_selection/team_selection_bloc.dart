@@ -7,6 +7,7 @@ import 'package:ikonfete/model/artist.dart';
 import 'package:ikonfete/model/fan.dart';
 import 'package:ikonfete/repository/artist_repository.dart';
 import 'package:ikonfete/repository/fan_repository.dart';
+import 'package:ikonfete/repository/user_presence_repository.dart';
 import 'package:ikonfete/utils/types.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';

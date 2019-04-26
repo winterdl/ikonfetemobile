@@ -32,14 +32,9 @@ void main() async {
   await DbProvider.db.database; // init database
   final registry = Registry();
   final sharedPreferences = await SharedPreferences.getInstance();
-//  final currentUser = await FirebaseAuth.instance.currentUser();
-//  final uid = sharedPreferences.getString(PreferenceKeys.uid);
+
   CurrentUserHolder currentUserHolder =
       await registry.authRepository().getCurrentUser();
-//  var artistOrFan;
-//  if (uid != null) {
-//    artistOrFan = await DbProvider.db.getArtistOrFanByUid(uid);
-//  }
 
   var configuredApp = AppConfig(
     appName: "Ikonfete",

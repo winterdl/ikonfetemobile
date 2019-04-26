@@ -5,13 +5,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ikonfete/colors.dart';
 import 'package:ikonfete/icons.dart';
 import 'package:ikonfete/app_bloc.dart';
+import 'package:ikonfete/model/sex.dart';
 import 'package:ikonfete/routes.dart';
 import 'package:ikonfete/screen_utils.dart';
 import 'package:ikonfete/screens/signup/signup_main_bloc.dart';
 import 'package:ikonfete/screens/signup/signup_profile_screen.dart';
 import 'package:ikonfete/widget/form_fields.dart';
 import 'package:ikonfete/widget/hud_overlay.dart';
-import 'package:ikonfete/widget/ikonfete_buttons.dart';
 import 'package:ikonfete/widget/overlays.dart';
 import 'package:ikonfete/widget/themes/theme.dart';
 
@@ -51,10 +51,13 @@ class _SignupMainScreenState extends State<SignupMainScreen> {
               ScreenUtils.onWidgetDidBuild(() {
                 Navigator.of(context).pushReplacement(
                   CupertinoPageRoute(
-                    builder: (ctx) => signupProfileScreen(ctx,
-                        name: result.name,
-                        email: result.email,
-                        password: result.password),
+                    builder: (ctx) => signupProfileScreen(
+                          ctx,
+                          name: result.name,
+                          email: result.email,
+                          password: result.password,
+                          sex: result.sex,
+                        ),
                   ),
                 );
               });
@@ -468,6 +471,33 @@ class _SignupFormState extends State<SignupForm> {
               passwordFocusNode.unfocus();
             },
             onSaved: (val) => bloc.dispatch(PasswordEntered(val.trim())),
+          ),
+          SizedBox(height: 20.0),
+          BlocBuilder<SignupMainScreenEvent, SignupMainScreenState>(
+            bloc: bloc,
+            builder: (ctx, state) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Text("Sex"),
+                  SizedBox(width: 20),
+                  DropdownButton<Sex>(
+                    elevation: 2,
+                    value: state.sex,
+                    items: SexConverter.sexes
+                        .map<DropdownMenuItem<Sex>>(
+                          (s) => DropdownMenuItem<Sex>(
+                                value: s,
+                                child: Text(SexConverter.sexToStr(s)),
+                              ),
+                        )
+                        .toList(),
+                    onChanged: (Sex newVal) =>
+                        bloc.dispatch(SexSelected(newVal)),
+                  ),
+                ],
+              );
+            },
           ),
           SizedBox(height: sh(10)),
           Row(

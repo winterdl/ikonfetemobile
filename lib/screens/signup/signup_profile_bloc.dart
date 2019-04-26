@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:ikonfete/model/sex.dart';
 import 'package:ikonfete/registry.dart';
 import 'package:ikonfete/model/artist.dart';
 import 'package:ikonfete/model/fan.dart';
@@ -114,12 +115,14 @@ class SignupProfileBloc
   final String name;
   final String email;
   final String password;
+  final Sex sex;
   final EmailAuthRepository authRepository;
 
   SignupProfileBloc({
     @required this.name,
     @required this.email,
     @required this.password,
+    @required this.sex,
   }) : authRepository = Registry().authRepository();
 
   @override
@@ -170,6 +173,7 @@ class SignupProfileBloc
       ..name = name
       ..email = email
       ..username = username
+      ..sex = sex
       ..countryIsoCode = countryIsoCode
       ..country = countryName;
 

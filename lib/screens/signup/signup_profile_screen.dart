@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ikonfete/app_bloc.dart';
 import 'package:ikonfete/colors.dart';
+import 'package:ikonfete/model/sex.dart';
 import 'package:ikonfete/screen_utils.dart';
 import 'package:ikonfete/screens/activation/activation_screen.dart';
 import 'package:ikonfete/screens/signup/signup_profile_bloc.dart';
@@ -17,9 +18,9 @@ import 'package:ikonfete/widget/overlays.dart';
 Widget signupProfileScreen(BuildContext context,
     {@required String name,
     @required String email,
-    @required String password}) {
+    @required String password, @required Sex sex}) {
   return BlocProvider<SignupProfileBloc>(
-    bloc: SignupProfileBloc(name: name, email: email, password: password),
+    bloc: SignupProfileBloc(name: name, email: email, password: password, sex: sex),
     child: SignupProfileScreen(email, password),
   );
 }

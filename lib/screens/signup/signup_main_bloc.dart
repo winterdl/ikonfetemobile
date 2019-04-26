@@ -1,4 +1,7 @@
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:ikonfete/model/sex.dart';
+import 'package:ikonfete/model/user.dart';
 import 'package:ikonfete/registry.dart';
 import 'package:ikonfete/repository/auth_repository.dart';
 import 'package:ikonfete/screens/signup/bloc_models.dart';
@@ -24,6 +27,12 @@ class PasswordEntered extends SignupMainScreenEvent {
   PasswordEntered(this.password);
 }
 
+class SexSelected extends SignupMainScreenEvent {
+  final Sex sex;
+
+  SexSelected(this.sex);
+}
+
 class ValidateForm extends SignupMainScreenEvent {
   final bool isArtist;
 
@@ -36,10 +45,11 @@ class _ValidateForm extends SignupMainScreenEvent {
   _ValidateForm({this.isArtist});
 }
 
-class SignupMainScreenState {
+class SignupMainScreenState extends Equatable {
   final String name;
   final String email;
   final String password;
+  final Sex sex;
   final bool isLoading;
   final SignupValidationResult result;
 
@@ -47,15 +57,17 @@ class SignupMainScreenState {
     @required this.name,
     @required this.email,
     @required this.password,
+    @required this.sex,
     @required this.isLoading,
     @required this.result,
-  });
+  }) : super([name, email, password, sex, isLoading, result]);
 
   factory SignupMainScreenState.initial() {
     return SignupMainScreenState(
       name: null,
       email: null,
       password: null,
+      sex: null,
       isLoading: false,
       result: null,
     );
@@ -65,6 +77,7 @@ class SignupMainScreenState {
     String name,
     String email,
     String password,
+    Sex sex,
     bool isLoading,
     SignupValidationResult result,
   }) {
@@ -72,24 +85,11 @@ class SignupMainScreenState {
       name: name ?? this.name,
       email: email ?? this.email,
       password: password ?? this.password,
+      sex: sex ?? this.sex,
       isLoading: isLoading ?? this.isLoading,
       result: result ?? this.result,
     );
   }
-
-  @override
-  bool operator ==(other) =>
-      identical(this, other) &&
-      other is SignupMainScreenState &&
-      runtimeType == other.runtimeType &&
-      name == other.name &&
-      email == other.email &&
-      password == other.password &&
-      result == other.result;
-
-  @override
-  int get hashCode =>
-      name.hashCode ^ email.hashCode ^ password.hashCode ^ result.hashCode;
 }
 
 class SignupMainBloc
@@ -122,6 +122,9 @@ class SignupMainBloc
     if (event is PasswordEntered) {
       yield state.copyWith(password: event.password);
     }
+    if (event is SexSelected) {
+      yield state.copyWith(sex: event.sex);
+    }
 
     if (event is ValidateForm) {
       yield state.copyWith(isLoading: true);
@@ -135,12 +138,24 @@ class SignupMainBloc
 
   Future<SignupValidationResult> validateForm(
       SignupMainScreenState state) async {
+    if (state.sex == null) {
+      return SignupValidationResult(
+          success: false,
+          error: "Select your sex",
+          email: null,
+          password: null,
+          sex: null,
+          name: null);
+    }
+
     final validationResult =
         await emailAuthRepository.validateEmail(state.email);
+
     return SignupValidationResult(
         name: state.name,
         email: state.email,
         password: state.password,
+        sex: state.sex,
         success: validationResult.isValid,
         error: validationResult.error);
   }

@@ -53,7 +53,7 @@ dependencies:
   equatable: ^0.1.0
   flutter_screenutil: ^0.4.2
   provider: ^1.6.1
-
+  direct_select: ^1.0.0
 
 
 dev_dependencies:
