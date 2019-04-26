@@ -140,11 +140,13 @@ class SettingsBloc extends Bloc<SettingsScreenEvent, SettingsState> {
 
     if (event is _LoadSettings) {
       try {
-        final settings = await _settingsRepository.findByUid(uid);
+        Settings settings = await _settingsRepository.findByUid(uid);
         yield state.copyWith(
           isLoading: false,
           settings: settings,
-          deezerEnabled: !StringUtils.isNullOrEmpty(settings.deezerUserId),
+          deezerEnabled: settings == null
+              ? false
+              : !StringUtils.isNullOrEmpty(settings.deezerUserId),
           loadSettingsResult: Pair.from(true, null),
         );
       } on PlatformException catch (e) {
